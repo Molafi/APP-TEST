@@ -200,6 +200,17 @@ generating, merge the following.
 ```
 (`RECORD_AUDIO` is needed for voice dictation via `speech_to_text`.)
 - `minSdkVersion 23` (Firebase Auth), `compileSdk`/`targetSdk` = latest stable.
+- **Enable core library desugaring** (required by `flutter_local_notifications`).
+  In `android/app/build.gradle.kts`, inside `compileOptions { ... }` add:
+  ```kotlin
+  isCoreLibraryDesugaringEnabled = true
+  ```
+  and add a dependencies block:
+  ```kotlin
+  dependencies {
+      coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+  }
+  ```
 - Use the modern photo picker (image_picker handles this) — no legacy broad
   storage permissions.
 - Do **not** enable cleartext traffic.
