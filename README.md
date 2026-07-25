@@ -125,6 +125,16 @@ flutter run \
   --dart-define=AI_BACKEND_URL=https://us-central1-<project>.cloudfunctions.net/aiProxy
 ```
 
+**Quick real-AI dev run (no Firebase, direct Groq)** — for local testing only:
+1. Copy `dart_defines.example.json` to `dart_defines.json` (git-ignored) and paste
+   your Groq key (get one free at https://console.groq.com/keys).
+2. Run with:
+   ```bash
+   flutter run --dart-define-from-file=dart_defines.json
+   ```
+Demo auth/storage stay local (any login works), but chat + diagnosis use the real
+Groq API. Never commit `dart_defines.json`.
+
 ---
 
 ## 🔥 Firebase setup

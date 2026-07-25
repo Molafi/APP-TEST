@@ -20,6 +20,8 @@ pubspec.lock
 .env
 *.env
 !.env.example
+# Local build-time defines holding the Groq dev key (never commit the real one).
+dart_defines.json
 # NOTE: lib/firebase_options.dart is committed as a non-functional PLACEHOLDER so
 # the project compiles in demo mode. Running `flutterfire configure` overwrites it
 # with your real (non-secret) config. Do not commit real service-account files.
