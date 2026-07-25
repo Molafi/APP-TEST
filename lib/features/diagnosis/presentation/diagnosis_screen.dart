@@ -1,6 +1,11 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/errors/error_mapper.dart';
@@ -97,7 +102,15 @@ class _ConfirmView extends StatelessWidget {
                   label: Text(l10n.retake),
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _crop(context),
+                  icon: const Icon(Icons.crop),
+                  label: Text(l10n.cropImage),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () => controller.analyze(),
@@ -110,6 +123,34 @@ class _ConfirmView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Lets the user crop to the affected area before analysis. Writes the bytes
+  /// to a temp file (image_cropper works with paths), crops, then feeds the
+  /// result back into the flow. Failure/cancel leaves the original image.
+  Future<void> _crop(BuildContext context) async {
+    final Uint8List? bytes = state.imageBytes;
+    if (bytes == null) return;
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    try {
+      final Directory dir = Directory.systemTemp;
+      final File temp = File(
+          '${dir.path}/ps_crop_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      await temp.writeAsBytes(bytes, flush: true);
+
+      final CroppedFile? cropped = await ImageCropper().cropImage(
+        sourcePath: temp.path,
+        uiSettings: [
+          AndroidUiSettings(toolbarTitle: l10n.cropImage, lockAspectRatio: false),
+          IOSUiSettings(title: l10n.cropImage),
+        ],
+      );
+      if (cropped == null) return;
+      final Uint8List newBytes = await File(cropped.path).readAsBytes();
+      controller.setImage(newBytes);
+    } catch (_) {
+      // Cropping unavailable/cancelled — keep the original image silently.
+    }
   }
 }
 
@@ -216,13 +257,17 @@ class _ResultView extends ConsumerWidget {
 
   Future<void> _share(
       BuildContext context, AppLocalizations l10n, Diagnosis d) async {
-    // Copy a plain-text summary to the clipboard. (Swap for share_plus to open
-    // the native share sheet — see README "Known limitations".)
-    await Clipboard.setData(ClipboardData(text: d.toShareText()));
-    if (context.mounted) {
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text(l10n.copied)));
+    // Open the native share sheet with a plain-text summary.
+    try {
+      await SharePlus.instance.share(ShareParams(text: d.toShareText()));
+    } catch (_) {
+      // Fallback to clipboard if sharing is unavailable on the platform.
+      await Clipboard.setData(ClipboardData(text: d.toShareText()));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(l10n.copied)));
+      }
     }
   }
 }

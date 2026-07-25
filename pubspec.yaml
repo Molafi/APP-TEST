@@ -31,6 +31,19 @@ dependencies:
   camera: ^0.11.0+2
   image_picker: ^1.1.2
   image: ^4.2.0
+  image_cropper: ^8.0.2
+
+  # AI accessibility (voice)
+  speech_to_text: ^7.0.0
+  flutter_tts: ^4.2.0
+
+  # Sharing & home-screen widget
+  share_plus: ^10.1.2
+  home_widget: ^0.7.0
+
+  # Optional, opt-in analytics & crash reporting (no-op unless enabled)
+  firebase_analytics: ^11.3.3
+  firebase_crashlytics: ^4.1.3
 
   # Location and permissions
   geolocator: ^13.0.1

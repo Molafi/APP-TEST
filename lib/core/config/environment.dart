@@ -47,6 +47,30 @@ class Environment {
     defaultValue: 'meta-llama/llama-4-scout-17b-16e-instruct',
   );
 
+  /// Backup models used automatically if the primary one is unavailable (Groq's
+  /// free lineup changes over time, so a fallback keeps the app working).
+  static const String groqTextModelFallback = String.fromEnvironment(
+    'GROQ_TEXT_MODEL_FALLBACK',
+    defaultValue: 'llama-3.1-8b-instant',
+  );
+  static const String groqVisionModelFallback = String.fromEnvironment(
+    'GROQ_VISION_MODEL_FALLBACK',
+    defaultValue: 'meta-llama/llama-4-maverick-17b-128e-instruct',
+  );
+
+  static List<String> get groqTextModels =>
+      _dedupe([groqTextModel, groqTextModelFallback]);
+  static List<String> get groqVisionModels =>
+      _dedupe([groqVisionModel, groqVisionModelFallback]);
+
+  static List<String> _dedupe(List<String> models) {
+    final seen = <String>{};
+    return [
+      for (final m in models)
+        if (m.isNotEmpty && seen.add(m)) m,
+    ];
+  }
+
   /// True when neither a backend nor a valid dev key is configured, meaning we
   /// must fall back to canned demo AI responses.
   static bool get aiUnavailable {

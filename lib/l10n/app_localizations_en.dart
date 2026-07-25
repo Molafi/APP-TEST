@@ -143,6 +143,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get removeImage => 'Remove image';
   @override
+  String get voiceInput => 'Voice input';
+  @override
+  String get readAloud => 'Read aloud';
+  @override
+  String get stopAudio => 'Stop';
+  @override
   String get fromCamera => 'Take a photo';
   @override
   String get fromGallery => 'Choose from gallery';
@@ -211,6 +217,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capture => 'Capture';
   @override
   String get retake => 'Retake';
+  @override
+  String get cropImage => 'Crop';
   @override
   String get confirmPhoto => 'Use this photo';
   @override

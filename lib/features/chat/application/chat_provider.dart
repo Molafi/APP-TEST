@@ -159,8 +159,13 @@ class ChatController extends StateNotifier<ChatState> {
         .where((m) => m.id != userMsg.id && m.status != MessageStatus.failed)
         .toList();
 
+    final ChatMessage sentUser = userMsg.copyWith(status: MessageStatus.sent);
+    final String assistantId = _uuid.v4();
+    bool assistantAdded = false;
+    String latest = '';
+
     try {
-      final String reply = await _service.sendMessage(
+      final Stream<String> stream = _service.sendMessageStream(
         locale: locale,
         userText: userMsg.text,
         history: history,
@@ -168,26 +173,51 @@ class ChatController extends StateNotifier<ChatState> {
         image: image,
       );
 
-      if (!mounted || seq != _requestSeq) return; // superseded
+      await for (final String cumulative in stream) {
+        if (!mounted || seq != _requestSeq) return; // superseded/cancelled
+        latest = cumulative;
+        if (!assistantAdded) {
+          // First chunk: mark the user message sent, drop the typing dots, and
+          // insert the assistant bubble that we then update in place.
+          assistantAdded = true;
+          state = state.copyWith(
+            isTyping: false,
+            messages: [
+              for (final m in state.messages)
+                m.id == userMsg.id ? sentUser : m,
+              ChatMessage(
+                id: assistantId,
+                role: MessageRole.assistant,
+                text: cumulative,
+                weatherContext: ctx.displayStrip,
+                createdAt: DateTime.now(),
+              ),
+            ],
+          );
+        } else {
+          state = state.copyWith(
+            messages: [
+              for (final m in state.messages)
+                m.id == assistantId ? m.copyWith(text: cumulative) : m,
+            ],
+          );
+        }
+      }
 
-      final ChatMessage sentUser = userMsg.copyWith(status: MessageStatus.sent);
-      final ChatMessage assistant = ChatMessage(
-        id: _uuid.v4(),
+      if (!mounted || seq != _requestSeq) return;
+      if (!assistantAdded || latest.trim().isEmpty) {
+        throw const AppException(AppErrorKind.malformedResponse);
+      }
+
+      final ChatMessage finalAssistant = ChatMessage(
+        id: assistantId,
         role: MessageRole.assistant,
-        text: reply,
+        text: latest,
         weatherContext: ctx.displayStrip,
         createdAt: DateTime.now(),
       );
-
-      state = state.copyWith(
-        isTyping: false,
-        messages: [
-          for (final m in state.messages) m.id == userMsg.id ? sentUser : m,
-          assistant,
-        ],
-      );
       unawaited(_repo.updateMessage(sentUser));
-      unawaited(_repo.saveMessage(assistant));
+      unawaited(_repo.saveMessage(finalAssistant));
     } catch (e) {
       if (!mounted || seq != _requestSeq) return;
       final AppException err = ErrorMapper.fromException(e);
@@ -197,7 +227,9 @@ class ChatController extends StateNotifier<ChatState> {
         isTyping: false,
         error: err,
         messages: [
-          for (final m in state.messages) m.id == userMsg.id ? failedUser : m,
+          for (final m in state.messages)
+            if (m.id != assistantId) // drop any partial assistant bubble
+              m.id == userMsg.id ? failedUser : m,
         ],
       );
       unawaited(_repo.updateMessage(failedUser));

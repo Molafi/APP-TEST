@@ -7,7 +7,7 @@ import 'ai_gateway.dart';
 /// (demo mode) or in tests. Produces valid diagnosis JSON when [jsonMode] is
 /// requested, and a helpful structured plant-care answer otherwise. This keeps
 /// the app fully usable without any credentials.
-class DemoAiGateway implements AiGateway {
+class DemoAiGateway extends AiGateway {
   DemoAiGateway([Random? random]) : _random = random ?? Random();
 
   final Random _random;
@@ -20,6 +20,26 @@ class DemoAiGateway implements AiGateway {
       return _demoDiagnosisJson(request);
     }
     return _demoChatAnswer(request);
+  }
+
+  @override
+  Stream<String> generateStream(AiRequest request) async* {
+    // Diagnosis (JSON) needs the whole document — emit once.
+    if (request.jsonMode) {
+      yield await generate(request);
+      return;
+    }
+    // Simulate token-by-token streaming of the canned chat answer so the
+    // streaming UI can be exercised in demo mode.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+    final String full = _demoChatAnswer(request);
+    final List<String> words = full.split(' ');
+    final StringBuffer acc = StringBuffer();
+    for (int i = 0; i < words.length; i++) {
+      acc.write(i == 0 ? words[i] : ' ${words[i]}');
+      yield acc.toString();
+      await Future<void>.delayed(const Duration(milliseconds: 18));
+    }
   }
 
   String _demoChatAnswer(AiRequest request) {

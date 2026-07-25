@@ -30,13 +30,54 @@ class AiChatService {
         ? turns.sublist(turns.length - AppConfig.maxContextMessages)
         : turns;
 
-    return _gateway.generate(AiRequest(
+    return _gateway.generate(_request(
+      locale: locale,
+      userText: userText,
+      history: trimmed,
+      context: context,
+      image: image,
+    ));
+  }
+
+  /// Streams the reply as cumulative text (each event is the full text so far).
+  Stream<String> sendMessageStream({
+    required String locale,
+    required String userText,
+    required List<ChatMessage> history,
+    Map<String, String> context = const {},
+    AiImage? image,
+  }) {
+    final List<AiTurn> turns = history
+        .where((m) => m.text.trim().isNotEmpty)
+        .map((m) => AiTurn(fromUser: m.role == MessageRole.user, text: m.text))
+        .toList();
+    final List<AiTurn> trimmed = turns.length > AppConfig.maxContextMessages
+        ? turns.sublist(turns.length - AppConfig.maxContextMessages)
+        : turns;
+
+    return _gateway.generateStream(_request(
+      locale: locale,
+      userText: userText,
+      history: trimmed,
+      context: context,
+      image: image,
+    ));
+  }
+
+  AiRequest _request({
+    required String locale,
+    required String userText,
+    required List<AiTurn> history,
+    required Map<String, String> context,
+    AiImage? image,
+  }) {
+    return AiRequest(
       systemPrompt: AiPrompts.system(locale: locale),
       userText: userText,
       context: context,
-      history: trimmed,
+      history: history,
       image: image,
-    ));
+    );
   }
 }
 

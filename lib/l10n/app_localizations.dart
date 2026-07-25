@@ -114,6 +114,9 @@ abstract class AppLocalizations {
   String get send;
   String get attachImage;
   String get removeImage;
+  String get voiceInput;
+  String get readAloud;
+  String get stopAudio;
   String get fromCamera;
   String get fromGallery;
   String get copy;
@@ -149,6 +152,7 @@ abstract class AppLocalizations {
   String get switchCamera;
   String get capture;
   String get retake;
+  String get cropImage;
   String get confirmPhoto;
   String get analyzing;
   String get cancelAnalysis;

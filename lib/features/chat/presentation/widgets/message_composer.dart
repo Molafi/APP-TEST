@@ -1,16 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/config/app_config.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/services/speech_service.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'camera_input_button.dart';
 
-/// Keyboard-safe message composer with attachment preview, character counter
-/// near the limit, and disabled states while sending.
-class MessageComposer extends StatefulWidget {
+/// Keyboard-safe message composer with attachment preview, voice dictation,
+/// character counter near the limit, and disabled states while sending.
+class MessageComposer extends ConsumerStatefulWidget {
   const MessageComposer({
     super.key,
     required this.initialDraft,
@@ -25,13 +27,15 @@ class MessageComposer extends StatefulWidget {
   final bool enabled;
 
   @override
-  State<MessageComposer> createState() => _MessageComposerState();
+  ConsumerState<MessageComposer> createState() => _MessageComposerState();
 }
 
-class _MessageComposerState extends State<MessageComposer> {
+class _MessageComposerState extends ConsumerState<MessageComposer> {
   late final TextEditingController _controller =
       TextEditingController(text: widget.initialDraft);
   Uint8List? _pendingImage;
+  bool _listening = false;
+  String _baseText = '';
 
   @override
   void didUpdateWidget(MessageComposer oldWidget) {
@@ -51,6 +55,8 @@ class _MessageComposerState extends State<MessageComposer> {
 
   @override
   void dispose() {
+    // Stop any in-progress dictation when the composer goes away.
+    ref.read(speechServiceProvider).stop();
     _controller.dispose();
     super.dispose();
   }
@@ -66,6 +72,31 @@ class _MessageComposerState extends State<MessageComposer> {
     _controller.clear();
     setState(() => _pendingImage = null);
     widget.onDraftChanged('');
+  }
+
+  Future<void> _toggleMic() async {
+    final SpeechService speech = ref.read(speechServiceProvider);
+    if (_listening) {
+      await speech.stop();
+      setState(() => _listening = false);
+      return;
+    }
+    _baseText = _controller.text;
+    final String localeId = Localizations.localeOf(context).languageCode;
+    final bool started = await speech.start(
+      localeId: localeId,
+      onResult: (words) {
+        final String combined =
+            _baseText.isEmpty ? words : '${_baseText.trimRight()} $words';
+        _controller.value = TextEditingValue(
+          text: combined,
+          selection: TextSelection.collapsed(offset: combined.length),
+        );
+        widget.onDraftChanged(combined);
+        setState(() {});
+      },
+    );
+    if (mounted) setState(() => _listening = started);
   }
 
   @override
@@ -123,6 +154,14 @@ class _MessageComposerState extends State<MessageComposer> {
                   CameraInputButton(
                     enabled: widget.enabled,
                     onImage: (bytes) => setState(() => _pendingImage = bytes),
+                  ),
+                  IconButton(
+                    tooltip: _listening ? l10n.stopAudio : l10n.voiceInput,
+                    onPressed: widget.enabled ? _toggleMic : null,
+                    color: _listening
+                        ? Theme.of(context).colorScheme.error
+                        : null,
+                    icon: Icon(_listening ? Icons.mic : Icons.mic_none),
                   ),
                   Expanded(
                     child: TextField(

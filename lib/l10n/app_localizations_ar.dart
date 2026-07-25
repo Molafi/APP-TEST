@@ -144,6 +144,12 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get removeImage => 'إزالة الصورة';
   @override
+  String get voiceInput => 'إدخال صوتي';
+  @override
+  String get readAloud => 'قراءة بصوت عالٍ';
+  @override
+  String get stopAudio => 'إيقاف';
+  @override
   String get fromCamera => 'التقاط صورة';
   @override
   String get fromGallery => 'الاختيار من المعرض';
@@ -210,6 +216,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get capture => 'التقاط';
   @override
   String get retake => 'إعادة الالتقاط';
+  @override
+  String get cropImage => 'اقتصاص';
   @override
   String get confirmPhoto => 'استخدام هذه الصورة';
   @override

@@ -4,7 +4,7 @@ import 'package:plantsense_ai/core/services/local_cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deterministic fake gateway used in provider/widget tests.
-class FakeAiGateway implements AiGateway {
+class FakeAiGateway extends AiGateway {
   FakeAiGateway({this.reply = 'Fake AI reply', this.throwError = false});
 
   final String reply;

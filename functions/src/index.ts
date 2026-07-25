@@ -28,9 +28,13 @@ setGlobalOptions({ region: "us-central1", maxInstances: 10 });
 
 const GROQ_API_KEY = defineSecret("GROQ_API_KEY");
 
-// Groq model names. Override here if Groq's free lineup changes.
-const GROQ_TEXT_MODEL = "llama-3.3-70b-versatile";
-const GROQ_VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
+// Groq model names, primary first then fallback. Override if Groq's free
+// lineup changes; the proxy automatically falls back when a model is retired.
+const GROQ_TEXT_MODELS = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
+const GROQ_VISION_MODELS = [
+  "meta-llama/llama-4-scout-17b-16e-instruct",
+  "meta-llama/llama-4-maverick-17b-128e-instruct",
+];
 
 // Max request body (base64 image + text). ~6 MB to allow a compressed photo.
 const MAX_BODY_BYTES = 6 * 1024 * 1024;
@@ -112,8 +116,8 @@ export const aiProxy = onRequest(
     try {
       const text = await callGroq(
         GROQ_API_KEY.value(),
-        GROQ_TEXT_MODEL,
-        GROQ_VISION_MODEL,
+        GROQ_TEXT_MODELS,
+        GROQ_VISION_MODELS,
         payload
       );
       res.status(200).json({ text });

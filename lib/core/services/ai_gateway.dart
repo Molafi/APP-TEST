@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import '../config/app_config.dart';
 import '../config/environment.dart';
 import '../errors/app_exception.dart';
+import '../errors/error_mapper.dart';
 import '../networking/api_client.dart';
 import 'demo_ai_gateway.dart';
 import 'firebase_id_token.dart';
@@ -69,12 +73,19 @@ class AiRequest {
 /// Transport-agnostic AI gateway. Returns raw model text; callers parse.
 abstract class AiGateway {
   Future<String> generate(AiRequest request);
+
+  /// Emits the response incrementally as **cumulative** text (each event is the
+  /// full text so far). The default implementation emits once; transports that
+  /// support server-sent events override this for true token streaming.
+  Stream<String> generateStream(AiRequest request) async* {
+    yield await generate(request);
+  }
 }
 
 /// Preferred production transport: calls the authenticated Cloud Function proxy
 /// so the Groq API key never touches the client. Requires a Firebase ID token
 /// supplied by [idTokenProvider].
-class BackendAiGateway implements AiGateway {
+class BackendAiGateway extends AiGateway {
   BackendAiGateway({
     required this.baseUrl,
     required this.idTokenProvider,
@@ -107,27 +118,47 @@ class BackendAiGateway implements AiGateway {
 /// Completions API from the client. Guarded by [Environment.allowDirectGroq];
 /// never ships with a committed key (supplied via --dart-define). The same
 /// class works for any OpenAI-compatible provider by changing [baseUrl].
-class OpenAiCompatibleGateway implements AiGateway {
+class OpenAiCompatibleGateway extends AiGateway {
   OpenAiCompatibleGateway({
     required this.baseUrl,
     required this.apiKey,
-    required this.textModel,
-    required this.visionModel,
+    required this.textModels,
+    required this.visionModels,
     ApiClient? client,
   }) : _client = client ?? ApiClient();
 
   final String baseUrl;
   final String apiKey;
-  final String textModel;
-  final String visionModel;
+
+  /// Ordered candidate models; the first that works is used. Subsequent entries
+  /// are fallbacks tried when a model is unavailable (e.g. retired on Groq).
+  final List<String> textModels;
+  final List<String> visionModels;
   final ApiClient _client;
 
   @override
   Future<String> generate(AiRequest request) async {
     final bool hasImage = request.image != null;
-    final Uri uri = Uri.parse('$baseUrl/chat/completions');
+    final List<String> candidates = hasImage ? visionModels : textModels;
 
-    final List<Map<String, dynamic>> messages = [
+    AppException? lastError;
+    for (final String model in candidates) {
+      try {
+        return await _call(request, model, hasImage);
+      } on AppException catch (e) {
+        // Only fall through for "this model can't be used" style errors.
+        final bool modelIssue = e.kind == AppErrorKind.modelUnavailable ||
+            e.kind == AppErrorKind.notFound ||
+            e.kind == AppErrorKind.invalidInput;
+        if (!modelIssue) rethrow;
+        lastError = e;
+      }
+    }
+    throw lastError ?? const AppException(AppErrorKind.modelUnavailable);
+  }
+
+  List<Map<String, dynamic>> _buildMessages(AiRequest request, bool hasImage) {
+    return [
       {'role': 'system', 'content': request.systemPrompt},
       for (final AiTurn t in request.history)
         {'role': t.fromUser ? 'user' : 'assistant', 'content': t.text},
@@ -145,25 +176,96 @@ class OpenAiCompatibleGateway implements AiGateway {
             : request.composeUserText(),
       },
     ];
+  }
 
-    final Map<String, dynamic> body = {
-      'model': hasImage ? visionModel : textModel,
-      'messages': messages,
+  Map<String, dynamic> _buildBody(
+      AiRequest request, String model, bool hasImage,
+      {bool stream = false}) {
+    return {
+      'model': model,
+      'messages': _buildMessages(request, hasImage),
       'temperature': 0.4,
+      if (stream) 'stream': true,
       // JSON mode is only requested for text-only calls; not all vision models
       // accept response_format. Diagnosis relies on a strict instruction plus
       // the tolerant client-side parser instead.
       if (request.jsonMode && !hasImage)
         'response_format': {'type': 'json_object'},
     };
+  }
 
+  Future<String> _call(
+      AiRequest request, String model, bool hasImage) async {
     final Map<String, dynamic> res = await _client.postJson(
-      uri,
+      Uri.parse('$baseUrl/chat/completions'),
       headers: {'Authorization': 'Bearer $apiKey'},
-      body: body,
+      body: _buildBody(request, model, hasImage),
       timeout: AppConfig.aiTimeout,
     );
     return _extractText(res);
+  }
+
+  @override
+  Stream<String> generateStream(AiRequest request) async* {
+    final bool hasImage = request.image != null;
+    // Streaming is used for text-only chat. For image/JSON diagnosis we want
+    // the complete document, so fall back to a single emit.
+    if (hasImage || request.jsonMode) {
+      yield await generate(request);
+      return;
+    }
+
+    final String model =
+        (hasImage ? visionModels : textModels).first;
+    final http.Client client = http.Client();
+    try {
+      final http.Request req =
+          http.Request('POST', Uri.parse('$baseUrl/chat/completions'))
+            ..headers['Authorization'] = 'Bearer $apiKey'
+            ..headers['Content-Type'] = 'application/json'
+            ..body = jsonEncode(_buildBody(request, model, hasImage, stream: true));
+
+      final http.StreamedResponse res =
+          await client.send(req).timeout(AppConfig.aiTimeout);
+
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        throw ErrorMapper.fromHttpStatus(res.statusCode);
+      }
+
+      final StringBuffer acc = StringBuffer();
+      await for (final String line in res.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())) {
+        if (!line.startsWith('data:')) continue;
+        final String data = line.substring(5).trim();
+        if (data.isEmpty) continue;
+        if (data == '[DONE]') break;
+        try {
+          final Map<String, dynamic> json =
+              jsonDecode(data) as Map<String, dynamic>;
+          final List<dynamic>? choices = json['choices'] as List<dynamic>?;
+          if (choices == null || choices.isEmpty) continue;
+          final delta = (choices.first as Map)['delta'];
+          final piece = (delta is Map) ? delta['content'] : null;
+          if (piece is String && piece.isNotEmpty) {
+            acc.write(piece);
+            yield acc.toString();
+          }
+        } catch (_) {
+          // Ignore malformed keep-alive/comment lines.
+        }
+      }
+      if (acc.isEmpty) {
+        // Nothing streamed — fall back to a non-streaming call.
+        yield await generate(request);
+      }
+    } catch (e) {
+      // On any streaming failure, fall back to the non-streaming path so the
+      // user still gets an answer.
+      yield await generate(request);
+    } finally {
+      client.close();
+    }
   }
 
   String _extractText(Map<String, dynamic> res) {
@@ -197,8 +299,8 @@ final aiGatewayProvider = Provider<AiGateway>((ref) {
     return OpenAiCompatibleGateway(
       baseUrl: AppConfig.groqApiBase,
       apiKey: Environment.groqApiKey,
-      textModel: Environment.groqTextModel,
-      visionModel: Environment.groqVisionModel,
+      textModels: Environment.groqTextModels,
+      visionModels: Environment.groqVisionModels,
     );
   }
   return DemoAiGateway();

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/services/tts_service.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/simple_markdown.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -95,6 +97,7 @@ class MessageBubble extends StatelessWidget {
                   textColor: textColor,
                   onRetry: onRetry,
                   isUser: _isUser,
+                  locale: locale,
                   l10n: l10n,
                 ),
               ],
@@ -112,6 +115,7 @@ class _StatusOrActions extends StatelessWidget {
     required this.textColor,
     required this.onRetry,
     required this.isUser,
+    required this.locale,
     required this.l10n,
   });
 
@@ -119,6 +123,7 @@ class _StatusOrActions extends StatelessWidget {
   final Color textColor;
   final VoidCallback? onRetry;
   final bool isUser;
+  final String locale;
   final AppLocalizations l10n;
 
   @override
@@ -149,20 +154,36 @@ class _StatusOrActions extends StatelessWidget {
           );
       }
     }
-    // AI message: offer copy.
-    return InkWell(
-      onTap: () async {
-        await Clipboard.setData(ClipboardData(text: message.text));
-        if (context.mounted) {
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(SnackBar(content: Text(l10n.copied)));
-        }
-      },
-      child: Icon(Icons.copy,
-          size: 13,
-          color: textColor.withValues(alpha: 0.7),
-          semanticLabel: l10n.copy),
+    // AI message: offer copy + read aloud.
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        InkWell(
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: message.text));
+            if (context.mounted) {
+              ScaffoldMessenger.of(context)
+                ..clearSnackBars()
+                ..showSnackBar(SnackBar(content: Text(l10n.copied)));
+            }
+          },
+          child: Icon(Icons.copy,
+              size: 13,
+              color: textColor.withValues(alpha: 0.7),
+              semanticLabel: l10n.copy),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Consumer(
+          builder: (context, ref, _) => InkWell(
+            onTap: () =>
+                ref.read(ttsServiceProvider).speak(message.text, locale: locale),
+            child: Icon(Icons.volume_up,
+                size: 14,
+                color: textColor.withValues(alpha: 0.7),
+                semanticLabel: l10n.readAloud),
+          ),
+        ),
+      ],
     );
   }
 }

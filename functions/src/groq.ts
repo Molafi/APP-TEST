@@ -33,12 +33,40 @@ function composeUserText(req: ProxyRequest): string {
 
 export async function callGroq(
   apiKey: string,
-  textModel: string,
-  visionModel: string,
+  textModels: string[],
+  visionModels: string[],
   req: ProxyRequest,
   timeoutMs = 45000
 ): Promise<string> {
   const hasImage = !!req.image;
+  const candidates = hasImage ? visionModels : textModels;
+
+  let lastError: GroqError | null = null;
+  for (const model of candidates) {
+    try {
+      return await callGroqModel(apiKey, model, req, hasImage, timeoutMs);
+    } catch (e) {
+      // Fall through only for "model unavailable" style errors.
+      if (
+        e instanceof GroqError &&
+        (e.status === 404 || e.status === 400)
+      ) {
+        lastError = e;
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw lastError ?? new GroqError(404, "no_model");
+}
+
+async function callGroqModel(
+  apiKey: string,
+  model: string,
+  req: ProxyRequest,
+  hasImage: boolean,
+  timeoutMs: number
+): Promise<string> {
 
   const messages: unknown[] = [{ role: "system", content: req.system }];
   for (const turn of req.history ?? []) {
@@ -66,7 +94,7 @@ export async function callGroq(
   }
 
   const body: Record<string, unknown> = {
-    model: hasImage ? visionModel : textModel,
+    model,
     messages,
     temperature: 0.4,
   };
