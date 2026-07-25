@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/environment.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/services/home_widget_service.dart';
+import '../../../core/services/local_cache_service.dart';
 import '../../../core/widgets/offline_banner.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/application/auth_provider.dart';
@@ -11,6 +13,7 @@ import '../../diagnosis/presentation/diagnosis_screen.dart';
 import '../../location/application/location_provider.dart';
 import '../../profile/application/profile_provider.dart';
 import '../../profile/application/settings_provider.dart';
+import '../../profile/presentation/language_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../weather/application/weather_provider.dart';
 import '../../weather/domain/weather_model.dart';
@@ -37,7 +40,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(weatherBootstrapProvider);
       _ensureProfile();
+      _maybePromptLanguage();
     });
+  }
+
+  /// One-time post-login language prompt. Only shown until the user makes (or
+  /// skips) a choice, tracked by [AppConstants.prefLanguageChosen].
+  Future<void> _maybePromptLanguage() async {
+    final cache = ref.read(localCacheServiceProvider);
+    if (cache.getBool(AppConstants.prefLanguageChosen)) return;
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const LanguageScreen(isFirstRun: true),
+        fullscreenDialog: true,
+      ),
+    );
   }
 
   Future<void> _ensureProfile() async {
