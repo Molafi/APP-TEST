@@ -7,6 +7,8 @@ class AppConstants {
   static const List<Locale> supportedLocales = [
     Locale('en'),
     Locale('ar'),
+    Locale('fr'),
+    Locale('es'),
   ];
 
   // SharedPreferences keys.
@@ -18,6 +20,7 @@ class AppConstants {
   static const String prefCachedWeather = 'cached_weather';
   static const String prefImageRetention = 'image_retention_enabled';
   static const String prefNotificationsEnabled = 'notifications_enabled';
+  static const String prefAnalyticsEnabled = 'analytics_enabled';
   static const String prefReminders = 'reminders_local';
   static const String prefGeocodeCachePrefix = 'geocode_';
 

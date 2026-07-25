@@ -373,6 +373,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get imageRetentionBody =>
       'عند التفعيل، تُحفظ صور التشخيص في حسابك. عند الإيقاف، تُحذف الصور بعد التحليل.';
   @override
+  String get analytics => 'تحليلات الاستخدام وتقارير الأعطال';
+  @override
+  String get analyticsBody =>
+      'شارك بيانات استخدام وأعطال مجهولة لتحسين التطبيق. لا تتضمن رسائلك أو صورك أو موقعك الدقيق أبدًا.';
+  @override
   String get reminders => 'تذكيرات العناية بالنبات';
   @override
   String get privacyPolicy => 'سياسة الخصوصية';
@@ -396,6 +401,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get deleteAllDataConfirm =>
       'سيؤدي هذا إلى حذف جميع محادثاتك وتشخيصاتك وتذكيراتك وصورك المخزنة. لا يمكن التراجع.';
+  @override
+  String get exportData => 'تنزيل بياناتي';
   @override
   String get reauthRequired => 'يرجى تسجيل الدخول مجددًا لتأكيد هذا الإجراء.';
   @override

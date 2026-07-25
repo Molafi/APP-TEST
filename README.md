@@ -196,7 +196,9 @@ generating, merge the following.
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
+(`RECORD_AUDIO` is needed for voice dictation via `speech_to_text`.)
 - `minSdkVersion 23` (Firebase Auth), `compileSdk`/`targetSdk` = latest stable.
 - Use the modern photo picker (image_picker handles this) — no legacy broad
   storage permissions.
@@ -210,6 +212,10 @@ generating, merge the following.
 <string>PlantSense lets you attach plant photos for analysis.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>Your location provides accurate local weather and plant-care advice.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>PlantSense uses the microphone for voice input in chat.</string>
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>PlantSense transcribes your speech so you can dictate messages.</string>
 ```
 - iOS deployment target 13+; add the Google Sign-In URL scheme; enable the
   Notifications capability if using reminders.
@@ -265,17 +271,59 @@ flutter build ios --release --no-codesign   # on macOS
 
 ---
 
+## 🌟 Additional features
+
+- **Streaming AI replies** — chat answers stream in token-by-token (Groq SSE;
+  simulated in demo). The backend proxy path returns the full text and emits
+  once (streaming through the proxy is a future enhancement).
+- **Voice & audio** — dictate messages with the mic (speech_to_text) and read AI
+  replies aloud (flutter_tts). Voice locale follows the app language.
+- **Native share** — diagnosis summaries open the OS share sheet (share_plus).
+- **Image cropping** — crop to the affected area before diagnosis (image_cropper).
+- **Groq model fallback** — a backup model is tried automatically if the primary
+  one is retired, on both the client and the Cloud Function.
+- **My Plants journal** — track plants (species, indoor/outdoor, notes), mark
+  watered, ask the AI about a specific plant, and generate a weather-aware
+  watering reminder.
+- **Multiple conversations** — create/rename/delete conversations; each is
+  stored separately (local or `users/{uid}/chats/{chatId}`).
+- **Data export** — "Download my data" builds a JSON of your profile,
+  conversations, diagnoses, plants and reminders and shares it.
+- **Opt-in analytics & crash reporting** — off by default; enable in Settings.
+  Backed by Firebase Analytics/Crashlytics only when Firebase is configured, and
+  never records message text, images or exact location.
+
+### 🌐 Languages
+Supported locales: **English, Arabic (RTL), French, Spanish**. French and
+Spanish ship with the most common strings translated and **fall back to English**
+for any not-yet-translated key; run `flutter gen-l10n` to regenerate full classes
+from the `app_*.arb` files. Change language in Settings without a restart.
+
+### 🏠 Home-screen widget (native setup required)
+The Dart side (`HomeWidgetService`) publishes city/temperature/next-watering via
+the `home_widget` package. To finish it after `flutter create .`:
+- **Android:** add an `AppWidgetProvider` named `PlantSenseWidgetProvider`, its
+  `res/xml/*_info.xml`, a widget layout, and register the receiver in
+  `AndroidManifest.xml`.
+- **iOS:** add a WidgetKit extension named `PlantSenseWidget` and an app group so
+  the widget can read the shared data.
+See the [home_widget docs](https://pub.dev/packages/home_widget) for the exact
+native files.
+
+---
+
 ## 🔒 Privacy & data retention
 
-- Location, notifications and **image retention are OFF by default**.
+- Location, notifications, image retention and **analytics are OFF by default**.
 - With retention off, diagnosis images are used for analysis and then discarded
   (never stored). With it on, compressed JPEGs go to `users/{uid}/diagnoses/`.
 - Raw base64 images are never stored in Firestore.
 - Delete conversations/diagnoses any time; "Delete all my data" and "Delete
-  account" remove chats, diagnoses, reminders, cached data and owned Storage
-  files. Deletion is only reported as complete once it has finished.
-- No background location; no analytics/crash reporting unless you explicitly add
-  and configure it (disabled by default).
+  account" remove chats, diagnoses, reminders, plants, cached data and owned
+  Storage files. Deletion is only reported as complete once it has finished.
+- "Download my data" exports everything as JSON for portability.
+- No background location. Analytics/crash reporting is opt-in and never includes
+  message text, images or exact location.
 
 ---
 
@@ -300,7 +348,13 @@ flutter build ios --release --no-codesign   # on macOS
   versions in `pubspec.yaml` are current-compatible but should be resolved with
   `flutter pub get` locally; minor version pins may need adjustment.
 - `android/` and `ios/` runner projects must be generated with `flutter create .`
-  and then merged with the platform config above.
-- The share action copies a text summary to the clipboard; swap in `share_plus`
-  for the native share sheet if desired.
+  and then merged with the platform config above. Several added packages need
+  native config: `image_cropper` (Android `UCropActivity`, iOS nothing extra),
+  `speech_to_text` (mic + speech permission strings), `flutter_tts`,
+  `share_plus`, and `home_widget` (native widget extension — see above).
+- French and Spanish are partially translated (common strings) with English
+  fallback for the rest; run `flutter gen-l10n` after completing the `.arb` files.
+- Streaming through the Cloud Function proxy is not implemented (the proxy
+  returns the full response); direct/demo paths stream.
+- The home-screen widget requires the native widget files described above.
 - The Cloud Function rate limit is in-memory (best-effort per instance).

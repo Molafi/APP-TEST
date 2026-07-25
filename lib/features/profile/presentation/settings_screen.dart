@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/services/permission_service.dart';
+import '../../../core/services/telemetry_service.dart';
 import '../../../core/theme/locale_provider.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ class SettingsScreen extends ConsumerWidget {
     final unit = ref.watch(unitSystemProvider);
     final bool retention = ref.watch(imageRetentionProvider);
     final bool notifications = ref.watch(notificationsEnabledProvider);
+    final bool analytics = ref.watch(analyticsEnabledProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.editProfile)),
@@ -39,6 +41,10 @@ class SettingsScreen extends ConsumerWidget {
                     value: 'en', title: Text('English')),
                 const RadioListTile<String>(
                     value: 'ar', title: Text('العربية')),
+                const RadioListTile<String>(
+                    value: 'fr', title: Text('Français')),
+                const RadioListTile<String>(
+                    value: 'es', title: Text('Español')),
               ],
             ),
           ),
@@ -97,6 +103,16 @@ class SettingsScreen extends ConsumerWidget {
             value: retention,
             onChanged: (v) =>
                 ref.read(imageRetentionProvider.notifier).set(v),
+          ),
+          SwitchListTile(
+            title: Text(l10n.analytics),
+            subtitle: Text(l10n.analyticsBody),
+            value: analytics,
+            onChanged: (v) async {
+              await ref.read(analyticsEnabledProvider.notifier).set(v);
+              // Apply the collection setting immediately (no-op unless Firebase).
+              await ref.read(telemetryServiceProvider).setEnabled(v);
+            },
           ),
           const SizedBox(height: AppSpacing.xl),
         ],

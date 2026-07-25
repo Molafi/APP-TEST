@@ -57,3 +57,22 @@ final notificationsEnabledProvider =
     StateNotifierProvider<NotificationsEnabledNotifier, bool>((ref) {
   return NotificationsEnabledNotifier(ref.watch(localCacheServiceProvider));
 });
+
+/// Whether the user has opted in to usage analytics + crash reporting. OFF by
+/// default; nothing is collected unless explicitly enabled.
+class AnalyticsEnabledNotifier extends StateNotifier<bool> {
+  AnalyticsEnabledNotifier(this._cache)
+      : super(_cache.getBool(AppConstants.prefAnalyticsEnabled));
+
+  final LocalCacheService _cache;
+
+  Future<void> set(bool value) async {
+    state = value;
+    await _cache.setBool(AppConstants.prefAnalyticsEnabled, value);
+  }
+}
+
+final analyticsEnabledProvider =
+    StateNotifierProvider<AnalyticsEnabledNotifier, bool>((ref) {
+  return AnalyticsEnabledNotifier(ref.watch(localCacheServiceProvider));
+});

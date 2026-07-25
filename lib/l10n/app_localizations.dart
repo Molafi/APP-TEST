@@ -7,6 +7,8 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fr.dart';
 
 /// Application localizations. This file mirrors the output of Flutter's
 /// `gen-l10n` tool for the ARB files in this directory. Running
@@ -36,6 +38,8 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('ar'),
+    Locale('fr'),
+    Locale('es'),
   ];
 
   // Common
@@ -229,6 +233,8 @@ abstract class AppLocalizations {
   String get notifications;
   String get imageRetention;
   String get imageRetentionBody;
+  String get analytics;
+  String get analyticsBody;
   String get reminders;
   String get privacyPolicy;
   String get termsOfService;
@@ -240,6 +246,7 @@ abstract class AppLocalizations {
   String get deleteAccountConfirm;
   String get deleteAllData;
   String get deleteAllDataConfirm;
+  String get exportData;
   String get reauthRequired;
   String get deleting;
   String get deleted;
@@ -335,7 +342,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'en'].contains(locale.languageCode);
+      <String>['ar', 'en', 'es', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -347,6 +354,10 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsAr();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fr':
+      return AppLocalizationsFr();
   }
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale".',

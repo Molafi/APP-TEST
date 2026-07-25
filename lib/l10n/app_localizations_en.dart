@@ -377,6 +377,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get imageRetentionBody =>
       'When on, your diagnosis images are stored to your account. When off, images are deleted after analysis.';
   @override
+  String get analytics => 'Usage analytics & crash reports';
+  @override
+  String get analyticsBody =>
+      'Share anonymous usage and crash data to help improve the app. Never includes your messages, images or exact location.';
+  @override
   String get reminders => 'Plant-care reminders';
   @override
   String get privacyPolicy => 'Privacy policy';
@@ -400,6 +405,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAllDataConfirm =>
       'This deletes all your chats, diagnoses, reminders and stored images. This cannot be undone.';
+  @override
+  String get exportData => 'Download my data';
   @override
   String get reauthRequired =>
       'Please log in again to confirm this action.';

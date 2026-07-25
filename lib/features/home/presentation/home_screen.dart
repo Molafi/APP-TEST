@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/environment.dart';
+import '../../../core/services/home_widget_service.dart';
 import '../../../core/widgets/offline_banner.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../chat/presentation/chat_screen.dart';
 import '../../diagnosis/presentation/diagnosis_screen.dart';
+import '../../location/application/location_provider.dart';
 import '../../profile/application/profile_provider.dart';
+import '../../profile/application/settings_provider.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../weather/application/weather_provider.dart';
+import '../../weather/domain/weather_model.dart';
 import '../../weather/presentation/weather_screen.dart';
 import '../../../models/user_profile.dart';
 import '../application/home_provider.dart';
@@ -56,6 +60,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final int tab = ref.watch(homeTabProvider);
+
+    // Keep the home-screen widget in sync when weather changes.
+    ref.listen<WeatherData?>(currentWeatherDataProvider, (prev, next) {
+      if (next?.current.temperatureC == null) return;
+      final unit = ref.read(unitSystemProvider);
+      final location = ref.read(selectedLocationProvider);
+      ref.read(homeWidgetServiceProvider).update(
+            city: location?.city ?? '',
+            temperature:
+                TemperatureFormat.format(next!.current.temperatureC, unit),
+          );
+    });
 
     return PopScope(
       // Android back: return to the Chat tab first instead of exiting.

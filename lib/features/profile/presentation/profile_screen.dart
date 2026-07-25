@@ -1,14 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/constants/app_spacing.dart';
-import '../../../core/errors/error_mapper.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../diagnosis/presentation/diagnosis_history_screen.dart';
 import '../../plants/presentation/my_plants_screen.dart';
 import '../../reminders/presentation/reminders_screen.dart';
+import '../application/data_export_provider.dart';
 import '../application/profile_provider.dart';
 import 'privacy_screen.dart';
 import 'settings_screen.dart';
@@ -67,6 +70,8 @@ class ProfileScreen extends ConsumerWidget {
         _tile(context, Icons.feedback_outlined, l10n.reportIssue,
             () => _showFeedback(context, l10n)),
         const Divider(),
+        _tile(context, Icons.download_outlined, l10n.exportData,
+            () => _exportData(context, ref)),
         _tile(context, Icons.logout, l10n.logout,
             () => _confirmLogout(context, ref, l10n)),
         _tile(context, Icons.delete_sweep_outlined, l10n.deleteAllData,
@@ -117,6 +122,29 @@ class ProfileScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _exportData(BuildContext context, WidgetRef ref) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    try {
+      final String json = await ref.read(dataExporterProvider).buildJson();
+      final Directory dir = Directory.systemTemp;
+      final File file = File(
+          '${dir.path}/plantsense_export_${DateTime.now().millisecondsSinceEpoch}.json');
+      await file.writeAsString(json, flush: true);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/json')],
+          subject: 'PlantSense AI data export',
+        ),
+      );
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(l10n.somethingWentWrong)));
+      }
+    }
   }
 
   Future<void> _confirmLogout(
