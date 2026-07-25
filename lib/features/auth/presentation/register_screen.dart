@@ -43,7 +43,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           _name.text.trim(),
         );
     if (ok && mounted) {
-      Navigator.of(context).maybePop();
+      await Navigator.of(context).maybePop();
     }
   }
 

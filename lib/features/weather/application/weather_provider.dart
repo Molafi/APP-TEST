@@ -97,7 +97,7 @@ class WeatherController extends StateNotifier<WeatherState> {
       );
       if (!mounted) return;
       state = WeatherState(data: data);
-      _cache.setString(
+      await _cache.setString(
           AppConstants.prefCachedWeather, jsonEncode(data.toMap()));
     } catch (e) {
       if (!mounted) return;

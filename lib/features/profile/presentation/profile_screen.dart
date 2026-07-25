@@ -57,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         _tile(context, Icons.settings_outlined, l10n.editProfile,
             () => _push(context, const SettingsScreen())),
-        _tile(context, Icons.potted_plant_outlined, l10n.myPlants,
+        _tile(context, Icons.local_florist_outlined, l10n.myPlants,
             () => _push(context, const MyPlantsScreen())),
         _tile(context, Icons.history, l10n.diagnosisHistory,
             () => _push(context, const DiagnosisHistoryScreen())),
@@ -132,11 +132,9 @@ class ProfileScreen extends ConsumerWidget {
       final File file = File(
           '${dir.path}/plantsense_export_${DateTime.now().millisecondsSinceEpoch}.json');
       await file.writeAsString(json, flush: true);
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path, mimeType: 'application/json')],
-          subject: 'PlantSense AI data export',
-        ),
+      await Share.shareXFiles(
+        [XFile(file.path, mimeType: 'application/json')],
+        subject: 'PlantSense AI data export',
       );
     } catch (_) {
       if (context.mounted) {

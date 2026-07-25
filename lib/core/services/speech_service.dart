@@ -33,8 +33,8 @@ class SpeechService {
     if (!await init()) return false;
     await _speech.listen(
       onResult: (r) => onResult(r.recognizedWords),
-      localeId: localeId,
-      listenOptions: SpeechListenOptions(partialResults: true),
+      listenOptions:
+          SpeechListenOptions(partialResults: true, localeId: localeId),
     );
     return true;
   }

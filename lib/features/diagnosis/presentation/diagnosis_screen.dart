@@ -259,7 +259,7 @@ class _ResultView extends ConsumerWidget {
       BuildContext context, AppLocalizations l10n, Diagnosis d) async {
     // Open the native share sheet with a plain-text summary.
     try {
-      await SharePlus.instance.share(ShareParams(text: d.toShareText()));
+      await Share.share(d.toShareText());
     } catch (_) {
       // Fallback to clipboard if sharing is unavailable on the platform.
       await Clipboard.setData(ClipboardData(text: d.toShareText()));

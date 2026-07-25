@@ -71,7 +71,7 @@ class ConversationsController extends StateNotifier<List<Chat>> {
         else
           c,
     ];
-    if (updated != null) await _repo.upsert(updated!);
+    if (updated != null) await _repo.upsert(updated);
   }
 
   /// Updates recency + preview (and sets the title from the first message when

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/widgets/app_empty_view.dart';
 import '../../../core/widgets/app_loading_view.dart';
 import '../../../l10n/app_localizations.dart';
@@ -30,7 +29,7 @@ class MyPlantsScreen extends ConsumerWidget {
           ? const AppLoadingView()
           : state.isEmpty
               ? AppEmptyView(
-                  icon: Icons.potted_plant_outlined,
+                  icon: Icons.local_florist_outlined,
                   title: l10n.plantsEmpty,
                   message: l10n.plantsEmptyBody,
                   action: FilledButton.icon(

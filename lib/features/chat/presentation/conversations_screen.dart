@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/widgets/app_empty_view.dart';
 import '../../../l10n/app_localizations.dart';
@@ -57,9 +56,9 @@ class ConversationsScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   trailing: PopupMenuButton<String>(
-                    onSelected: (v) {
-                      if (v == 'rename') _rename(context, ref, l10n, c);
-                      if (v == 'delete') _delete(context, ref, l10n, c);
+                    onSelected: (v) async {
+                      if (v == 'rename') await _rename(context, ref, l10n, c);
+                      if (v == 'delete') await _delete(context, ref, l10n, c);
                     },
                     itemBuilder: (_) => [
                       PopupMenuItem(value: 'rename', child: Text(l10n.rename)),

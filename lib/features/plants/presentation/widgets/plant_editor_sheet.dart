@@ -63,7 +63,7 @@ class _PlantEditorState extends ConsumerState<_PlantEditor> {
           notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
           wateringIntervalDays: int.tryParse(_interval.text.trim()),
         );
-    if (mounted) Navigator.of(context).maybePop();
+    if (mounted) await Navigator.of(context).maybePop();
   }
 
   @override

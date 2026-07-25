@@ -14,7 +14,8 @@ class ErrorMapper {
   static AppException fromHttpStatus(int status, {String? body}) {
     switch (status) {
       case 400:
-        return AppException(AppErrorKind.invalidInput, debugDetail: 'HTTP 400');
+        return const AppException(AppErrorKind.invalidInput,
+            debugDetail: 'HTTP 400');
       case 401:
         return const AppException(AppErrorKind.unauthenticated,
             debugDetail: 'HTTP 401');

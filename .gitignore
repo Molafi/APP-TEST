@@ -20,7 +20,9 @@ pubspec.lock
 .env
 *.env
 !.env.example
-lib/firebase_options.dart
+# NOTE: lib/firebase_options.dart is committed as a non-functional PLACEHOLDER so
+# the project compiles in demo mode. Running `flutterfire configure` overwrites it
+# with your real (non-secret) config. Do not commit real service-account files.
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 android/key.properties

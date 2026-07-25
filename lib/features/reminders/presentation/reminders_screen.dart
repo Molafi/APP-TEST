@@ -187,7 +187,7 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
         recurrence: _recurrence,
       ));
     }
-    if (mounted) Navigator.of(context).maybePop();
+    if (mounted) await Navigator.of(context).maybePop();
   }
 
   @override

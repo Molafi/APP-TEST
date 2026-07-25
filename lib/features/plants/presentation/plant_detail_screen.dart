@@ -42,6 +42,9 @@ class PlantDetailScreen extends ConsumerWidget {
       return const Scaffold(body: SizedBox.shrink());
     }
 
+    // Non-nullable local so it can be safely captured inside button callbacks.
+    final Plant plant0 = plant;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(plant.name),
@@ -49,12 +52,12 @@ class PlantDetailScreen extends ConsumerWidget {
           IconButton(
             tooltip: l10n.editPlant,
             icon: const Icon(Icons.edit_outlined),
-            onPressed: () => showPlantEditor(context, existing: plant),
+            onPressed: () => showPlantEditor(context, existing: plant0),
           ),
           IconButton(
             tooltip: l10n.delete,
             icon: const Icon(Icons.delete_outline),
-            onPressed: () => _confirmDelete(context, ref, l10n, plant),
+            onPressed: () => _confirmDelete(context, ref, l10n, plant0),
           ),
         ],
       ),
@@ -94,19 +97,19 @@ class PlantDetailScreen extends ConsumerWidget {
             runSpacing: AppSpacing.sm,
             children: [
               FilledButton.icon(
-                onPressed: () => _askAbout(context, ref, plant),
+                onPressed: () => _askAbout(context, ref, plant0),
                 icon: const Icon(Icons.chat_outlined),
                 label: Text(l10n.askAboutPlant),
               ),
               OutlinedButton.icon(
                 onPressed: () => ref
                     .read(plantsControllerProvider.notifier)
-                    .markWatered(plant),
+                    .markWatered(plant0),
                 icon: const Icon(Icons.water_drop),
                 label: Text(l10n.markWatered),
               ),
               OutlinedButton.icon(
-                onPressed: () => _scheduleWatering(context, ref, l10n, plant),
+                onPressed: () => _scheduleWatering(context, ref, l10n, plant0),
                 icon: const Icon(Icons.event_available_outlined),
                 label: Text(l10n.generateWateringSchedule),
               ),
