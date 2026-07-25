@@ -68,7 +68,10 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(AppSpacing.minTouchTarget),
+          // Accessible min height WITHOUT forcing infinite width (Size.fromHeight
+          // sets width to infinity, which crashes buttons placed inside a Row).
+          // Full-width auth buttons still stretch via their parent Column.
+          minimumSize: const Size(64, AppSpacing.minTouchTarget),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
