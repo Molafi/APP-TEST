@@ -123,6 +123,9 @@ abstract class AppLocalizations {
   String get copied;
   String get deleteConversation;
   String get deleteConversationConfirm;
+  String get conversations;
+  String get newChat;
+  String get rename;
   String get messageFailed;
   String get sending;
   String get typing;
@@ -263,6 +266,23 @@ abstract class AppLocalizations {
   String get remindersEmpty;
   String get remindersEmptyBody;
   String get notificationsPermissionBody;
+
+  // My Plants
+  String get myPlants;
+  String get addPlant;
+  String get editPlant;
+  String get plantSpecies;
+  String get plantNotes;
+  String get plantsEmpty;
+  String get plantsEmptyBody;
+  String get askAboutPlant;
+  String get plantLocation;
+  String get plantIndoor;
+  String get plantOutdoor;
+  String get markWatered;
+  String get wateringInterval;
+  String get generateWateringSchedule;
+  String get wateringScheduleCreated;
 
   // Privacy
   String get privacyTitle;

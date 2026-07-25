@@ -12,7 +12,9 @@ import '../../../core/widgets/app_loading_view.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../home/application/home_provider.dart';
 import '../application/chat_provider.dart';
+import '../application/conversations_provider.dart';
 import '../domain/message_model.dart';
+import 'conversations_screen.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_composer.dart';
 import 'widgets/typing_indicator.dart';
@@ -120,15 +122,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       children: [
         if (Environment.isDemo)
           _DemoBanner(text: l10n.demoModeBanner),
-        if (!state.isEmpty)
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: TextButton.icon(
-              onPressed: _confirmDelete,
-              icon: const Icon(Icons.delete_outline, size: 18),
-              label: Text(l10n.deleteConversation),
+        Row(
+          children: [
+            TextButton.icon(
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const ConversationsScreen(),
+              )),
+              icon: const Icon(Icons.forum_outlined, size: 18),
+              label: Text(l10n.conversations),
             ),
-          ),
+            const Spacer(),
+            IconButton(
+              tooltip: l10n.newChat,
+              icon: const Icon(Icons.add_comment_outlined),
+              onPressed: () => ref
+                  .read(conversationsControllerProvider.notifier)
+                  .create(title: l10n.newChat),
+            ),
+            if (!state.isEmpty)
+              IconButton(
+                tooltip: l10n.deleteConversation,
+                icon: const Icon(Icons.delete_outline),
+                onPressed: _confirmDelete,
+              ),
+          ],
+        ),
         Expanded(
           child: state.isLoading
               ? const AppLoadingView()

@@ -9,18 +9,19 @@ import 'chat_repository.dart';
 class FirestoreChatRepository implements ChatRepository {
   FirestoreChatRepository({
     required this.uid,
+    this.chatId = 'default',
     FirebaseFirestore? firestore,
   }) : _db = firestore ?? FirebaseFirestore.instance;
 
   final String uid;
+  final String chatId;
   final FirebaseFirestore _db;
-  static const String _chatId = 'default';
 
   CollectionReference<Map<String, dynamic>> get _messages => _db
       .collection('users')
       .doc(uid)
       .collection('chats')
-      .doc(_chatId)
+      .doc(chatId)
       .collection('messages');
 
   @override
@@ -35,7 +36,7 @@ class FirestoreChatRepository implements ChatRepository {
         .collection('users')
         .doc(uid)
         .collection('chats')
-        .doc(_chatId)
+        .doc(chatId)
         .set({
       'updatedAt': FieldValue.serverTimestamp(),
       'lastMessagePreview': message.text.length > 80

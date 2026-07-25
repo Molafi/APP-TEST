@@ -8,6 +8,7 @@ import '../../../core/services/local_cache_service.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../chat/application/chat_provider.dart';
 import '../../diagnosis/application/diagnosis_provider.dart';
+import '../../plants/application/plants_provider.dart';
 import '../../reminders/application/reminder_provider.dart';
 import '../data/profile_repository.dart';
 
@@ -38,6 +39,7 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
     try {
       await _ref.read(chatRepositoryProvider).deleteAll();
       await _ref.read(diagnosisRepositoryProvider).deleteAll();
+      await _ref.read(plantsRepositoryProvider).deleteAll();
       final reminders = _ref.read(reminderControllerProvider);
       final reminderCtrl = _ref.read(reminderControllerProvider.notifier);
       for (final r in [...reminders]) {
@@ -86,6 +88,7 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
     cache.clearPrivate([
       'chat_messages_default',
       'diagnoses_local',
+      'plants_local',
       AppConstants.prefReminders,
       AppConstants.prefCachedWeather,
       AppConstants.prefSelectedLocation,
@@ -97,6 +100,7 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
     _ref.invalidate(chatControllerProvider);
     _ref.invalidate(diagnosisControllerProvider);
     _ref.invalidate(diagnosisHistoryProvider);
+    _ref.invalidate(plantsControllerProvider);
   }
 }
 

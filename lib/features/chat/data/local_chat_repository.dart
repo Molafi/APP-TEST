@@ -7,10 +7,12 @@ import 'chat_repository.dart';
 /// SharedPreferences-backed chat store used in demo mode and offline. Persists
 /// messages as JSON so history survives restarts without a backend.
 class LocalChatRepository implements ChatRepository {
-  LocalChatRepository(this._cache);
+  LocalChatRepository(this._cache, {this.chatId = 'default'});
 
-  static const String _key = 'chat_messages_default';
+  final String chatId;
   final LocalCacheService _cache;
+
+  String get _key => 'chat_messages_$chatId';
 
   @override
   Future<List<ChatMessage>> loadMessages() async {

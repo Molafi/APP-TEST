@@ -163,6 +163,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteConversationConfirm =>
       'هل تريد حذف هذه المحادثة؟ لا يمكن التراجع.';
   @override
+  String get conversations => 'المحادثات';
+  @override
+  String get newChat => 'محادثة جديدة';
+  @override
+  String get rename => 'إعادة تسمية';
+  @override
   String get messageFailed => 'فشل الإرسال. اضغط لإعادة المحاولة.';
   @override
   String get sending => 'جارٍ الإرسال…';
@@ -440,6 +446,37 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get notificationsPermissionBody =>
       'اسمح بالإشعارات لنذكّرك بعناية النبات.';
+
+  @override
+  String get myPlants => 'نباتاتي';
+  @override
+  String get addPlant => 'إضافة نبات';
+  @override
+  String get editPlant => 'تعديل النبات';
+  @override
+  String get plantSpecies => 'النوع (اختياري)';
+  @override
+  String get plantNotes => 'ملاحظات';
+  @override
+  String get plantsEmpty => 'لا توجد نباتات بعد';
+  @override
+  String get plantsEmptyBody => 'أضف نبتة لتتبّع عنايتها وسجلّها.';
+  @override
+  String get askAboutPlant => 'اسأل عن هذه النبتة';
+  @override
+  String get plantLocation => 'الموقع';
+  @override
+  String get plantIndoor => 'داخلي';
+  @override
+  String get plantOutdoor => 'خارجي';
+  @override
+  String get markWatered => 'تحديد كمسقية';
+  @override
+  String get wateringInterval => 'الري كل (أيام)';
+  @override
+  String get generateWateringSchedule => 'إنشاء جدول ري';
+  @override
+  String get wateringScheduleCreated => 'تم جدولة تذكير الري';
 
   @override
   String get privacyTitle => 'الخصوصية والبيانات';

@@ -19,15 +19,18 @@ import '../data/chat_repository.dart';
 import '../data/firestore_chat_repository.dart';
 import '../data/local_chat_repository.dart';
 import '../domain/message_model.dart';
+import 'conversations_provider.dart';
 
-/// Selects the chat store: Firestore for a signed-in real user, local
-/// (SharedPreferences) otherwise (demo/offline).
+/// Selects the chat store for the ACTIVE conversation: Firestore for a signed-in
+/// real user, local (SharedPreferences) otherwise (demo/offline).
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   final user = ref.watch(currentUserProvider);
+  final String chatId = ref.watch(currentChatIdProvider);
   if (!Environment.isDemo && user != null) {
-    return FirestoreChatRepository(uid: user.uid);
+    return FirestoreChatRepository(uid: user.uid, chatId: chatId);
   }
-  return LocalChatRepository(ref.watch(localCacheServiceProvider));
+  return LocalChatRepository(ref.watch(localCacheServiceProvider),
+      chatId: chatId);
 });
 
 @immutable
@@ -69,6 +72,14 @@ class ChatState {
 class ChatController extends StateNotifier<ChatState> {
   ChatController(this._ref) : super(const ChatState()) {
     _load();
+    // Reload messages when the active conversation changes.
+    _ref.listen<String>(currentChatIdProvider, (prev, next) {
+      if (prev != next) {
+        _requestSeq++; // cancel any in-flight request for the old conversation
+        state = const ChatState();
+        _load();
+      }
+    });
   }
 
   final Ref _ref;
@@ -218,6 +229,12 @@ class ChatController extends StateNotifier<ChatState> {
       );
       unawaited(_repo.updateMessage(sentUser));
       unawaited(_repo.saveMessage(finalAssistant));
+      // Update the conversation list (recency, preview, and auto-title from the
+      // first user message).
+      unawaited(_ref
+          .read(conversationsControllerProvider.notifier)
+          .touch(_ref.read(currentChatIdProvider),
+              preview: latest, autoTitle: userMsg.text));
     } catch (e) {
       if (!mounted || seq != _requestSeq) return;
       final AppException err = ErrorMapper.fromException(e);
@@ -238,8 +255,20 @@ class ChatController extends StateNotifier<ChatState> {
 
   Future<void> deleteConversation() async {
     _requestSeq++; // cancel any in-flight
+    final String chatId = _ref.read(currentChatIdProvider);
+    final convos = _ref.read(conversationsControllerProvider);
+    final matches = convos.where((c) => c.id == chatId).toList();
+    if (matches.isNotEmpty) {
+      // Removes messages + metadata and switches the active conversation,
+      // which triggers a reload via the currentChatIdProvider listener.
+      await _ref
+          .read(conversationsControllerProvider.notifier)
+          .delete(matches.first);
+    } else {
+      await _repo.deleteAll();
+    }
+    if (!mounted) return;
     state = const ChatState(isLoading: false);
-    await _repo.deleteAll();
   }
 
   void _updateMessage(ChatMessage m) {

@@ -162,6 +162,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteConversationConfirm =>
       'Delete this conversation? This cannot be undone.';
   @override
+  String get conversations => 'Conversations';
+  @override
+  String get newChat => 'New chat';
+  @override
+  String get rename => 'Rename';
+  @override
   String get messageFailed => 'Failed to send. Tap to retry.';
   @override
   String get sending => 'Sending…';
@@ -446,6 +452,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notificationsPermissionBody =>
       'Allow notifications so we can remind you about plant care.';
+
+  @override
+  String get myPlants => 'My plants';
+  @override
+  String get addPlant => 'Add plant';
+  @override
+  String get editPlant => 'Edit plant';
+  @override
+  String get plantSpecies => 'Species (optional)';
+  @override
+  String get plantNotes => 'Notes';
+  @override
+  String get plantsEmpty => 'No plants yet';
+  @override
+  String get plantsEmptyBody => 'Add a plant to track its care and history.';
+  @override
+  String get askAboutPlant => 'Ask about this plant';
+  @override
+  String get plantLocation => 'Location';
+  @override
+  String get plantIndoor => 'Indoor';
+  @override
+  String get plantOutdoor => 'Outdoor';
+  @override
+  String get markWatered => 'Mark watered';
+  @override
+  String get wateringInterval => 'Water every (days)';
+  @override
+  String get generateWateringSchedule => 'Create watering schedule';
+  @override
+  String get wateringScheduleCreated => 'Watering reminder scheduled';
 
   @override
   String get privacyTitle => 'Privacy & data';

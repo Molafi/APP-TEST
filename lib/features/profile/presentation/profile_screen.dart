@@ -7,6 +7,7 @@ import '../../../core/errors/error_mapper.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../diagnosis/presentation/diagnosis_history_screen.dart';
+import '../../plants/presentation/my_plants_screen.dart';
 import '../../reminders/presentation/reminders_screen.dart';
 import '../application/profile_provider.dart';
 import 'privacy_screen.dart';
@@ -53,6 +54,8 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         _tile(context, Icons.settings_outlined, l10n.editProfile,
             () => _push(context, const SettingsScreen())),
+        _tile(context, Icons.potted_plant_outlined, l10n.myPlants,
+            () => _push(context, const MyPlantsScreen())),
         _tile(context, Icons.history, l10n.diagnosisHistory,
             () => _push(context, const DiagnosisHistoryScreen())),
         _tile(context, Icons.alarm, l10n.reminders,
