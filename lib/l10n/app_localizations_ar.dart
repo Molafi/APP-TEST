@@ -1,0 +1,513 @@
+import 'app_localizations.dart';
+
+/// Arabic translations (generated-equivalent). Natural Arabic, not
+/// transliteration. RTL is handled automatically by the framework.
+class AppLocalizationsAr extends AppLocalizations {
+  AppLocalizationsAr([super.locale = 'ar']);
+
+  @override
+  String get appTitle => 'بلانت سينس';
+  @override
+  String get tagline => 'مساعدك الذكي للنباتات والتربة';
+  @override
+  String get retry => 'إعادة المحاولة';
+  @override
+  String get cancel => 'إلغاء';
+  @override
+  String get confirm => 'تأكيد';
+  @override
+  String get save => 'حفظ';
+  @override
+  String get delete => 'حذف';
+  @override
+  String get close => 'إغلاق';
+  @override
+  String get next => 'التالي';
+  @override
+  String get back => 'رجوع';
+  @override
+  String get skip => 'تخطٍّ';
+  @override
+  String get getStarted => 'لنبدأ';
+  @override
+  String get openSettings => 'فتح الإعدادات';
+  @override
+  String get loading => 'جارٍ التحميل…';
+  @override
+  String get somethingWentWrong => 'حدث خطأ ما';
+
+  @override
+  String get navChat => 'المحادثة';
+  @override
+  String get navDiagnose => 'التشخيص';
+  @override
+  String get navWeather => 'الطقس';
+  @override
+  String get navProfile => 'الملف الشخصي';
+
+  @override
+  String get offlineBanner =>
+      'أنت غير متصل بالإنترنت. يتم عرض البيانات المخزنة إن وُجدت.';
+  @override
+  String lastUpdated(String time) => 'آخر تحديث $time';
+  @override
+  String get cachedData => 'بيانات مخزّنة';
+  @override
+  String get liveData => 'مباشر';
+
+  @override
+  String get onboardingTitle1 => 'اسأل عن أي نبات';
+  @override
+  String get onboardingBody1 =>
+      'تحدث مع بلانت سينس حول النباتات والآفات والتربة باستخدام النص أو الصور.';
+  @override
+  String get onboardingTitle2 => 'التشخيص من صورة';
+  @override
+  String get onboardingBody2 =>
+      'التقط صورة لورقة أو آفة أو مشكلة في التربة واحصل على إرشادات منظّمة وحذرة.';
+  @override
+  String get onboardingTitle3 => 'عناية تراعي الطقس';
+  @override
+  String get onboardingBody3 =>
+      'شارك موقعك للحصول على طقس محلي ونصائح عناية مخصصة للنباتات.';
+  @override
+  String get onboardingTitle4 => 'أنت المتحكم';
+  @override
+  String get onboardingBody4 =>
+      'قد تكون نتائج الذكاء الاصطناعي غير دقيقة. أنت تتحكم في الأذونات والاحتفاظ بالصور وبياناتك.';
+
+  @override
+  String get login => 'تسجيل الدخول';
+  @override
+  String get register => 'إنشاء حساب';
+  @override
+  String get email => 'البريد الإلكتروني';
+  @override
+  String get password => 'كلمة المرور';
+  @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+  @override
+  String get displayName => 'الاسم المعروض';
+  @override
+  String get forgotPassword => 'هل نسيت كلمة المرور؟';
+  @override
+  String get continueWithGoogle => 'المتابعة عبر Google';
+  @override
+  String get noAccountPrompt => 'مستخدم جديد؟ أنشئ حسابًا';
+  @override
+  String get haveAccountPrompt => 'لديك حساب بالفعل؟ سجّل الدخول';
+  @override
+  String get sendResetLink => 'إرسال رابط إعادة التعيين';
+  @override
+  String get resetLinkSent =>
+      'إذا كان هذا البريد مسجلًا، فسيصلك رابط إعادة التعيين.';
+  @override
+  String get verifyEmailNotice => 'يرجى تأكيد عنوان بريدك الإلكتروني.';
+  @override
+  String get showPassword => 'إظهار كلمة المرور';
+  @override
+  String get hidePassword => 'إخفاء كلمة المرور';
+
+  @override
+  String get emailRequired => 'يرجى إدخال بريدك الإلكتروني';
+  @override
+  String get emailInvalid => 'أدخل عنوان بريد إلكتروني صحيح';
+  @override
+  String get emailTooLong => 'البريد الإلكتروني طويل جدًا';
+  @override
+  String get passwordRequired => 'يرجى إدخال كلمة المرور';
+  @override
+  String get passwordTooShort => 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل';
+  @override
+  String get passwordTooLong => 'كلمة المرور طويلة جدًا';
+  @override
+  String get passwordWeak => 'استخدم حرفًا واحدًا ورقمًا واحدًا على الأقل';
+  @override
+  String get passwordMismatch => 'كلمتا المرور غير متطابقتين';
+  @override
+  String get nameRequired => 'يرجى إدخال اسم معروض';
+  @override
+  String get nameTooLong => 'الاسم المعروض طويل جدًا';
+
+  @override
+  String get chatTitle => 'محادثة بلانت سينس';
+  @override
+  String get chatEmptyTitle => 'اطرح سؤالك الأول';
+  @override
+  String get chatEmptyBody => 'اختر أحد الاقتراحات أدناه أو اكتب سؤالك.';
+  @override
+  String get composerHint => 'اسأل عن نبتتك…';
+  @override
+  String get send => 'إرسال';
+  @override
+  String get attachImage => 'إرفاق صورة';
+  @override
+  String get removeImage => 'إزالة الصورة';
+  @override
+  String get fromCamera => 'التقاط صورة';
+  @override
+  String get fromGallery => 'الاختيار من المعرض';
+  @override
+  String get copy => 'نسخ';
+  @override
+  String get copied => 'تم النسخ';
+  @override
+  String get deleteConversation => 'حذف المحادثة';
+  @override
+  String get deleteConversationConfirm =>
+      'هل تريد حذف هذه المحادثة؟ لا يمكن التراجع.';
+  @override
+  String get messageFailed => 'فشل الإرسال. اضغط لإعادة المحاولة.';
+  @override
+  String get sending => 'جارٍ الإرسال…';
+  @override
+  String get typing => 'بلانت سينس يفكّر…';
+  @override
+  String charactersRemaining(int count) => 'بقي $count حرفًا';
+  @override
+  String get aiDisclaimerShort => 'قد تكون اقتراحات الذكاء الاصطناعي غير دقيقة.';
+  @override
+  String get contextUnavailable => 'سياق الموقع/الطقس غير متوفر';
+
+  @override
+  String get starterYellowLeaves => 'لماذا تتحول أوراق نبتتي إلى الأصفر؟';
+  @override
+  String get starterWaterBasil => 'كم مرة يجب أن أسقي الريحان؟';
+  @override
+  String get starterSucculentSoil => 'ما خليط التربة المناسب للعصاريات؟';
+  @override
+  String get starterIdentifyPest => 'هل يمكنك تحديد هذه الآفة؟';
+  @override
+  String get starterTransplant => 'هل طقس اليوم مناسب لإعادة الزراعة؟';
+  @override
+  String get starterClayDrainage => 'كيف أحسّن تصريف المياه في التربة الطينية؟';
+
+  @override
+  String get diagnoseTitle => 'التشخيص';
+  @override
+  String get cameraInitializing => 'جارٍ تشغيل الكاميرا…';
+  @override
+  String get cameraPermissionTitle => 'نحتاج إذن الكاميرا';
+  @override
+  String get cameraPermissionBody =>
+      'يستخدم بلانت سينس الكاميرا لتصوير النباتات والتربة للتحليل. تُستخدم الصور فقط للتشخيص الذي تطلبه.';
+  @override
+  String get cameraPermissionDeniedBody =>
+      'تم رفض إذن الكاميرا. لا يزال بإمكانك اختيار صورة من المعرض.';
+  @override
+  String get cameraUnavailable => 'لا توجد كاميرا متاحة على هذا الجهاز.';
+  @override
+  String get captureFailed => 'تعذّر التقاط الصورة. حاول مرة أخرى.';
+  @override
+  String get allowCamera => 'السماح للكاميرا';
+  @override
+  String get flashOn => 'الفلاش يعمل';
+  @override
+  String get flashOff => 'الفلاش متوقف';
+  @override
+  String get switchCamera => 'تبديل الكاميرا';
+  @override
+  String get capture => 'التقاط';
+  @override
+  String get retake => 'إعادة الالتقاط';
+  @override
+  String get confirmPhoto => 'استخدام هذه الصورة';
+  @override
+  String get analyzing => 'جارٍ تحليل صورتك…';
+  @override
+  String get cancelAnalysis => 'إلغاء التحليل';
+  @override
+  String get diagnosisPlant => 'النبات / الموضوع';
+  @override
+  String get diagnosisWhatISee => 'ما أراه';
+  @override
+  String get diagnosisIssue => 'المشكلات المكتشفة';
+  @override
+  String get diagnosisTreatment => 'خطوات العلاج';
+  @override
+  String get diagnosisPrevention => 'نصائح الوقاية';
+  @override
+  String get diagnosisSafety => 'ملاحظات السلامة';
+  @override
+  String get diagnosisConfidence => 'درجة الثقة';
+  @override
+  String get confidenceLow => 'منخفضة';
+  @override
+  String get confidenceMedium => 'متوسطة';
+  @override
+  String get confidenceHigh => 'عالية';
+  @override
+  String get likelihoodLow => 'احتمال منخفض';
+  @override
+  String get likelihoodMedium => 'احتمال متوسط';
+  @override
+  String get likelihoodHigh => 'احتمال مرتفع';
+  @override
+  String get needMoreInfo => 'أحتاج صورة أوضح';
+  @override
+  String get notPlantRelated =>
+      'لا يبدو هذا متعلقًا بالنباتات. جرّب صورة لنبات أو ورقة أو آفة أو تربة.';
+  @override
+  String get poorImageQuality =>
+      'الصورة غير واضحة. حاول مجددًا في إضاءة جيدة مع ملء الإطار بالمنطقة المصابة.';
+  @override
+  String get saveDiagnosis => 'حفظ التشخيص';
+  @override
+  String get diagnosisSaved => 'تم حفظ التشخيص';
+  @override
+  String get askFollowUp => 'طرح سؤال متابعة';
+  @override
+  String get shareSummary => 'مشاركة الملخص';
+  @override
+  String get diagnosisHistory => 'سجل التشخيص';
+  @override
+  String get diagnosisHistoryEmpty => 'لا توجد تشخيصات محفوظة بعد';
+  @override
+  String get diagnosisHistoryEmptyBody => 'شخّص نبتة لبناء سجلّك.';
+  @override
+  String get aiDisclaimerLong =>
+      'يقدّم بلانت سينس اقتراحات وليست ضمانات. للحالات الخطيرة المتعلقة بأمراض النبات أو المبيدات أو المحاصيل الغذائية أو السميّة أو الزراعة، استشر مختصًا مؤهلًا في علم النبات أو الهندسة الزراعية أو البستنة أو الطب البيطري أو مركز مكافحة السموم أو الجهة الزراعية المحلية.';
+
+  @override
+  String get weatherTitle => 'الطقس';
+  @override
+  String get currentWeather => 'الطقس الحالي';
+  @override
+  String feelsLike(String value) => 'الإحساس كـ $value';
+  @override
+  String get humidity => 'الرطوبة';
+  @override
+  String get uvIndex => 'مؤشر الأشعة';
+  @override
+  String get precipitation => 'الهطول';
+  @override
+  String get hourlyForecast => 'التوقعات الساعية';
+  @override
+  String get sevenDayForecast => 'توقعات 7 أيام';
+  @override
+  String get plantCareTips => 'نصائح العناية بالنبات';
+  @override
+  String rainChance(int value) => 'احتمال مطر $value%';
+  @override
+  String get weatherUnavailable => 'الطقس غير متاح حاليًا.';
+  @override
+  String get pullToRefresh => 'اسحب للتحديث';
+  @override
+  String get tipHighUv =>
+      'مؤشر الأشعة مرتفع اليوم — أبعد النباتات الحساسة عن شمس الظهيرة المباشرة.';
+  @override
+  String get tipNoRain =>
+      'لا يُتوقع مطر لعدة أيام — تحقق من رطوبة الأصص بشكل أكثر تكرارًا.';
+  @override
+  String get tipHighHumidity =>
+      'قد تزيد الرطوبة العالية من خطر الفطريات — حسّن التهوية وتجنب بلل الأوراق ليلًا.';
+  @override
+  String get tipFreezing => 'احتمال تجمّد — احمِ النباتات الخارجية الحساسة.';
+  @override
+  String get tipHot =>
+      'الجو حار — اسقِ مبكرًا أو متأخرًا ووفّر الظل للنباتات الرقيقة.';
+  @override
+  String get tipMild => 'الأجواء معتدلة — يوم مناسب للعناية الروتينية بالنبات.';
+
+  @override
+  String get locationTitle => 'الموقع';
+  @override
+  String get useMyLocation => 'استخدام موقعي';
+  @override
+  String get searchCity => 'ابحث عن مدينة';
+  @override
+  String get locationRationale =>
+      'مشاركة موقعك تتيح لبلانت سينس تقديم طقس محلي دقيق ونصائح عناية تراعي المناخ.';
+  @override
+  String get locationDeniedBody =>
+      'تم رفض إذن الموقع. يمكنك البحث عن مدينة بدلًا من ذلك.';
+  @override
+  String get locationServicesOff =>
+      'خدمات الموقع متوقفة. شغّلها أو ابحث عن مدينة.';
+  @override
+  String get geocodeFailed => 'تعذّر تحديد مدينتك. حاول البحث يدويًا.';
+  @override
+  String get selectCity => 'اختر مدينة';
+  @override
+  String get noResults => 'لا توجد أماكن مطابقة';
+
+  @override
+  String get profileTitle => 'الملف الشخصي';
+  @override
+  String get editProfile => 'تعديل الملف';
+  @override
+  String get language => 'اللغة';
+  @override
+  String get theme => 'المظهر';
+  @override
+  String get themeSystem => 'النظام';
+  @override
+  String get themeLight => 'فاتح';
+  @override
+  String get themeDark => 'داكن';
+  @override
+  String get units => 'الوحدات';
+  @override
+  String get unitsMetric => 'متري (°م)';
+  @override
+  String get unitsImperial => 'إمبراطوري (°ف)';
+  @override
+  String get notifications => 'الإشعارات';
+  @override
+  String get imageRetention => 'حفظ صوري';
+  @override
+  String get imageRetentionBody =>
+      'عند التفعيل، تُحفظ صور التشخيص في حسابك. عند الإيقاف، تُحذف الصور بعد التحليل.';
+  @override
+  String get reminders => 'تذكيرات العناية بالنبات';
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+  @override
+  String get termsOfService => 'شروط الخدمة';
+  @override
+  String get reportIssue => 'إرسال ملاحظات';
+  @override
+  String appVersion(String version) => 'الإصدار $version';
+  @override
+  String get logout => 'تسجيل الخروج';
+  @override
+  String get logoutConfirm => 'تسجيل الخروج من بلانت سينس؟';
+  @override
+  String get deleteAccount => 'حذف الحساب';
+  @override
+  String get deleteAccountConfirm =>
+      'سيؤدي هذا إلى حذف حسابك وجميع بياناتك نهائيًا. لا يمكن التراجع.';
+  @override
+  String get deleteAllData => 'حذف كل بياناتي';
+  @override
+  String get deleteAllDataConfirm =>
+      'سيؤدي هذا إلى حذف جميع محادثاتك وتشخيصاتك وتذكيراتك وصورك المخزنة. لا يمكن التراجع.';
+  @override
+  String get reauthRequired => 'يرجى تسجيل الدخول مجددًا لتأكيد هذا الإجراء.';
+  @override
+  String get deleting => 'جارٍ الحذف…';
+  @override
+  String get deleted => 'تم الحذف';
+
+  @override
+  String get remindersTitle => 'التذكيرات';
+  @override
+  String get addReminder => 'إضافة تذكير';
+  @override
+  String get reminderPlantName => 'اسم النبات';
+  @override
+  String get reminderNote => 'ملاحظة';
+  @override
+  String get reminderType => 'النوع';
+  @override
+  String get reminderWatering => 'الري';
+  @override
+  String get reminderFertilizing => 'التسميد';
+  @override
+  String get reminderRepotting => 'إعادة التأصيص';
+  @override
+  String get reminderInspection => 'الفحص';
+  @override
+  String get reminderFollowUp => 'متابعة التشخيص';
+  @override
+  String get reminderDateTime => 'التاريخ والوقت';
+  @override
+  String get reminderRecurrence => 'التكرار';
+  @override
+  String get recurrenceNone => 'مرة واحدة';
+  @override
+  String get recurrenceDaily => 'يوميًا';
+  @override
+  String get recurrenceWeekly => 'أسبوعيًا';
+  @override
+  String get reminderPaused => 'متوقف';
+  @override
+  String get reminderPause => 'إيقاف مؤقت';
+  @override
+  String get reminderResume => 'استئناف';
+  @override
+  String get remindersEmpty => 'لا توجد تذكيرات بعد';
+  @override
+  String get remindersEmptyBody => 'أضف تذكيرًا لتبقى على اطلاع بعناية النبات.';
+  @override
+  String get notificationsPermissionBody =>
+      'اسمح بالإشعارات لنذكّرك بعناية النبات.';
+
+  @override
+  String get privacyTitle => 'الخصوصية والبيانات';
+  @override
+  String get privacyIntro => 'إليك كيفية تعامل بلانت سينس مع بياناتك.';
+  @override
+  String get privacyProfile =>
+      'يُحفظ ملفك الشخصي (الاسم والبريد والتفضيلات) في حسابك.';
+  @override
+  String get privacyLocation =>
+      'الموقع اختياري ويُستخدم فقط للطقس ونصائح العناية. لا نجمع الموقع في الخلفية أبدًا.';
+  @override
+  String get privacyImages =>
+      'تُرسل الصور التي تقدّمها لتحليل الذكاء الاصطناعي. تُحتفظ بها فقط إذا فعّلت حفظ الصور؛ وإلا تُحذف بعد التحليل.';
+  @override
+  String get privacyProviders =>
+      'قد تعالج جهات الذكاء الاصطناعي والبنية التحتية المحتوى الذي تقدّمه. وقد تكون إجابات الذكاء الاصطناعي غير دقيقة.';
+  @override
+  String get privacyControl =>
+      'يمكنك تعطيل الاحتفاظ وحذف المحادثات والتشخيصات وحذف حسابك وبياناتك في أي وقت.';
+
+  @override
+  String get a11yError => 'خطأ';
+  @override
+  String get a11ySendMessage => 'إرسال الرسالة';
+  @override
+  String a11yWeatherIcon(String condition) => 'حالة الطقس: $condition';
+  @override
+  String a11yConfidence(String level) => 'مستوى الثقة: $level';
+
+  @override
+  String get errorNoConnection =>
+      'لا يوجد اتصال بالإنترنت. تحقق من شبكتك وحاول مجددًا.';
+  @override
+  String get errorTimeout => 'انتهت مهلة الطلب. حاول مرة أخرى.';
+  @override
+  String get errorPermissionDenied => 'تم رفض الإذن.';
+  @override
+  String get errorPermissionPermanentlyDenied =>
+      'الإذن محظور. فعّله من الإعدادات.';
+  @override
+  String get errorLocationServicesDisabled => 'خدمات الموقع متوقفة.';
+  @override
+  String get errorAuthExpired => 'انتهت جلستك. يرجى تسجيل الدخول مجددًا.';
+  @override
+  String get errorUnauthenticated => 'يجب تسجيل الدخول للقيام بذلك.';
+  @override
+  String get errorInvalidCredentials =>
+      'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+  @override
+  String get errorRateLimited => 'طلبات كثيرة جدًا. انتظر لحظة وحاول مجددًا.';
+  @override
+  String get errorInvalidInput => 'هذا الإدخال غير صالح. راجعه وحاول مجددًا.';
+  @override
+  String get errorImageTooLarge => 'هذه الصورة كبيرة جدًا. جرّب صورة أصغر.';
+  @override
+  String get errorContentBlocked => 'تم حظر هذا الطلب لأسباب تتعلق بالسلامة.';
+  @override
+  String get errorModelUnavailable => 'خدمة الذكاء الاصطناعي غير متاحة مؤقتًا.';
+  @override
+  String get errorMalformedResponse => 'تعذّر قراءة الاستجابة. حاول مجددًا.';
+  @override
+  String get errorProviderUnavailable =>
+      'إحدى الخدمات غير متاحة مؤقتًا. حاول مجددًا.';
+  @override
+  String get errorNotFound => 'غير موجود.';
+  @override
+  String get errorUnknown => 'حدث خطأ ما. حاول مجددًا.';
+  @override
+  String get emailInUse => 'هذا البريد مسجّل بالفعل.';
+  @override
+  String get userDisabled => 'تم تعطيل هذا الحساب.';
+  @override
+  String get userNotFound => 'لا يوجد حساب لهذا البريد.';
+
+  @override
+  String get demoModeBanner =>
+      'الوضع التجريبي — بيانات نموذجية. اضبط Firebase وGemini للميزات الكاملة.';
+}
