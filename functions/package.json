@@ -1,6 +1,6 @@
 {
   "name": "plantsense-functions",
-  "description": "Secure Gemini proxy for PlantSense AI",
+  "description": "Secure Groq AI proxy for PlantSense AI",
   "engines": {
     "node": "20"
   },

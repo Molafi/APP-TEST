@@ -1,7 +1,7 @@
 import 'weather_model.dart';
 
 /// Deterministic weather-derived care tips. These run first and always work,
-/// even when the AI is unavailable, so weather never blocks on Gemini.
+/// even when the AI is unavailable, so weather never blocks on the AI provider.
 enum PlantCareTip { highUv, noRain, highHumidity, freezing, hot, mild }
 
 class PlantCareRules {

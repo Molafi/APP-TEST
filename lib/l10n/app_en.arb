@@ -252,5 +252,5 @@
   "userDisabled": "This account has been disabled.",
   "userNotFound": "No account found for that email.",
 
-  "demoModeBanner": "Demo mode — using sample data. Configure Firebase & Gemini for full features."
+  "demoModeBanner": "Demo mode — using sample data. Configure Firebase & Groq for full features."
 }

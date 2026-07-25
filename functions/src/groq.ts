@@ -1,0 +1,117 @@
+/**
+ * Groq request construction and response normalization. Groq exposes an
+ * OpenAI-compatible Chat Completions API. The API key is passed in from the
+ * caller (read from Secret Manager) and is NEVER logged or returned to the
+ * client.
+ */
+
+const GROQ_BASE = "https://api.groq.com/openai/v1";
+
+export interface ProxyRequest {
+  system: string;
+  text: string;
+  context?: Record<string, string>;
+  history?: { role: "user" | "model"; text: string }[];
+  image?: { mimeType: string; data: string };
+  jsonMode?: boolean;
+}
+
+export class GroqError extends Error {
+  constructor(public status: number, public code: string) {
+    super(code);
+  }
+}
+
+function composeUserText(req: ProxyRequest): string {
+  if (!req.context || Object.keys(req.context).length === 0) return req.text;
+  const ctx = Object.entries(req.context)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(", ");
+  // Delimit untrusted context from the instruction.
+  return `[context] ${ctx}\n[user] ${req.text}`;
+}
+
+export async function callGroq(
+  apiKey: string,
+  textModel: string,
+  visionModel: string,
+  req: ProxyRequest,
+  timeoutMs = 45000
+): Promise<string> {
+  const hasImage = !!req.image;
+
+  const messages: unknown[] = [{ role: "system", content: req.system }];
+  for (const turn of req.history ?? []) {
+    messages.push({
+      role: turn.role === "model" ? "assistant" : "user",
+      content: turn.text,
+    });
+  }
+
+  if (hasImage) {
+    messages.push({
+      role: "user",
+      content: [
+        { type: "text", text: composeUserText(req) },
+        {
+          type: "image_url",
+          image_url: {
+            url: `data:${req.image!.mimeType};base64,${req.image!.data}`,
+          },
+        },
+      ],
+    });
+  } else {
+    messages.push({ role: "user", content: composeUserText(req) });
+  }
+
+  const body: Record<string, unknown> = {
+    model: hasImage ? visionModel : textModel,
+    messages,
+    temperature: 0.4,
+  };
+  // Only request JSON mode for text-only calls; some vision models reject
+  // response_format. Diagnosis relies on the strict instruction + tolerant
+  // client-side parser instead.
+  if (req.jsonMode && !hasImage) {
+    body.response_format = { type: "json_object" };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  let res: Response;
+  try {
+    res = await fetch(`${GROQ_BASE}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+  } catch {
+    throw new GroqError(408, "timeout");
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!res.ok) {
+    // Map upstream status without leaking the response body to the client.
+    if (res.status === 429) throw new GroqError(429, "rate_limited");
+    throw new GroqError(res.status, `upstream_${res.status}`);
+  }
+
+  const json = (await res.json()) as any;
+  const choices = json.choices;
+  if (!Array.isArray(choices) || choices.length === 0) {
+    throw new GroqError(502, "malformed");
+  }
+  const content = choices[0]?.message?.content;
+  if (typeof content !== "string" || content.trim().length === 0) {
+    // Empty content is typically a safety/content filter result.
+    throw new GroqError(422, "content_blocked");
+  }
+  return content.trim();
+}

@@ -1,15 +1,15 @@
 /**
- * PlantSense AI — secure Gemini proxy.
+ * PlantSense AI — secure AI proxy (Groq).
  *
  * The Flutter client calls this authenticated endpoint instead of talking to
- * Gemini directly, so the Gemini API key never ships in the app. The key is
- * read from Secret Manager (set via `firebase functions:secrets:set GEMINI_API_KEY`).
+ * Groq directly, so the Groq API key never ships in the app. The key is read
+ * from Secret Manager (set via `firebase functions:secrets:set GROQ_API_KEY`).
  *
  * Responsibilities:
  *  - Verify Firebase Authentication (Bearer ID token).
  *  - Validate content type and payload size.
  *  - Apply a per-user rate limit.
- *  - Read the Gemini key from server-side secret storage.
+ *  - Read the Groq key from server-side secret storage.
  *  - Return normalized errors and never leak the key or raw upstream bodies.
  *  - Never log private message text or image bytes.
  */
@@ -21,13 +21,16 @@ import * as logger from "firebase-functions/logger";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
-import { callGemini, GeminiError, ProxyRequest } from "./gemini";
+import { callGroq, GroqError, ProxyRequest } from "./groq";
 
 initializeApp();
 setGlobalOptions({ region: "us-central1", maxInstances: 10 });
 
-const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GROQ_API_KEY = defineSecret("GROQ_API_KEY");
+
+// Groq model names. Override here if Groq's free lineup changes.
+const GROQ_TEXT_MODEL = "llama-3.3-70b-versatile";
+const GROQ_VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct";
 
 // Max request body (base64 image + text). ~6 MB to allow a compressed photo.
 const MAX_BODY_BYTES = 6 * 1024 * 1024;
@@ -57,8 +60,8 @@ async function verifyUid(authHeader?: string): Promise<string | null> {
   }
 }
 
-export const geminiProxy = onRequest(
-  { secrets: [GEMINI_API_KEY], cors: false, timeoutSeconds: 60 },
+export const aiProxy = onRequest(
+  { secrets: [GROQ_API_KEY], cors: false, timeoutSeconds: 60 },
   async (req, res) => {
     // Lock down methods and CORS. Mobile apps do not need permissive CORS.
     if (req.method === "OPTIONS") {
@@ -93,7 +96,11 @@ export const geminiProxy = onRequest(
     }
 
     const payload = req.body as ProxyRequest;
-    if (!payload || typeof payload.text !== "string" || typeof payload.system !== "string") {
+    if (
+      !payload ||
+      typeof payload.text !== "string" ||
+      typeof payload.system !== "string"
+    ) {
       res.status(400).json({ error: "invalid_request" });
       return;
     }
@@ -103,16 +110,17 @@ export const geminiProxy = onRequest(
     }
 
     try {
-      const text = await callGemini(
-        GEMINI_API_KEY.value(),
-        GEMINI_MODEL,
+      const text = await callGroq(
+        GROQ_API_KEY.value(),
+        GROQ_TEXT_MODEL,
+        GROQ_VISION_MODEL,
         payload
       );
       res.status(200).json({ text });
     } catch (e) {
-      if (e instanceof GeminiError) {
+      if (e instanceof GroqError) {
         // Log only the code + status, never the request content.
-        logger.warn("gemini_error", { code: e.code, status: e.status, uid });
+        logger.warn("groq_error", { code: e.code, status: e.status, uid });
         res.status(e.status >= 500 ? 502 : e.status).json({ error: e.code });
         return;
       }

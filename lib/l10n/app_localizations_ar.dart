@@ -509,5 +509,5 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get demoModeBanner =>
-      'الوضع التجريبي — بيانات نموذجية. اضبط Firebase وGemini للميزات الكاملة.';
+      'الوضع التجريبي — بيانات نموذجية. اضبط Firebase وGroq للميزات الكاملة.';
 }

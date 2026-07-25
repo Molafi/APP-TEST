@@ -7,7 +7,7 @@ import 'package:plantsense_ai/core/services/local_cache_service.dart';
 import 'package:plantsense_ai/core/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Integration test running the app in DEMO mode end-to-end. No real Gemini,
+/// Integration test running the app in DEMO mode end-to-end. No real Groq,
 /// Open-Meteo, Nominatim or production Firebase services are contacted — demo
 /// fakes back everything. Run with:
 ///   flutter test integration_test/app_flow_test.dart

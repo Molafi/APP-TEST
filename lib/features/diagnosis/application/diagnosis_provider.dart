@@ -14,8 +14,8 @@ import '../../../core/utils/image_compressor.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../profile/application/settings_provider.dart';
 import '../../weather/application/ai_context_provider.dart';
+import '../data/ai_diagnosis_service.dart';
 import '../data/diagnosis_repository.dart';
-import '../data/gemini_diagnosis_service.dart';
 import '../domain/diagnosis_model.dart';
 
 final diagnosisRepositoryProvider = Provider<DiagnosisRepository>((ref) {
@@ -104,7 +104,7 @@ class DiagnosisController extends StateNotifier<DiagnosisState> {
       final String locale = _ref.read(localeProvider)?.languageCode ?? 'en';
 
       final Diagnosis result =
-          await _ref.read(geminiDiagnosisServiceProvider).analyze(
+          await _ref.read(aiDiagnosisServiceProvider).analyze(
                 locale: locale,
                 image: AiImage(
                     base64: prepared.base64, mimeType: prepared.mimeType),

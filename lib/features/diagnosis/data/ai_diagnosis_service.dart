@@ -6,10 +6,11 @@ import '../../../core/services/ai_prompts.dart';
 import '../domain/diagnosis_model.dart';
 
 /// Runs a structured image diagnosis: sends the image + JSON instruction to the
-/// AI gateway and parses the result into a typed [Diagnosis]. Malformed output
-/// is surfaced as a typed [AppException] (never raw text).
-class GeminiDiagnosisService {
-  GeminiDiagnosisService(this._gateway);
+/// AI gateway (Groq vision model in production) and parses the result into a
+/// typed [Diagnosis]. Malformed output is surfaced as a typed [AppException]
+/// (never raw text).
+class AiDiagnosisService {
+  AiDiagnosisService(this._gateway);
 
   final AiGateway _gateway;
 
@@ -37,6 +38,6 @@ class GeminiDiagnosisService {
   }
 }
 
-final geminiDiagnosisServiceProvider = Provider<GeminiDiagnosisService>((ref) {
-  return GeminiDiagnosisService(ref.watch(aiGatewayProvider));
+final aiDiagnosisServiceProvider = Provider<AiDiagnosisService>((ref) {
+  return AiDiagnosisService(ref.watch(aiGatewayProvider));
 });

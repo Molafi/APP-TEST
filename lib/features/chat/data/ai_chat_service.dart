@@ -6,10 +6,12 @@ import '../../../core/services/ai_prompts.dart';
 import '../domain/message_model.dart';
 
 /// Builds AI requests for conversational chat and returns the model's text.
-/// Trims history to the configured context window and injects available
+/// Provider-agnostic — the underlying [AiGateway] decides how the request is
+/// fulfilled (Groq backend proxy, direct dev client, or demo fake). Trims
+/// history to the configured context window and injects available
 /// weather/location context (unknown values are omitted upstream).
-class GeminiChatService {
-  GeminiChatService(this._gateway);
+class AiChatService {
+  AiChatService(this._gateway);
 
   final AiGateway _gateway;
 
@@ -38,6 +40,6 @@ class GeminiChatService {
   }
 }
 
-final geminiChatServiceProvider = Provider<GeminiChatService>((ref) {
-  return GeminiChatService(ref.watch(aiGatewayProvider));
+final aiChatServiceProvider = Provider<AiChatService>((ref) {
+  return AiChatService(ref.watch(aiGatewayProvider));
 });

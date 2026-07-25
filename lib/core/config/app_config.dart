@@ -4,9 +4,9 @@
 class AppConfig {
   const AppConfig._();
 
-  // --- Gemini / AI ---------------------------------------------------------
-  static const String geminiApiBase =
-      'https://generativelanguage.googleapis.com/v1beta';
+  // --- Groq / AI -----------------------------------------------------------
+  // Groq exposes an OpenAI-compatible Chat Completions API.
+  static const String groqApiBase = 'https://api.groq.com/openai/v1';
   static const Duration aiTimeout = Duration(seconds: 45);
   static const int aiMaxRetries = 3;
   static const int maxInputChars = 4000;

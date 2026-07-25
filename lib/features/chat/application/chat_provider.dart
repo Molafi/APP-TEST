@@ -14,9 +14,9 @@ import '../../../core/theme/locale_provider.dart';
 import '../../../core/utils/image_compressor.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../weather/application/ai_context_provider.dart';
+import '../data/ai_chat_service.dart';
 import '../data/chat_repository.dart';
 import '../data/firestore_chat_repository.dart';
-import '../data/gemini_chat_service.dart';
 import '../data/local_chat_repository.dart';
 import '../domain/message_model.dart';
 
@@ -79,7 +79,7 @@ class ChatController extends StateNotifier<ChatState> {
   int _requestSeq = 0;
 
   ChatRepository get _repo => _ref.read(chatRepositoryProvider);
-  GeminiChatService get _service => _ref.read(geminiChatServiceProvider);
+  AiChatService get _service => _ref.read(aiChatServiceProvider);
 
   Future<void> _load() async {
     try {

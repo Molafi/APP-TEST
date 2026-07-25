@@ -22,7 +22,7 @@ and plant-care advice — in **English or Arabic (full RTL)**.
 - **Weather** — Open-Meteo current, 24h hourly and 7-day forecasts with
   metric/imperial units, cached fallback + "last updated"/live-vs-cached badges.
 - **Weather-aware plant-care tips** — deterministic rules first (always work
-  offline of the AI), so weather never blocks on Gemini.
+  offline of the AI), so weather never blocks on the AI provider.
 - **Location** — GPS (opt-in) + Nominatim reverse geocoding, manual city search
   with debounce & caching, and full permission/denied/services-off handling.
 - **Auth** — email/password, Google Sign-In, password reset, email verification,
@@ -41,7 +41,7 @@ and plant-care advice — in **English or Arabic (full RTL)**.
 
 The app ships configured to run in **demo mode**: an in-memory auth fake, local
 (SharedPreferences) storage, canned AI responses, and a sample location. This
-means it launches and works end-to-end **without any Firebase or Gemini setup**.
+means it launches and works end-to-end **without any Firebase or Groq setup**.
 
 ```bash
 flutter pub get
@@ -76,15 +76,26 @@ lib/
 │       └── {data, domain, application, presentation}/
 └── models/user_profile.dart
 
-functions/                    # Secure Gemini proxy (TypeScript, Cloud Functions v2)
+functions/                    # Secure Groq proxy (TypeScript, Cloud Functions v2)
 firestore.rules / storage.rules / firestore.indexes.json / firebase.json
 test/ (unit, providers, widgets, mocks) + integration_test/
 ```
 
-### AI transport selection (`aiGatewayProvider`)
-1. **Backend proxy** (recommended) — `USE_GEMINI_BACKEND=true` +
-   `GEMINI_BACKEND_URL`. The app sends a Firebase ID token; the key stays server-side.
-2. **Direct dev client** — only when `ALLOW_DIRECT_GEMINI=true` and a key is
+### AI provider — Groq (OpenAI-compatible)
+Chat and image diagnosis run on **[Groq](https://console.groq.com)** via its
+OpenAI-compatible Chat Completions API. Text uses `llama-3.3-70b-versatile`;
+image diagnosis uses the vision model `meta-llama/llama-4-scout-17b-16e-instruct`
+(both overridable — Groq's free lineup changes over time, so verify current
+models at [console.groq.com/docs/models](https://console.groq.com/docs/models)).
+
+The `AiGateway` abstraction (`lib/core/services/ai_gateway.dart`) makes the
+transport swappable — `OpenAiCompatibleGateway` works with any OpenAI-compatible
+provider by changing the base URL.
+
+**Transport selection (`aiGatewayProvider`):**
+1. **Backend proxy** (recommended) — `USE_AI_BACKEND=true` + `AI_BACKEND_URL`.
+   The app sends a Firebase ID token; the Groq key stays server-side.
+2. **Direct dev client** — only when `ALLOW_DIRECT_GROQ=true` and a key is
    supplied via `--dart-define`. Never commit a key.
 3. **Demo** — used automatically when neither is configured.
 
@@ -98,19 +109,20 @@ No secrets live in the client. See `.env.example`. Flags read by `Environment`:
 |---|---|---|
 | `DEMO_MODE` | `true` | Run entirely on local fakes |
 | `USE_FIREBASE` | `false` | Initialise Firebase (auth/Firestore/Storage) |
-| `USE_GEMINI_BACKEND` | `true` | Route AI through the Cloud Function proxy |
-| `GEMINI_BACKEND_URL` | `""` | Deployed proxy URL (not a secret) |
-| `ALLOW_DIRECT_GEMINI` | `false` | Dev-only direct Gemini access |
-| `GEMINI_DEV_API_KEY` | `""` | Dev-only key (supply at build time only) |
-| `GEMINI_MODEL` | `gemini-2.0-flash` | Model name |
+| `USE_AI_BACKEND` | `true` | Route AI through the Cloud Function proxy |
+| `AI_BACKEND_URL` | `""` | Deployed proxy URL (not a secret) |
+| `ALLOW_DIRECT_GROQ` | `false` | Dev-only direct Groq access |
+| `GROQ_API_KEY` | `""` | Dev-only key (supply at build time only) |
+| `GROQ_TEXT_MODEL` | `llama-3.3-70b-versatile` | Chat model |
+| `GROQ_VISION_MODEL` | `meta-llama/llama-4-scout-17b-16e-instruct` | Diagnosis (vision) model |
 
 Production run example:
 ```bash
 flutter run \
   --dart-define=DEMO_MODE=false \
   --dart-define=USE_FIREBASE=true \
-  --dart-define=USE_GEMINI_BACKEND=true \
-  --dart-define=GEMINI_BACKEND_URL=https://us-central1-<project>.cloudfunctions.net/geminiProxy
+  --dart-define=USE_AI_BACKEND=true \
+  --dart-define=AI_BACKEND_URL=https://us-central1-<project>.cloudfunctions.net/aiProxy
 ```
 
 ---
@@ -137,17 +149,20 @@ flutter run \
 
 ---
 
-## ☁️ Cloud Function (secure Gemini proxy)
+## ☁️ Cloud Function (secure Groq proxy)
 
+Get a free API key at [console.groq.com/keys](https://console.groq.com/keys), then:
 ```bash
 cd functions
 npm install
-firebase functions:secrets:set GEMINI_API_KEY   # server-side only
-npm run deploy
+firebase functions:secrets:set GROQ_API_KEY     # server-side only
+npm run deploy                                   # deploys the `aiProxy` function
 ```
 The proxy verifies the Firebase ID token, validates content type/size, applies a
-per-user rate limit, reads the key from Secret Manager, and returns normalized
-errors. It never logs message text or image bytes, and never returns the key.
+per-user rate limit, reads the key from Secret Manager, calls Groq's
+OpenAI-compatible Chat Completions API (selecting the vision model when an image
+is attached), and returns normalized errors. It never logs message text or image
+bytes, and never returns the key.
 
 > The included per-user rate limit is in-memory (best-effort). For strict limits
 > across instances, back it with Firestore or a dedicated rate-limiter.
@@ -156,6 +171,9 @@ errors. It never logs message text or image bytes, and never returns the key.
 
 ## 🌍 Third-party integrations
 
+- **Groq** — AI chat + vision diagnosis via the OpenAI-compatible Chat
+  Completions API. Free API key from [console.groq.com](https://console.groq.com);
+  used only server-side by the Cloud Function (or a dev-only direct client).
 - **Open-Meteo** — no API key required. Fields: current + hourly + daily as in
   `OpenMeteoService`. Responses are parsed defensively (nullable-safe) and cached
   for 30 min (stale after 3h).
@@ -214,11 +232,11 @@ generating, merge the following.
 flutter test                         # unit + provider + widget tests
 flutter test integration_test        # demo end-to-end flow (mocked services)
 ```
-Covered: Gemini/diagnosis JSON parsing (incl. malformed + fenced), weather
+Covered: diagnosis JSON parsing (incl. malformed + fenced), weather
 parsing + missing fields, plant-care rules, retry/backoff, error mapping,
 validation, unit conversion, chat provider (send/fail/retry/delete, duplicate
 prevention), login widget (+ Arabic RTL), empty chat. Tests use fakes/mocks and
-never contact real Gemini, Open-Meteo, Nominatim or production Firebase.
+never contact real Groq, Open-Meteo, Nominatim or production Firebase.
 
 ### Firebase Emulator Suite (optional)
 ```bash

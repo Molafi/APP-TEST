@@ -252,5 +252,5 @@
   "userDisabled": "تم تعطيل هذا الحساب.",
   "userNotFound": "لا يوجد حساب لهذا البريد.",
 
-  "demoModeBanner": "الوضع التجريبي — بيانات نموذجية. اضبط Firebase وGemini للميزات الكاملة."
+  "demoModeBanner": "الوضع التجريبي — بيانات نموذجية. اضبط Firebase وGroq للميزات الكاملة."
 }

@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'ai_gateway.dart';
 
-/// Canned, deterministic AI responses used when Gemini is not configured
+/// Canned, deterministic AI responses used when no AI provider is configured
 /// (demo mode) or in tests. Produces valid diagnosis JSON when [jsonMode] is
 /// requested, and a helpful structured plant-care answer otherwise. This keeps
 /// the app fully usable without any credentials.
@@ -30,7 +30,7 @@ class DemoAiGateway implements AiGateway {
       return "I can see the image you shared. Could you tell me what's "
           "concerning you about this plant? For example, are the leaves "
           "discoloured, spotted, or wilting?\n\n"
-          "_(Demo response — configure Gemini for full AI analysis.)_";
+          "_(Demo response — configure Groq for full AI analysis.)_";
     }
 
     String assessment;

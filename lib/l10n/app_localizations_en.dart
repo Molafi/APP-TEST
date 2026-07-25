@@ -521,5 +521,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demoModeBanner =>
-      'Demo mode — using sample data. Configure Firebase & Gemini for full features.';
+      'Demo mode — using sample data. Configure Firebase & Groq for full features.';
 }

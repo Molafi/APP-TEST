@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_config.dart';
@@ -21,6 +19,9 @@ class AiImage {
   const AiImage({required this.base64, required this.mimeType});
   final String base64;
   final String mimeType;
+
+  /// Data URL form expected by OpenAI-compatible `image_url` parts.
+  String get dataUrl => 'data:$mimeType;base64,$base64';
 }
 
 /// A normalized request for the AI, independent of transport.
@@ -41,6 +42,17 @@ class AiRequest {
   final AiImage? image;
   final bool jsonMode;
 
+  /// Composes the user text with any available (untrusted) context, clearly
+  /// delimited from the instruction.
+  String composeUserText() {
+    if (context.isEmpty) return userText;
+    final String ctx =
+        context.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+    return '[context] $ctx\n[user] $userText';
+  }
+
+  /// Payload sent to the secure Cloud Function proxy (unchanged across
+  /// providers — the function decides which provider/model to call).
   Map<String, dynamic> toBackendPayload() => {
         'system': systemPrompt,
         'text': userText,
@@ -60,7 +72,7 @@ abstract class AiGateway {
 }
 
 /// Preferred production transport: calls the authenticated Cloud Function proxy
-/// so the Gemini key never touches the client. Requires a Firebase ID token
+/// so the Groq API key never touches the client. Requires a Firebase ID token
 /// supplied by [idTokenProvider].
 class BackendAiGateway implements AiGateway {
   BackendAiGateway({
@@ -91,113 +103,102 @@ class BackendAiGateway implements AiGateway {
   }
 }
 
-/// DEV-ONLY direct transport, guarded by [Environment.allowDirectGemini]. Never
-/// ships with a committed key; the key is supplied via --dart-define.
-class DirectGeminiGateway implements AiGateway {
-  DirectGeminiGateway({required this.apiKey, required this.model, ApiClient? client})
-      : _client = client ?? ApiClient();
+/// DEV-ONLY direct transport that calls Groq's OpenAI-compatible Chat
+/// Completions API from the client. Guarded by [Environment.allowDirectGroq];
+/// never ships with a committed key (supplied via --dart-define). The same
+/// class works for any OpenAI-compatible provider by changing [baseUrl].
+class OpenAiCompatibleGateway implements AiGateway {
+  OpenAiCompatibleGateway({
+    required this.baseUrl,
+    required this.apiKey,
+    required this.textModel,
+    required this.visionModel,
+    ApiClient? client,
+  }) : _client = client ?? ApiClient();
 
+  final String baseUrl;
   final String apiKey;
-  final String model;
+  final String textModel;
+  final String visionModel;
   final ApiClient _client;
 
   @override
   Future<String> generate(AiRequest request) async {
-    final Uri uri = Uri.parse(
-        '${AppConfig.geminiApiBase}/models/$model:generateContent?key=$apiKey');
+    final bool hasImage = request.image != null;
+    final Uri uri = Uri.parse('$baseUrl/chat/completions');
 
-    final List<Map<String, dynamic>> contents = [
+    final List<Map<String, dynamic>> messages = [
+      {'role': 'system', 'content': request.systemPrompt},
       for (final AiTurn t in request.history)
-        {
-          'role': t.fromUser ? 'user' : 'model',
-          'parts': [
-            {'text': t.text}
-          ]
-        },
+        {'role': t.fromUser ? 'user' : 'assistant', 'content': t.text},
       {
         'role': 'user',
-        'parts': [
-          if (request.image != null)
-            {
-              'inline_data': {
-                'mime_type': request.image!.mimeType,
-                'data': request.image!.base64,
-              }
-            },
-          {'text': _composeUserText(request)},
-        ],
+        'content': hasImage
+            // Multimodal content array (text + image).
+            ? [
+                {'type': 'text', 'text': request.composeUserText()},
+                {
+                  'type': 'image_url',
+                  'image_url': {'url': request.image!.dataUrl},
+                },
+              ]
+            : request.composeUserText(),
       },
     ];
 
     final Map<String, dynamic> body = {
-      'system_instruction': {
-        'parts': [
-          {'text': request.systemPrompt}
-        ]
-      },
-      'contents': contents,
-      'generationConfig': {
-        if (request.jsonMode) 'responseMimeType': 'application/json',
-        'temperature': 0.4,
-      },
+      'model': hasImage ? visionModel : textModel,
+      'messages': messages,
+      'temperature': 0.4,
+      // JSON mode is only requested for text-only calls; not all vision models
+      // accept response_format. Diagnosis relies on a strict instruction plus
+      // the tolerant client-side parser instead.
+      if (request.jsonMode && !hasImage)
+        'response_format': {'type': 'json_object'},
     };
 
-    final Map<String, dynamic> res = await _client.postJson(uri,
-        body: body, timeout: AppConfig.aiTimeout);
+    final Map<String, dynamic> res = await _client.postJson(
+      uri,
+      headers: {'Authorization': 'Bearer $apiKey'},
+      body: body,
+      timeout: AppConfig.aiTimeout,
+    );
     return _extractText(res);
   }
 
-  String _composeUserText(AiRequest request) {
-    if (request.context.isEmpty) return request.userText;
-    final String ctx = request.context.entries
-        .map((e) => '${e.key}: ${e.value}')
-        .join(', ');
-    // Delimit untrusted context clearly from the instruction.
-    return '[context] $ctx\n[user] ${request.userText}';
-  }
-
   String _extractText(Map<String, dynamic> res) {
-    // Handle safety blocks / empty candidates explicitly.
-    final prompt = res['promptFeedback'];
-    if (prompt is Map && prompt['blockReason'] != null) {
-      throw const AppException(AppErrorKind.contentBlocked);
-    }
-    final List<dynamic>? candidates = res['candidates'] as List<dynamic>?;
-    if (candidates == null || candidates.isEmpty) {
-      throw const AppException(AppErrorKind.contentBlocked);
-    }
-    final content = candidates.first['content'];
-    final parts = (content is Map) ? content['parts'] as List<dynamic>? : null;
-    if (parts == null || parts.isEmpty) {
+    final List<dynamic>? choices = res['choices'] as List<dynamic>?;
+    if (choices == null || choices.isEmpty) {
       throw const AppException(AppErrorKind.malformedResponse);
     }
-    final StringBuffer buffer = StringBuffer();
-    for (final part in parts) {
-      if (part is Map && part['text'] is String) buffer.write(part['text']);
+    final first = choices.first;
+    final message = (first is Map) ? first['message'] : null;
+    // A non-null finish for content filtering surfaces as empty content.
+    final content = (message is Map) ? message['content'] : null;
+    if (content is! String || content.trim().isEmpty) {
+      throw const AppException(AppErrorKind.malformedResponse);
     }
-    final String text = buffer.toString().trim();
-    if (text.isEmpty) throw const AppException(AppErrorKind.malformedResponse);
-    return text;
+    return content.trim();
   }
-
-  static String encodeBody(Map<String, dynamic> body) => jsonEncode(body);
 }
 
 final aiGatewayProvider = Provider<AiGateway>((ref) {
   // Demo / unconfigured: use the canned demo gateway so nothing crashes.
-  if (Environment.geminiUnavailable) {
+  if (Environment.aiUnavailable) {
     return DemoAiGateway();
   }
-  if (Environment.useGeminiBackend) {
+  if (Environment.useAiBackend) {
     return BackendAiGateway(
-      baseUrl: Environment.geminiBackendUrl,
+      baseUrl: Environment.aiBackendUrl,
       idTokenProvider: firebaseIdTokenImpl,
     );
   }
-  if (Environment.allowDirectGemini) {
-    return DirectGeminiGateway(
-      apiKey: Environment.geminiDevApiKey,
-      model: Environment.geminiModel,
+  if (Environment.allowDirectGroq) {
+    return OpenAiCompatibleGateway(
+      baseUrl: AppConfig.groqApiBase,
+      apiKey: Environment.groqApiKey,
+      textModel: Environment.groqTextModel,
+      visionModel: Environment.groqVisionModel,
     );
   }
   return DemoAiGateway();
