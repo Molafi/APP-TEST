@@ -22,10 +22,11 @@ class ConversationsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.conversations)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
+          final NavigatorState navigator = Navigator.of(context);
           await ref
               .read(conversationsControllerProvider.notifier)
               .create(title: l10n.newChat);
-          if (context.mounted) Navigator.of(context).maybePop();
+          await navigator.maybePop();
         },
         icon: const Icon(Icons.add_comment_outlined),
         label: Text(l10n.newChat),
@@ -66,10 +67,11 @@ class ConversationsScreen extends ConsumerWidget {
                     ],
                   ),
                   onTap: () async {
+                    final NavigatorState navigator = Navigator.of(context);
                     await ref
                         .read(conversationsControllerProvider.notifier)
                         .open(c.id);
-                    if (context.mounted) Navigator.of(context).maybePop();
+                    await navigator.maybePop();
                   },
                 );
               },
