@@ -11,8 +11,10 @@ import '../../auth/application/auth_provider.dart';
 import '../../diagnosis/presentation/diagnosis_history_screen.dart';
 import '../../plants/presentation/my_plants_screen.dart';
 import '../../reminders/presentation/reminders_screen.dart';
+import '../../soil/presentation/land_screen.dart';
 import '../application/data_export_provider.dart';
 import '../application/profile_provider.dart';
+import 'language_screen.dart';
 import 'privacy_screen.dart';
 import 'settings_screen.dart';
 
@@ -57,6 +59,10 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(height: AppSpacing.lg),
         _tile(context, Icons.settings_outlined, l10n.editProfile,
             () => _push(context, const SettingsScreen())),
+        _tile(context, Icons.language, 'Language',
+            () => _push(context, const LanguageScreen())),
+        _tile(context, Icons.terrain_outlined, 'Land & Soil',
+            () => _push(context, const LandScreen())),
         _tile(context, Icons.local_florist_outlined, l10n.myPlants,
             () => _push(context, const MyPlantsScreen())),
         _tile(context, Icons.history, l10n.diagnosisHistory,

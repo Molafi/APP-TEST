@@ -297,7 +297,9 @@ final aiGatewayProvider = Provider<AiGateway>((ref) {
   }
   if (Environment.allowDirectGroq) {
     return OpenAiCompatibleGateway(
-      baseUrl: AppConfig.groqApiBase,
+      baseUrl: Environment.aiBaseUrl.isNotEmpty
+          ? Environment.aiBaseUrl
+          : AppConfig.groqApiBase,
       apiKey: Environment.groqApiKey,
       textModels: Environment.groqTextModels,
       visionModels: Environment.groqVisionModels,

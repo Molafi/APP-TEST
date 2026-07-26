@@ -25,6 +25,12 @@ class Environment {
   static const String aiBackendUrl =
       String.fromEnvironment('AI_BACKEND_URL', defaultValue: '');
 
+  /// Optional override for the direct AI provider base URL (OpenAI-compatible).
+  /// Lets the app target any OpenAI-compatible provider (e.g. OpenRouter for
+  /// vision) without code changes. Empty means use the default Groq base.
+  static const String aiBaseUrl =
+      String.fromEnvironment('AI_BASE_URL', defaultValue: '');
+
   /// DEV-ONLY escape hatch for calling Groq directly from the client. Guarded
   /// so it can never be enabled accidentally in a release without an explicit
   /// define. Use only for local development.
