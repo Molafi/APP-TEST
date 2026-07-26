@@ -5,8 +5,9 @@ class HomeTab {
   const HomeTab._();
   static const int chat = 0;
   static const int diagnose = 1;
-  static const int weather = 2;
-  static const int profile = 3;
+  static const int plants = 2;
+  static const int weather = 3;
+  static const int profile = 4;
 }
 
 /// Currently selected bottom-nav tab. Kept in state so tapping the weather chip

@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../chat/presentation/chat_screen.dart';
 import '../../diagnosis/presentation/diagnosis_screen.dart';
+import '../../plants/presentation/plants_tab.dart';
 import '../../location/application/location_provider.dart';
 import '../../profile/application/profile_provider.dart';
 import '../../profile/application/settings_provider.dart';
@@ -70,6 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _titleFor(AppLocalizations l10n, int tab) => switch (tab) {
         HomeTab.chat => l10n.chatTitle,
         HomeTab.diagnose => l10n.diagnoseTitle,
+        HomeTab.plants => l10n.myPlants,
         HomeTab.weather => l10n.weatherTitle,
         _ => l10n.profileTitle,
       };
@@ -108,6 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: const [
                   ChatScreen(),
                   DiagnosisScreen(),
+                  PlantsTab(),
                   WeatherScreen(),
                   ProfileScreen(),
                 ],
@@ -129,6 +132,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               icon: const Icon(Icons.camera_alt_outlined),
               selectedIcon: const Icon(Icons.camera_alt),
               label: l10n.navDiagnose,
+            ),
+            NavigationDestination(
+              icon: const Icon(Icons.local_florist_outlined),
+              selectedIcon: const Icon(Icons.local_florist),
+              label: l10n.myPlants,
             ),
             NavigationDestination(
               icon: const Icon(Icons.wb_sunny_outlined),

@@ -13,6 +13,7 @@ import '../application/weather_provider.dart';
 import 'widgets/current_weather_card.dart';
 import 'widgets/hourly_forecast.dart';
 import 'widgets/plant_care_tips.dart';
+import 'widgets/weather_extras.dart';
 import 'widgets/weekly_forecast.dart';
 
 /// Weather tab body. Pull-to-refresh, cached fallback, unit-aware, and a
@@ -77,11 +78,20 @@ class WeatherScreen extends ConsumerWidget {
             city: location?.displayLabel,
           ),
           const SizedBox(height: AppSpacing.sm),
+          SeasonCard(latitude: location?.latitude),
+          TodayGlanceCard(
+            today: data.daily.isNotEmpty ? data.daily.first : null,
+            unit: unit,
+          ),
+          WateringCallCard(data: data),
+          const SizedBox(height: AppSpacing.sm),
           PlantCareTipsCard(tips: state.tips),
           const SizedBox(height: AppSpacing.md),
           HourlyForecastStrip(hours: data.hourly, unit: unit, locale: locale),
           const SizedBox(height: AppSpacing.lg),
           WeeklyForecastList(days: data.daily, unit: unit, locale: locale),
+          const SizedBox(height: AppSpacing.md),
+          LandShortcutCard(),
         ],
       ),
     );
