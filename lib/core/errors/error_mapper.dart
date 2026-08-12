@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -60,7 +61,21 @@ class ErrorMapper {
   }
 
   /// Localized, user-safe message. Raw exception text is never included.
+  ///
+  /// In **debug builds only**, the technical detail (HTTP status, host, model)
+  /// is appended. Several distinct failures share one localized string — a
+  /// rejected API key and a genuine sign-in problem both render as
+  /// "You need to be logged in" — so without this the real cause is invisible
+  /// in the UI. Release builds show just the clean message.
   static String message(AppLocalizations l10n, AppException e) {
+    final String base = _localized(l10n, e);
+    if (kDebugMode && e.debugDetail != null) {
+      return '$base\n[debug] ${e.debugDetail}';
+    }
+    return base;
+  }
+
+  static String _localized(AppLocalizations l10n, AppException e) {
     switch (e.kind) {
       case AppErrorKind.noConnection:
         return l10n.errorNoConnection;

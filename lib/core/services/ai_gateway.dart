@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -196,13 +197,51 @@ class OpenAiCompatibleGateway extends AiGateway {
 
   Future<String> _call(
       AiRequest request, String model, bool hasImage) async {
-    final Map<String, dynamic> res = await _client.postJson(
-      Uri.parse('$baseUrl/chat/completions'),
-      headers: {'Authorization': 'Bearer $apiKey'},
-      body: _buildBody(request, model, hasImage),
-      timeout: AppConfig.aiTimeout,
-    );
-    return _extractText(res);
+    try {
+      final Map<String, dynamic> res = await _client.postJson(
+        Uri.parse('$baseUrl/chat/completions'),
+        headers: {'Authorization': 'Bearer $apiKey'},
+        body: _buildBody(request, model, hasImage),
+        timeout: AppConfig.aiTimeout,
+      );
+      return _extractText(res);
+    } on AppException catch (e) {
+      _logFailure(e, model);
+      // Enrich the error with which host/model actually failed. The UI shows
+      // this only in debug builds, which makes provider misconfiguration
+      // diagnosable without digging through console output.
+      throw AppException(
+        e.kind,
+        debugDetail: [
+          if (e.debugDetail != null) e.debugDetail,
+          Uri.tryParse(baseUrl)?.host ?? baseUrl,
+          model,
+        ].join(' · '),
+        retryAfter: e.retryAfter,
+        cause: e.cause,
+      );
+    }
+  }
+
+  /// Debug-only diagnostics. The localized UI message is intentionally vague,
+  /// which makes provider misconfiguration hard to tell apart from a genuine
+  /// auth problem — this prints the real cause to the console. Never logs the
+  /// key, the prompt or image bytes.
+  void _logFailure(AppException e, String model) {
+    if (!kDebugMode) return;
+    final String host = Uri.tryParse(baseUrl)?.host ?? baseUrl;
+    debugPrint('[AI] request failed  host=$host  model=$model  '
+        'kind=${e.kind.name}  detail=${e.debugDetail ?? "-"}');
+    if (e.kind == AppErrorKind.unauthenticated) {
+      debugPrint('[AI] -> $host rejected the credentials (HTTP 401/403). '
+          'Verify the API key is valid, has credits, and belongs to $host. '
+          'A 403 here can also mean the host blocked a browser-origin request '
+          '— try a non-web device.');
+    } else if (e.kind == AppErrorKind.modelUnavailable ||
+        e.kind == AppErrorKind.notFound) {
+      debugPrint('[AI] -> model "$model" not available on $host; '
+          'trying the next candidate if one is configured.');
+    }
   }
 
   @override
@@ -284,24 +323,79 @@ class OpenAiCompatibleGateway extends AiGateway {
   }
 }
 
+/// Splits traffic by modality: requests carrying an image go to
+/// [visionGateway], text-only requests go to [textGateway].
+///
+/// This is what lets the app read plant photos with Claude Opus (via
+/// OpenRouter) while keeping ordinary chat on Groq's much faster and cheaper
+/// Llama models. Both delegates are plain [AiGateway]s, so streaming, model
+/// fallback and error mapping behave exactly as they do standalone.
+class ModalityRoutingGateway extends AiGateway {
+  ModalityRoutingGateway({
+    required this.textGateway,
+    required this.visionGateway,
+  });
+
+  final AiGateway textGateway;
+  final AiGateway visionGateway;
+
+  AiGateway _routeFor(AiRequest request) =>
+      request.image != null ? visionGateway : textGateway;
+
+  @override
+  Future<String> generate(AiRequest request) =>
+      _routeFor(request).generate(request);
+
+  @override
+  Stream<String> generateStream(AiRequest request) =>
+      _routeFor(request).generateStream(request);
+}
+
+/// Builds the OpenRouter transport (OpenAI-compatible Chat Completions).
+OpenAiCompatibleGateway _buildOpenRouterGateway() {
+  final String base = Environment.openRouterBaseUrlOverride.isNotEmpty
+      ? Environment.openRouterBaseUrlOverride
+      : AppConfig.openRouterApiBase;
+  return OpenAiCompatibleGateway(
+    baseUrl: base,
+    apiKey: Environment.openRouterApiKey,
+    textModels: Environment.openRouterTextModels,
+    visionModels: Environment.openRouterVisionModels,
+  );
+}
+
+OpenAiCompatibleGateway _buildGroqGateway() => OpenAiCompatibleGateway(
+      baseUrl: AppConfig.groqApiBase,
+      apiKey: Environment.groqApiKey,
+      textModels: Environment.groqTextModels,
+      visionModels: Environment.groqVisionModels,
+    );
+
 final aiGatewayProvider = Provider<AiGateway>((ref) {
   // Demo / unconfigured: use the canned demo gateway so nothing crashes.
   if (Environment.aiUnavailable) {
     return DemoAiGateway();
   }
+  // Production: the Cloud Function proxy decides the provider server-side, so
+  // the client never holds a key.
   if (Environment.useAiBackend) {
     return BackendAiGateway(
       baseUrl: Environment.aiBackendUrl,
       idTokenProvider: firebaseIdTokenImpl,
     );
   }
-  if (Environment.allowDirectGroq) {
-    return OpenAiCompatibleGateway(
-      baseUrl: AppConfig.groqApiBase,
-      apiKey: Environment.groqApiKey,
-      textModels: Environment.groqTextModels,
-      visionModels: Environment.groqVisionModels,
+
+  final bool openRouter = Environment.openRouterReady;
+  final bool groq = Environment.directGroqReady;
+
+  // Both configured: Claude Opus sees the images, Groq handles text chat.
+  if (openRouter && groq) {
+    return ModalityRoutingGateway(
+      textGateway: _buildGroqGateway(),
+      visionGateway: _buildOpenRouterGateway(),
     );
   }
+  if (openRouter) return _buildOpenRouterGateway();
+  if (groq) return _buildGroqGateway();
   return DemoAiGateway();
 });

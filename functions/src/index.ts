@@ -21,12 +21,26 @@ import * as logger from "firebase-functions/logger";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 
-import { callGroq, GroqError, ProxyRequest } from "./groq";
+import {
+  callChatCompletions,
+  GroqError,
+  ProxyRequest,
+  ProviderConfig,
+  GROQ_BASE,
+  OPENROUTER_BASE,
+} from "./groq";
 
 initializeApp();
 setGlobalOptions({ region: "us-central1", maxInstances: 10 });
 
 const GROQ_API_KEY = defineSecret("GROQ_API_KEY");
+
+// Optional: enables Claude Opus for image (vision) requests via OpenRouter.
+// Create it before deploying with:
+//   firebase functions:secrets:set OPENROUTER_API_KEY
+// If you don't want Claude vision, remove this from the `secrets` array below
+// and vision falls back to the Groq Llama models automatically.
+const OPENROUTER_API_KEY = defineSecret("OPENROUTER_API_KEY");
 
 // Groq model names, primary first then fallback. Override if Groq's free
 // lineup changes; the proxy automatically falls back when a model is retired.
@@ -35,6 +49,27 @@ const GROQ_VISION_MODELS = [
   "meta-llama/llama-4-scout-17b-16e-instruct",
   "meta-llama/llama-4-maverick-17b-128e-instruct",
 ];
+
+// Claude Opus reads plant photos considerably better than the Llama vision
+// models, so image requests prefer it when an OpenRouter key is configured.
+// Primary first, then fallback — relay model IDs drift, and callChatCompletions
+// retries the next entry on a 404/400.
+const OPENROUTER_VISION_MODELS = [
+  "anthropic/claude-opus-4.8",
+  "anthropic/claude-opus-4.6",
+];
+
+/**
+ * Reads the optional OpenRouter secret. Returns "" when the secret has not
+ * been created, so deployments that only use Groq keep working.
+ */
+function openRouterKey(): string {
+  try {
+    return OPENROUTER_API_KEY.value() || "";
+  } catch {
+    return "";
+  }
+}
 
 // Max request body (base64 image + text). ~6 MB to allow a compressed photo.
 const MAX_BODY_BYTES = 6 * 1024 * 1024;
@@ -65,7 +100,11 @@ async function verifyUid(authHeader?: string): Promise<string | null> {
 }
 
 export const aiProxy = onRequest(
-  { secrets: [GROQ_API_KEY], cors: false, timeoutSeconds: 60 },
+  {
+    secrets: [GROQ_API_KEY, OPENROUTER_API_KEY],
+    cors: false,
+    timeoutSeconds: 60,
+  },
   async (req, res) => {
     // Lock down methods and CORS. Mobile apps do not need permissive CORS.
     if (req.method === "OPTIONS") {
@@ -114,12 +153,22 @@ export const aiProxy = onRequest(
     }
 
     try {
-      const text = await callGroq(
-        GROQ_API_KEY.value(),
-        GROQ_TEXT_MODELS,
-        GROQ_VISION_MODELS,
-        payload
-      );
+      // Route by modality: images prefer Claude Opus via OpenRouter (when a
+      // key exists), everything else goes to Groq.
+      const orKey = openRouterKey();
+      const useClaudeVision = !!payload.image && orKey.length > 0;
+
+      const provider: ProviderConfig = useClaudeVision
+        ? { baseUrl: OPENROUTER_BASE, apiKey: orKey }
+        : { baseUrl: GROQ_BASE, apiKey: GROQ_API_KEY.value() };
+
+      const models = useClaudeVision
+        ? OPENROUTER_VISION_MODELS
+        : payload.image
+          ? GROQ_VISION_MODELS
+          : GROQ_TEXT_MODELS;
+
+      const text = await callChatCompletions(provider, models, payload);
       res.status(200).json({ text });
     } catch (e) {
       if (e instanceof GroqError) {
