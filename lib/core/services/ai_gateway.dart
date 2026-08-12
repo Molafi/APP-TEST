@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -196,13 +197,39 @@ class OpenAiCompatibleGateway extends AiGateway {
 
   Future<String> _call(
       AiRequest request, String model, bool hasImage) async {
-    final Map<String, dynamic> res = await _client.postJson(
-      Uri.parse('$baseUrl/chat/completions'),
-      headers: {'Authorization': 'Bearer $apiKey'},
-      body: _buildBody(request, model, hasImage),
-      timeout: AppConfig.aiTimeout,
-    );
-    return _extractText(res);
+    try {
+      final Map<String, dynamic> res = await _client.postJson(
+        Uri.parse('$baseUrl/chat/completions'),
+        headers: {'Authorization': 'Bearer $apiKey'},
+        body: _buildBody(request, model, hasImage),
+        timeout: AppConfig.aiTimeout,
+      );
+      return _extractText(res);
+    } on AppException catch (e) {
+      _logFailure(e, model);
+      rethrow;
+    }
+  }
+
+  /// Debug-only diagnostics. The localized UI message is intentionally vague,
+  /// which makes provider misconfiguration hard to tell apart from a genuine
+  /// auth problem — this prints the real cause to the console. Never logs the
+  /// key, the prompt or image bytes.
+  void _logFailure(AppException e, String model) {
+    if (!kDebugMode) return;
+    final String host = Uri.tryParse(baseUrl)?.host ?? baseUrl;
+    debugPrint('[AI] request failed  host=$host  model=$model  '
+        'kind=${e.kind.name}  detail=${e.debugDetail ?? "-"}');
+    if (e.kind == AppErrorKind.unauthenticated) {
+      debugPrint('[AI] -> $host rejected the credentials (HTTP 401/403). '
+          'Verify the API key is valid, has credits, and belongs to $host. '
+          'A 403 here can also mean the host blocked a browser-origin request '
+          '— try a non-web device.');
+    } else if (e.kind == AppErrorKind.modelUnavailable ||
+        e.kind == AppErrorKind.notFound) {
+      debugPrint('[AI] -> model "$model" not available on $host; '
+          'trying the next candidate if one is configured.');
+    }
   }
 
   @override

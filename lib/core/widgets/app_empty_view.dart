@@ -20,8 +20,11 @@ class AppEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Scrollable so the illustration + copy + CTA can never overflow on short
+    // viewports (small phones in landscape, resized desktop/web windows). The
+    // Column keeps MainAxisSize.min so it still centres when there's room.
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
