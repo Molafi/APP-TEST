@@ -63,6 +63,62 @@ class Environment {
   static List<String> get groqVisionModels =>
       _dedupe([groqVisionModel, groqVisionModelFallback]);
 
+  // --- AgentRouter (Claude Opus vision) ------------------------------------
+  // AgentRouter is an OpenAI-compatible gateway fronting Claude/GPT/Gemini.
+  // Its main use here is image understanding: Claude Opus reads plant photos
+  // far more reliably than the Llama vision models, so diagnosis quality
+  // improves noticeably. Text chat can stay on Groq (faster and cheaper).
+
+  /// Enables the AgentRouter transport. Off by default so nothing changes for
+  /// existing builds.
+  static const bool useAgentRouter =
+      bool.fromEnvironment('USE_AGENTROUTER', defaultValue: false);
+
+  /// DEV-ONLY AgentRouter key (`sk-...`) supplied via --dart-define. Never
+  /// committed; for release builds use the Cloud Function proxy instead.
+  static const String agentRouterApiKey =
+      String.fromEnvironment('AGENTROUTER_API_KEY', defaultValue: '');
+
+  /// Optional base-URL override (for self-hosted or mirror relays). Empty means
+  /// use [AppConfig.agentRouterApiBase].
+  static const String agentRouterBaseUrlOverride =
+      String.fromEnvironment('AGENTROUTER_BASE_URL', defaultValue: '');
+
+  /// Vision model for image requests. Model IDs on relays drift, so the
+  /// fallback is tried automatically when the primary returns 404/400.
+  static const String agentRouterVisionModel = String.fromEnvironment(
+    'AGENTROUTER_VISION_MODEL',
+    defaultValue: 'claude-opus-4-8',
+  );
+  static const String agentRouterVisionModelFallback = String.fromEnvironment(
+    'AGENTROUTER_VISION_MODEL_FALLBACK',
+    defaultValue: 'claude-opus-4-6',
+  );
+
+  /// Text model, used only when AgentRouter also serves plain chat (i.e. no
+  /// Groq key is configured).
+  static const String agentRouterTextModel = String.fromEnvironment(
+    'AGENTROUTER_TEXT_MODEL',
+    defaultValue: 'claude-opus-4-8',
+  );
+  static const String agentRouterTextModelFallback = String.fromEnvironment(
+    'AGENTROUTER_TEXT_MODEL_FALLBACK',
+    defaultValue: 'claude-opus-4-6',
+  );
+
+  static List<String> get agentRouterVisionModels =>
+      _dedupe([agentRouterVisionModel, agentRouterVisionModelFallback]);
+  static List<String> get agentRouterTextModels =>
+      _dedupe([agentRouterTextModel, agentRouterTextModelFallback]);
+
+  /// True when AgentRouter is switched on *and* actually usable.
+  static bool get agentRouterReady =>
+      useAgentRouter && agentRouterApiKey.isNotEmpty;
+
+  /// True when the direct Groq transport is switched on *and* usable.
+  static bool get directGroqReady =>
+      allowDirectGroq && groqApiKey.isNotEmpty;
+
   static List<String> _dedupe(List<String> models) {
     final seen = <String>{};
     return [
@@ -75,8 +131,8 @@ class Environment {
   /// must fall back to canned demo AI responses.
   static bool get aiUnavailable {
     if (useAiBackend) return aiBackendUrl.isEmpty;
-    if (allowDirectGroq) return groqApiKey.isEmpty;
-    return true;
+    // Either direct transport being usable is enough to leave demo mode.
+    return !agentRouterReady && !directGroqReady;
   }
 
   static bool get isDemo => demoMode || !useFirebase;

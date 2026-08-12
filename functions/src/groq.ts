@@ -5,7 +5,21 @@
  * client.
  */
 
-const GROQ_BASE = "https://api.groq.com/openai/v1";
+export const GROQ_BASE = "https://api.groq.com/openai/v1";
+
+/**
+ * AgentRouter is an OpenAI-compatible relay fronting Claude/GPT/Gemini. We use
+ * its Chat Completions path so the exact same request builder works — the
+ * Anthropic /v1/messages path is deliberately avoided because it only accepts
+ * traffic matching the Claude Code client wire image.
+ */
+export const AGENTROUTER_BASE = "https://agentrouter.org/v1";
+
+/** An OpenAI-compatible upstream: base URL plus its bearer key. */
+export interface ProviderConfig {
+  baseUrl: string;
+  apiKey: string;
+}
 
 export interface ProxyRequest {
   system: string;
@@ -31,20 +45,19 @@ function composeUserText(req: ProxyRequest): string {
   return `[context] ${ctx}\n[user] ${req.text}`;
 }
 
-export async function callGroq(
-  apiKey: string,
-  textModels: string[],
-  visionModels: string[],
+export async function callChatCompletions(
+  provider: ProviderConfig,
+  models: string[],
   req: ProxyRequest,
   timeoutMs = 45000
 ): Promise<string> {
   const hasImage = !!req.image;
-  const candidates = hasImage ? visionModels : textModels;
+  const candidates = models;
 
   let lastError: GroqError | null = null;
   for (const model of candidates) {
     try {
-      return await callGroqModel(apiKey, model, req, hasImage, timeoutMs);
+      return await callModel(provider, model, req, hasImage, timeoutMs);
     } catch (e) {
       // Fall through only for "model unavailable" style errors.
       if (
@@ -60,8 +73,8 @@ export async function callGroq(
   throw lastError ?? new GroqError(404, "no_model");
 }
 
-async function callGroqModel(
-  apiKey: string,
+async function callModel(
+  provider: ProviderConfig,
   model: string,
   req: ProxyRequest,
   hasImage: boolean,
@@ -110,11 +123,11 @@ async function callGroqModel(
 
   let res: Response;
   try {
-    res = await fetch(`${GROQ_BASE}/chat/completions`, {
+    res = await fetch(`${provider.baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${provider.apiKey}`,
       },
       body: JSON.stringify(body),
       signal: controller.signal,

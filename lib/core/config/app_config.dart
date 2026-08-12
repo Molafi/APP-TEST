@@ -7,6 +7,12 @@ class AppConfig {
   // --- Groq / AI -----------------------------------------------------------
   // Groq exposes an OpenAI-compatible Chat Completions API.
   static const String groqApiBase = 'https://api.groq.com/openai/v1';
+
+  // AgentRouter is an OpenAI-compatible gateway that fronts Claude, GPT and
+  // Gemini behind one endpoint. We use its /chat/completions path (NOT the
+  // Anthropic /v1/messages path, which rejects traffic that doesn't match the
+  // Claude Code client wire image).
+  static const String agentRouterApiBase = 'https://agentrouter.org/v1';
   static const Duration aiTimeout = Duration(seconds: 45);
   static const int aiMaxRetries = 3;
   static const int maxInputChars = 4000;

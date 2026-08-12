@@ -284,24 +284,79 @@ class OpenAiCompatibleGateway extends AiGateway {
   }
 }
 
+/// Splits traffic by modality: requests carrying an image go to
+/// [visionGateway], text-only requests go to [textGateway].
+///
+/// This is what lets the app read plant photos with Claude Opus (via
+/// AgentRouter) while keeping ordinary chat on Groq's much faster and cheaper
+/// Llama models. Both delegates are plain [AiGateway]s, so streaming, model
+/// fallback and error mapping behave exactly as they do standalone.
+class ModalityRoutingGateway extends AiGateway {
+  ModalityRoutingGateway({
+    required this.textGateway,
+    required this.visionGateway,
+  });
+
+  final AiGateway textGateway;
+  final AiGateway visionGateway;
+
+  AiGateway _routeFor(AiRequest request) =>
+      request.image != null ? visionGateway : textGateway;
+
+  @override
+  Future<String> generate(AiRequest request) =>
+      _routeFor(request).generate(request);
+
+  @override
+  Stream<String> generateStream(AiRequest request) =>
+      _routeFor(request).generateStream(request);
+}
+
+/// Builds the AgentRouter transport (OpenAI-compatible Chat Completions).
+OpenAiCompatibleGateway _buildAgentRouterGateway() {
+  final String base = Environment.agentRouterBaseUrlOverride.isNotEmpty
+      ? Environment.agentRouterBaseUrlOverride
+      : AppConfig.agentRouterApiBase;
+  return OpenAiCompatibleGateway(
+    baseUrl: base,
+    apiKey: Environment.agentRouterApiKey,
+    textModels: Environment.agentRouterTextModels,
+    visionModels: Environment.agentRouterVisionModels,
+  );
+}
+
+OpenAiCompatibleGateway _buildGroqGateway() => OpenAiCompatibleGateway(
+      baseUrl: AppConfig.groqApiBase,
+      apiKey: Environment.groqApiKey,
+      textModels: Environment.groqTextModels,
+      visionModels: Environment.groqVisionModels,
+    );
+
 final aiGatewayProvider = Provider<AiGateway>((ref) {
   // Demo / unconfigured: use the canned demo gateway so nothing crashes.
   if (Environment.aiUnavailable) {
     return DemoAiGateway();
   }
+  // Production: the Cloud Function proxy decides the provider server-side, so
+  // the client never holds a key.
   if (Environment.useAiBackend) {
     return BackendAiGateway(
       baseUrl: Environment.aiBackendUrl,
       idTokenProvider: firebaseIdTokenImpl,
     );
   }
-  if (Environment.allowDirectGroq) {
-    return OpenAiCompatibleGateway(
-      baseUrl: AppConfig.groqApiBase,
-      apiKey: Environment.groqApiKey,
-      textModels: Environment.groqTextModels,
-      visionModels: Environment.groqVisionModels,
+
+  final bool agentRouter = Environment.agentRouterReady;
+  final bool groq = Environment.directGroqReady;
+
+  // Both configured: Claude Opus sees the images, Groq handles text chat.
+  if (agentRouter && groq) {
+    return ModalityRoutingGateway(
+      textGateway: _buildGroqGateway(),
+      visionGateway: _buildAgentRouterGateway(),
     );
   }
+  if (agentRouter) return _buildAgentRouterGateway();
+  if (groq) return _buildGroqGateway();
   return DemoAiGateway();
 });
