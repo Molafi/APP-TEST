@@ -207,7 +207,19 @@ class OpenAiCompatibleGateway extends AiGateway {
       return _extractText(res);
     } on AppException catch (e) {
       _logFailure(e, model);
-      rethrow;
+      // Enrich the error with which host/model actually failed. The UI shows
+      // this only in debug builds, which makes provider misconfiguration
+      // diagnosable without digging through console output.
+      throw AppException(
+        e.kind,
+        debugDetail: [
+          if (e.debugDetail != null) e.debugDetail,
+          Uri.tryParse(baseUrl)?.host ?? baseUrl,
+          model,
+        ].join(' · '),
+        retryAfter: e.retryAfter,
+        cause: e.cause,
+      );
     }
   }
 
