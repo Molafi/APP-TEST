@@ -96,49 +96,53 @@ provider by changing the base URL.
 1. **Backend proxy** (recommended) — `USE_AI_BACKEND=true` + `AI_BACKEND_URL`.
    The app sends a Firebase ID token; the Groq key stays server-side.
 2. **Direct dev client** — only when `ALLOW_DIRECT_GROQ=true` and/or
-   `USE_AGENTROUTER=true`, with the key supplied via `--dart-define`. Never
+   `USE_OPENROUTER=true`, with the key supplied via `--dart-define`. Never
    commit a key.
 3. **Demo** — used automatically when neither is configured.
 
-### Vision provider — Claude Opus via AgentRouter (optional)
+### Vision provider — Claude Opus via OpenRouter (optional)
 
 Llama's vision models are adequate but miss fine detail in leaf photos.
-[AgentRouter](https://agentrouter.org) is an **OpenAI-compatible** relay fronting
+[OpenRouter](https://openrouter.ai) is an **OpenAI-compatible** relay fronting
 Claude/GPT/Gemini, so image requests can be answered by **Claude Opus** with no
 new transport code — the existing `OpenAiCompatibleGateway` is reused with a
-different base URL (`https://agentrouter.org/v1`).
+different base URL (`https://openrouter.ai/api/v1`).
 
-When **both** an AgentRouter key and a Groq key are configured, the app builds a
+When **both** an OpenRouter key and a Groq key are configured, the app builds a
 `ModalityRoutingGateway`:
 
 | Request | Provider | Why |
 |---|---|---|
-| Has an image | Claude Opus (AgentRouter) | Much better photo understanding |
+| Has an image | Claude Opus (OpenRouter) | Much better photo understanding |
 | Text-only chat | Groq Llama | Faster and cheaper, streams tokens |
 
-With only an AgentRouter key, Claude handles everything. With only Groq, nothing
+With only an OpenRouter key, Claude handles everything. With only Groq, nothing
 changes from before.
 
-Model IDs on relays drift, so `AGENTROUTER_VISION_MODEL` is tried first and
-`AGENTROUTER_VISION_MODEL_FALLBACK` is used automatically on a 404/400. Verify
-the current list with:
+Model IDs drift, so `OPENROUTER_VISION_MODEL` is tried first and
+`OPENROUTER_VISION_MODEL_FALLBACK` is used automatically on a 404/400. List the
+current Claude models with:
 
 ```bash
-curl https://agentrouter.org/v1/models -H "Authorization: Bearer sk-YOUR_KEY"
+curl -s https://openrouter.ai/api/v1/models | grep -o '"anthropic/claude-opus[^"]*"'
 ```
 
-> Use the OpenAI-compatible `/v1/chat/completions` path, **not** the Anthropic
-> `/v1/messages` path — the latter only accepts requests that match the Claude
-> Code client wire image and will reject this app.
+> **Why not agentrouter.org?** It was evaluated first and is **not usable from
+> an application**. The host sits behind an Aliyun WAF that answers ordinary
+> HTTP clients with an `HTTP 200` `text/html` JavaScript challenge page instead
+> of JSON. No API key can bypass that, and it fails identically from web,
+> mobile, desktop and server-side code — so the Cloud Function proxy cannot work
+> around it either. Set `OPENROUTER_BASE_URL` to point at any other
+> OpenAI-compatible relay if you prefer a different provider.
 
 Server-side, `functions/src/index.ts` performs the same modality routing using
-an optional `AGENTROUTER_API_KEY` secret:
+an optional `OPENROUTER_API_KEY` secret:
 
 ```bash
-firebase functions:secrets:set AGENTROUTER_API_KEY
+firebase functions:secrets:set OPENROUTER_API_KEY
 ```
 
-If that secret does not exist, `agentRouterKey()` returns `""` and vision falls
+If that secret does not exist, `openRouterKey()` returns `""` and vision falls
 back to Groq, so existing deployments keep working.
 
 ---
@@ -157,12 +161,12 @@ No secrets live in the client. See `.env.example`. Flags read by `Environment`:
 | `GROQ_API_KEY` | `""` | Dev-only key (supply at build time only) |
 | `GROQ_TEXT_MODEL` | `llama-3.3-70b-versatile` | Chat model |
 | `GROQ_VISION_MODEL` | `meta-llama/llama-4-scout-17b-16e-instruct` | Diagnosis (vision) model |
-| `USE_AGENTROUTER` | `false` | Enable the AgentRouter (Claude) transport |
-| `AGENTROUTER_API_KEY` | `""` | Dev-only AgentRouter key (`sk-…`) |
-| `AGENTROUTER_BASE_URL` | `""` | Override the relay base URL (blank = `https://agentrouter.org/v1`) |
-| `AGENTROUTER_VISION_MODEL` | `claude-opus-4-8` | Vision model for image requests |
-| `AGENTROUTER_VISION_MODEL_FALLBACK` | `claude-opus-4-6` | Tried if the primary is unavailable |
-| `AGENTROUTER_TEXT_MODEL` | `claude-opus-4-8` | Chat model (only when no Groq key is set) |
+| `USE_OPENROUTER` | `false` | Enable the OpenRouter (Claude) transport |
+| `OPENROUTER_API_KEY` | `""` | Dev-only OpenRouter key (`sk-or-v1-…`) |
+| `OPENROUTER_BASE_URL` | `""` | Override the relay base URL (blank = `https://openrouter.ai/api/v1`) |
+| `OPENROUTER_VISION_MODEL` | `anthropic/claude-opus-4.8` | Vision model for image requests |
+| `OPENROUTER_VISION_MODEL_FALLBACK` | `anthropic/claude-opus-4.6` | Tried if the primary is unavailable |
+| `OPENROUTER_TEXT_MODEL` | `anthropic/claude-opus-4.8` | Chat model (only when no Groq key is set) |
 
 Production run example:
 ```bash

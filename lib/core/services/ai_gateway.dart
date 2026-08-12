@@ -315,7 +315,7 @@ class OpenAiCompatibleGateway extends AiGateway {
 /// [visionGateway], text-only requests go to [textGateway].
 ///
 /// This is what lets the app read plant photos with Claude Opus (via
-/// AgentRouter) while keeping ordinary chat on Groq's much faster and cheaper
+/// OpenRouter) while keeping ordinary chat on Groq's much faster and cheaper
 /// Llama models. Both delegates are plain [AiGateway]s, so streaming, model
 /// fallback and error mapping behave exactly as they do standalone.
 class ModalityRoutingGateway extends AiGateway {
@@ -339,16 +339,16 @@ class ModalityRoutingGateway extends AiGateway {
       _routeFor(request).generateStream(request);
 }
 
-/// Builds the AgentRouter transport (OpenAI-compatible Chat Completions).
-OpenAiCompatibleGateway _buildAgentRouterGateway() {
-  final String base = Environment.agentRouterBaseUrlOverride.isNotEmpty
-      ? Environment.agentRouterBaseUrlOverride
-      : AppConfig.agentRouterApiBase;
+/// Builds the OpenRouter transport (OpenAI-compatible Chat Completions).
+OpenAiCompatibleGateway _buildOpenRouterGateway() {
+  final String base = Environment.openRouterBaseUrlOverride.isNotEmpty
+      ? Environment.openRouterBaseUrlOverride
+      : AppConfig.openRouterApiBase;
   return OpenAiCompatibleGateway(
     baseUrl: base,
-    apiKey: Environment.agentRouterApiKey,
-    textModels: Environment.agentRouterTextModels,
-    visionModels: Environment.agentRouterVisionModels,
+    apiKey: Environment.openRouterApiKey,
+    textModels: Environment.openRouterTextModels,
+    visionModels: Environment.openRouterVisionModels,
   );
 }
 
@@ -373,17 +373,17 @@ final aiGatewayProvider = Provider<AiGateway>((ref) {
     );
   }
 
-  final bool agentRouter = Environment.agentRouterReady;
+  final bool openRouter = Environment.openRouterReady;
   final bool groq = Environment.directGroqReady;
 
   // Both configured: Claude Opus sees the images, Groq handles text chat.
-  if (agentRouter && groq) {
+  if (openRouter && groq) {
     return ModalityRoutingGateway(
       textGateway: _buildGroqGateway(),
-      visionGateway: _buildAgentRouterGateway(),
+      visionGateway: _buildOpenRouterGateway(),
     );
   }
-  if (agentRouter) return _buildAgentRouterGateway();
+  if (openRouter) return _buildOpenRouterGateway();
   if (groq) return _buildGroqGateway();
   return DemoAiGateway();
 });

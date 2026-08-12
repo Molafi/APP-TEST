@@ -8,11 +8,17 @@ class AppConfig {
   // Groq exposes an OpenAI-compatible Chat Completions API.
   static const String groqApiBase = 'https://api.groq.com/openai/v1';
 
-  // AgentRouter is an OpenAI-compatible gateway that fronts Claude, GPT and
-  // Gemini behind one endpoint. We use its /chat/completions path (NOT the
-  // Anthropic /v1/messages path, which rejects traffic that doesn't match the
-  // Claude Code client wire image).
-  static const String agentRouterApiBase = 'https://agentrouter.org/v1';
+  // OpenRouter is an OpenAI-compatible gateway fronting Claude, GPT and Gemini
+  // behind one endpoint. Used here so image requests can be answered by Claude
+  // Opus, which reads plant photos far better than the Llama vision models.
+  //
+  // NOTE: agentrouter.org was evaluated first and is NOT usable from an app.
+  // It sits behind an Aliyun WAF that answers ordinary HTTP clients with an
+  // HTTP 200 `text/html` JavaScript challenge page instead of JSON, so no API
+  // key can make it work from Flutter (web, mobile or server). Override
+  // [Environment.openRouterBaseUrlOverride] to point at any other
+  // OpenAI-compatible relay.
+  static const String openRouterApiBase = 'https://openrouter.ai/api/v1';
   static const Duration aiTimeout = Duration(seconds: 45);
   static const int aiMaxRetries = 3;
   static const int maxInputChars = 4000;

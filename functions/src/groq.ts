@@ -8,12 +8,14 @@
 export const GROQ_BASE = "https://api.groq.com/openai/v1";
 
 /**
- * AgentRouter is an OpenAI-compatible relay fronting Claude/GPT/Gemini. We use
- * its Chat Completions path so the exact same request builder works — the
- * Anthropic /v1/messages path is deliberately avoided because it only accepts
- * traffic matching the Claude Code client wire image.
+ * OpenRouter is an OpenAI-compatible relay fronting Claude/GPT/Gemini, so the
+ * exact same request builder works for it.
+ *
+ * agentrouter.org was evaluated first and rejected: its Aliyun WAF answers
+ * ordinary HTTP clients with an HTTP 200 text/html JavaScript challenge instead
+ * of JSON, which no API key can bypass — including from a server.
  */
-export const AGENTROUTER_BASE = "https://agentrouter.org/v1";
+export const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 
 /** An OpenAI-compatible upstream: base URL plus its bearer key. */
 export interface ProviderConfig {
