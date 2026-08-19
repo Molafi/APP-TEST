@@ -3,9 +3,13 @@ description: PlantSense AI — an intelligent plant and soil assistant with AI c
 publish_to: "none"
 version: 1.0.0+1
 
+# Verified against Flutter 3.35.1 / Dart 3.9.0 (flutter analyze + flutter test).
+# The floor is 3.35 because settings_screen.dart uses the RadioGroup widget,
+# which only shipped in Flutter 3.35 (the Radio groupValue/onChanged API was
+# deprecated after 3.32). Lowering this constraint will not compile.
 environment:
-  sdk: ">=3.4.0 <4.0.0"
-  flutter: ">=3.24.0"
+  sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=3.35.0"
 
 dependencies:
   flutter:

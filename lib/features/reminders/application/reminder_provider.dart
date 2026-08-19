@@ -69,6 +69,7 @@ class ReminderController extends StateNotifier<List<Reminder>> {
       body: r.note ?? _defaultBody(r.type),
       scheduledAt: r.scheduledAt,
       repeatsDaily: r.recurrence == Recurrence.daily,
+      repeatsWeekly: r.recurrence == Recurrence.weekly,
     );
   }
 

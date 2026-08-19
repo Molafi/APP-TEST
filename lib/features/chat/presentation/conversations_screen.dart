@@ -57,9 +57,15 @@ class ConversationsScreen extends ConsumerWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   trailing: PopupMenuButton<String>(
+                    // A switch (rather than two sequential ifs) guarantees
+                    // `context` is never used after an earlier await.
                     onSelected: (v) async {
-                      if (v == 'rename') await _rename(context, ref, l10n, c);
-                      if (v == 'delete') await _delete(context, ref, l10n, c);
+                      switch (v) {
+                        case 'rename':
+                          await _rename(context, ref, l10n, c);
+                        case 'delete':
+                          await _delete(context, ref, l10n, c);
+                      }
                     },
                     itemBuilder: (_) => [
                       PopupMenuItem(value: 'rename', child: Text(l10n.rename)),

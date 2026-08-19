@@ -7,6 +7,7 @@ import '../../../core/errors/error_mapper.dart';
 import '../../../core/services/local_cache_service.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../chat/application/chat_provider.dart';
+import '../../chat/application/conversations_provider.dart';
 import '../../diagnosis/application/diagnosis_provider.dart';
 import '../../plants/application/plants_provider.dart';
 import '../../reminders/application/reminder_provider.dart';
@@ -37,6 +38,15 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
   Future<DeletionResult> deleteAllData() async {
     state = const AsyncLoading<void>();
     try {
+      // chatRepositoryProvider is scoped to the *active* conversation, so
+      // deleting through it alone would leave every other conversation's
+      // messages on disk. Delete each conversation explicitly instead: the
+      // repository's delete() also drops that chat's `chat_messages_<id>` cache
+      // entry (local) or its messages subcollection (Firestore).
+      final conversationsRepo = _ref.read(conversationsRepositoryProvider);
+      for (final chat in await conversationsRepo.list()) {
+        await conversationsRepo.delete(chat.id);
+      }
       await _ref.read(chatRepositoryProvider).deleteAll();
       await _ref.read(diagnosisRepositoryProvider).deleteAll();
       await _ref.read(plantsRepositoryProvider).deleteAll();
@@ -86,7 +96,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
     final LocalCacheService cache = _ref.read(localCacheServiceProvider);
     // Clear private, user-scoped keys only. Locale/theme are preserved.
     cache.clearPrivate([
+      // Per-conversation message keys are removed by the loop in
+      // deleteAllData(); this covers the default chat and the index itself.
       'chat_messages_default',
+      'conversations',
       'diagnoses_local',
       'plants_local',
       AppConstants.prefReminders,

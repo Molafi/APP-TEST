@@ -20,28 +20,34 @@ class AppEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Centred when there is room, scrollable when there isn't. Without the
+    // scroll view this overflows on short viewports (landscape, split screen,
+    // small phones) and at large accessibility text scales.
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: AppSpacing.lg),
-            Text(title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge),
-            if (message != null) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Text(message!,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon,
+                  size: 56, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: AppSpacing.lg),
+              Text(title,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium),
+                  style: Theme.of(context).textTheme.titleLarge),
+              if (message != null) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text(message!,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium),
+              ],
+              if (action != null) ...[
+                const SizedBox(height: AppSpacing.xl),
+                action!,
+              ],
             ],
-            if (action != null) ...[
-              const SizedBox(height: AppSpacing.xl),
-              action!,
-            ],
-          ],
+          ),
         ),
       ),
     );

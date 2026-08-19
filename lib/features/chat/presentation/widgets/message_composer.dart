@@ -37,6 +37,16 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
   bool _listening = false;
   String _baseText = '';
 
+  /// Captured eagerly in [initState]: `ref` must not be touched from
+  /// [dispose], and a lazy `late final` would still resolve it there.
+  late final SpeechService _speech;
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = ref.read(speechServiceProvider);
+  }
+
   @override
   void didUpdateWidget(MessageComposer oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -55,8 +65,10 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
 
   @override
   void dispose() {
-    // Stop any in-progress dictation when the composer goes away.
-    ref.read(speechServiceProvider).stop();
+    // Stop any in-progress dictation when the composer goes away. Uses the
+    // pre-resolved `_speech` because reading `ref` here throws
+    // "Cannot use ref after the widget was disposed".
+    _speech.stop();
     _controller.dispose();
     super.dispose();
   }
@@ -75,7 +87,7 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
   }
 
   Future<void> _toggleMic() async {
-    final SpeechService speech = ref.read(speechServiceProvider);
+    final SpeechService speech = _speech;
     if (_listening) {
       await speech.stop();
       setState(() => _listening = false);

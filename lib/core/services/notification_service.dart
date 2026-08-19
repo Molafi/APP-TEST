@@ -48,6 +48,7 @@ class NotificationService {
     required String body,
     required DateTime scheduledAt,
     bool repeatsDaily = false,
+    bool repeatsWeekly = false,
   }) async {
     await init();
     final tz.TZDateTime when =
@@ -69,8 +70,13 @@ class NotificationService {
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents:
-            repeatsDaily ? DateTimeComponents.time : null,
+        // `time` repeats every day at the same clock time;
+        // `dayOfWeekAndTime` repeats on the same weekday each week.
+        matchDateTimeComponents: repeatsWeekly
+            ? DateTimeComponents.dayOfWeekAndTime
+            : repeatsDaily
+                ? DateTimeComponents.time
+                : null,
       );
     } catch (e) {
       // Scheduling failures must never crash the app.
