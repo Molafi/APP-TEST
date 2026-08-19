@@ -11,13 +11,13 @@ class PlantCareTipsCard extends StatelessWidget {
   final List<PlantCareTip> tips;
 
   String _text(AppLocalizations l10n, PlantCareTip tip) => switch (tip) {
-        PlantCareTip.highUv => l10n.tipHighUv,
-        PlantCareTip.noRain => l10n.tipNoRain,
-        PlantCareTip.highHumidity => l10n.tipHighHumidity,
-        PlantCareTip.freezing => l10n.tipFreezing,
-        PlantCareTip.hot => l10n.tipHot,
-        PlantCareTip.mild => l10n.tipMild,
-      };
+    PlantCareTip.highUv => l10n.tipHighUv,
+    PlantCareTip.noRain => l10n.tipNoRain,
+    PlantCareTip.highHumidity => l10n.tipHighHumidity,
+    PlantCareTip.freezing => l10n.tipFreezing,
+    PlantCareTip.hot => l10n.tipHot,
+    PlantCareTip.mild => l10n.tipMild,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,10 @@ class PlantCareTipsCard extends StatelessWidget {
               children: [
                 const Icon(Icons.eco, color: AppColors.leafGreenDark),
                 const SizedBox(width: AppSpacing.sm),
-                Text(l10n.plantCareTips,
-                    style: Theme.of(context).textTheme.titleMedium),
+                Text(
+                  l10n.plantCareTips,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.sm),

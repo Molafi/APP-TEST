@@ -29,5 +29,6 @@ class PermissionService {
   Future<bool> openSettings() => openAppSettings();
 }
 
-final permissionServiceProvider =
-    Provider<PermissionService>((ref) => const PermissionService());
+final permissionServiceProvider = Provider<PermissionService>(
+  (ref) => const PermissionService(),
+);

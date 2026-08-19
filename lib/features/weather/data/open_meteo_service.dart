@@ -46,20 +46,22 @@ class OpenMeteoService {
 
     final CurrentWeather currentWeather = CurrentWeather(
       temperatureC: (current['temperature_2m'] as num?)?.toDouble(),
-      apparentTemperatureC:
-          (current['apparent_temperature'] as num?)?.toDouble(),
+      apparentTemperatureC: (current['apparent_temperature'] as num?)
+          ?.toDouble(),
       humidity: (current['relative_humidity_2m'] as num?)?.toInt(),
       uvIndex: (current['uv_index'] as num?)?.toDouble(),
       precipitation: (current['precipitation'] as num?)?.toDouble(),
       condition: conditionFromCode((current['weather_code'] as num?)?.toInt()),
-      time: DateTime.tryParse(current['time'] as String? ?? '') ??
-          DateTime.now(),
+      time:
+          DateTime.tryParse(current['time'] as String? ?? '') ?? DateTime.now(),
     );
 
-    final List<HourlyForecast> hourly =
-        _parseHourly(json['hourly'] as Map<String, dynamic>?);
-    final List<DailyForecast> daily =
-        _parseDaily(json['daily'] as Map<String, dynamic>?);
+    final List<HourlyForecast> hourly = _parseHourly(
+      json['hourly'] as Map<String, dynamic>?,
+    );
+    final List<DailyForecast> daily = _parseDaily(
+      json['daily'] as Map<String, dynamic>?,
+    );
 
     return WeatherData(
       current: currentWeather,
@@ -83,14 +85,20 @@ class OpenMeteoService {
       final DateTime t = DateTime.tryParse(times[i].toString()) ?? now;
       // Keep the next 24 hours from now.
       if (t.isBefore(now.subtract(const Duration(hours: 1)))) continue;
-      out.add(HourlyForecast(
-        time: t,
-        temperatureC: i < temps.length ? (temps[i] as num?)?.toDouble() : null,
-        condition:
-            conditionFromCode(i < codes.length ? (codes[i] as num?)?.toInt() : null),
-        precipitationProbability:
-            i < pop.length ? (pop[i] as num?)?.toInt() : null,
-      ));
+      out.add(
+        HourlyForecast(
+          time: t,
+          temperatureC: i < temps.length
+              ? (temps[i] as num?)?.toDouble()
+              : null,
+          condition: conditionFromCode(
+            i < codes.length ? (codes[i] as num?)?.toInt() : null,
+          ),
+          precipitationProbability: i < pop.length
+              ? (pop[i] as num?)?.toInt()
+              : null,
+        ),
+      );
       if (out.length >= 24) break;
     }
     return out;
@@ -108,21 +116,28 @@ class OpenMeteoService {
 
     final List<DailyForecast> out = [];
     for (int i = 0; i < times.length; i++) {
-      out.add(DailyForecast(
-        date: DateTime.tryParse(times[i].toString()) ?? DateTime.now(),
-        condition:
-            conditionFromCode(i < codes.length ? (codes[i] as num?)?.toInt() : null),
-        maxC: i < max.length ? (max[i] as num?)?.toDouble() : null,
-        minC: i < min.length ? (min[i] as num?)?.toDouble() : null,
-        uvIndexMax: i < uv.length ? (uv[i] as num?)?.toDouble() : null,
-        precipitationSum: i < psum.length ? (psum[i] as num?)?.toDouble() : null,
-        precipitationProbabilityMax:
-            i < ppm.length ? (ppm[i] as num?)?.toInt() : null,
-      ));
+      out.add(
+        DailyForecast(
+          date: DateTime.tryParse(times[i].toString()) ?? DateTime.now(),
+          condition: conditionFromCode(
+            i < codes.length ? (codes[i] as num?)?.toInt() : null,
+          ),
+          maxC: i < max.length ? (max[i] as num?)?.toDouble() : null,
+          minC: i < min.length ? (min[i] as num?)?.toDouble() : null,
+          uvIndexMax: i < uv.length ? (uv[i] as num?)?.toDouble() : null,
+          precipitationSum: i < psum.length
+              ? (psum[i] as num?)?.toDouble()
+              : null,
+          precipitationProbabilityMax: i < ppm.length
+              ? (ppm[i] as num?)?.toInt()
+              : null,
+        ),
+      );
     }
     return out;
   }
 }
 
-final openMeteoServiceProvider =
-    Provider<OpenMeteoService>((ref) => OpenMeteoService());
+final openMeteoServiceProvider = Provider<OpenMeteoService>(
+  (ref) => OpenMeteoService(),
+);

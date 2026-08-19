@@ -9,13 +9,12 @@ import 'package:timezone/timezone.dart' as tz;
 /// permission. Nothing is scheduled at startup.
 class NotificationService {
   NotificationService([FlutterLocalNotificationsPlugin? plugin])
-      : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialised = false;
 
-  static const AndroidNotificationChannel _channel =
-      AndroidNotificationChannel(
+  static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'plant_care_reminders',
     'Plant care reminders',
     description: 'Watering, fertilizing and inspection reminders.',
@@ -25,8 +24,9 @@ class NotificationService {
   Future<void> init() async {
     if (_initialised) return;
     tzdata.initializeTimeZones();
-    const AndroidInitializationSettings android =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings android = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const DarwinInitializationSettings darwin = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -37,7 +37,8 @@ class NotificationService {
     );
     await _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(_channel);
     _initialised = true;
   }
@@ -51,8 +52,7 @@ class NotificationService {
     bool repeatsWeekly = false,
   }) async {
     await init();
-    final tz.TZDateTime when =
-        tz.TZDateTime.from(scheduledAt, tz.local);
+    final tz.TZDateTime when = tz.TZDateTime.from(scheduledAt, tz.local);
     try {
       await _plugin.zonedSchedule(
         id,
@@ -75,8 +75,8 @@ class NotificationService {
         matchDateTimeComponents: repeatsWeekly
             ? DateTimeComponents.dayOfWeekAndTime
             : repeatsDaily
-                ? DateTimeComponents.time
-                : null,
+            ? DateTimeComponents.time
+            : null,
       );
     } catch (e) {
       // Scheduling failures must never crash the app.
@@ -88,5 +88,6 @@ class NotificationService {
   Future<void> cancelAll() => _plugin.cancelAll();
 }
 
-final notificationServiceProvider =
-    Provider<NotificationService>((ref) => NotificationService());
+final notificationServiceProvider = Provider<NotificationService>(
+  (ref) => NotificationService(),
+);

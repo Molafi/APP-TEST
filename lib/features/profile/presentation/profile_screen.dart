@@ -47,44 +47,94 @@ class ProfileScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         Center(
-          child: Text(user?.displayName ?? l10n.profileTitle,
-              style: Theme.of(context).textTheme.titleLarge),
+          child: Text(
+            user?.displayName ?? l10n.profileTitle,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
         Center(
-          child: Text(user?.email ?? '',
-              style: Theme.of(context).textTheme.bodyMedium),
+          child: Text(
+            user?.email ?? '',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        _tile(context, Icons.settings_outlined, l10n.editProfile,
-            () => _push(context, const SettingsScreen())),
-        _tile(context, Icons.local_florist_outlined, l10n.myPlants,
-            () => _push(context, const MyPlantsScreen())),
-        _tile(context, Icons.history, l10n.diagnosisHistory,
-            () => _push(context, const DiagnosisHistoryScreen())),
-        _tile(context, Icons.alarm, l10n.reminders,
-            () => _push(context, const RemindersScreen())),
-        _tile(context, Icons.privacy_tip_outlined, l10n.privacyPolicy,
-            () => _push(context, const PrivacyScreen())),
-        _tile(context, Icons.description_outlined, l10n.termsOfService,
-            () => _push(context, const PrivacyScreen())),
-        _tile(context, Icons.feedback_outlined, l10n.reportIssue,
-            () => _showFeedback(context, l10n)),
+        _tile(
+          context,
+          Icons.settings_outlined,
+          l10n.editProfile,
+          () => _push(context, const SettingsScreen()),
+        ),
+        _tile(
+          context,
+          Icons.local_florist_outlined,
+          l10n.myPlants,
+          () => _push(context, const MyPlantsScreen()),
+        ),
+        _tile(
+          context,
+          Icons.history,
+          l10n.diagnosisHistory,
+          () => _push(context, const DiagnosisHistoryScreen()),
+        ),
+        _tile(
+          context,
+          Icons.alarm,
+          l10n.reminders,
+          () => _push(context, const RemindersScreen()),
+        ),
+        _tile(
+          context,
+          Icons.privacy_tip_outlined,
+          l10n.privacyPolicy,
+          () => _push(context, const PrivacyScreen()),
+        ),
+        _tile(
+          context,
+          Icons.description_outlined,
+          l10n.termsOfService,
+          () => _push(context, const PrivacyScreen()),
+        ),
+        _tile(
+          context,
+          Icons.feedback_outlined,
+          l10n.reportIssue,
+          () => _showFeedback(context, l10n),
+        ),
         const Divider(),
-        _tile(context, Icons.download_outlined, l10n.exportData,
-            () => _exportData(context, ref)),
-        _tile(context, Icons.logout, l10n.logout,
-            () => _confirmLogout(context, ref, l10n)),
-        _tile(context, Icons.delete_sweep_outlined, l10n.deleteAllData,
-            () => _confirmDeleteData(context, ref, l10n),
-            danger: true),
-        _tile(context, Icons.no_accounts_outlined, l10n.deleteAccount,
-            () => _confirmDeleteAccount(context, ref, l10n),
-            danger: true),
+        _tile(
+          context,
+          Icons.download_outlined,
+          l10n.exportData,
+          () => _exportData(context, ref),
+        ),
+        _tile(
+          context,
+          Icons.logout,
+          l10n.logout,
+          () => _confirmLogout(context, ref, l10n),
+        ),
+        _tile(
+          context,
+          Icons.delete_sweep_outlined,
+          l10n.deleteAllData,
+          () => _confirmDeleteData(context, ref, l10n),
+          danger: true,
+        ),
+        _tile(
+          context,
+          Icons.no_accounts_outlined,
+          l10n.deleteAccount,
+          () => _confirmDeleteAccount(context, ref, l10n),
+          danger: true,
+        ),
         const SizedBox(height: AppSpacing.lg),
         Center(
           child: version.when(
-            data: (info) => Text(l10n.appVersion('${info.version}+${info.buildNumber}'),
-                style: Theme.of(context).textTheme.bodySmall),
+            data: (info) => Text(
+              l10n.appVersion('${info.version}+${info.buildNumber}'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -94,9 +144,13 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _tile(BuildContext context, IconData icon, String title,
-      VoidCallback onTap,
-      {bool danger = false}) {
+  Widget _tile(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    bool danger = false,
+  }) {
     final Color? color = danger ? Theme.of(context).colorScheme.error : null;
     return ListTile(
       leading: Icon(icon, color: color),
@@ -118,7 +172,9 @@ class ProfileScreen extends ConsumerWidget {
         content: const Text('support@plantsense.example'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: Text(l10n.close)),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.close),
+          ),
         ],
       ),
     );
@@ -130,12 +186,12 @@ class ProfileScreen extends ConsumerWidget {
       final String json = await ref.read(dataExporterProvider).buildJson();
       final Directory dir = Directory.systemTemp;
       final File file = File(
-          '${dir.path}/plantsense_export_${DateTime.now().millisecondsSinceEpoch}.json');
-      await file.writeAsString(json, flush: true);
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'application/json')],
-        subject: 'PlantSense AI data export',
+        '${dir.path}/plantsense_export_${DateTime.now().millisecondsSinceEpoch}.json',
       );
+      await file.writeAsString(json, flush: true);
+      await Share.shareXFiles([
+        XFile(file.path, mimeType: 'application/json'),
+      ], subject: 'PlantSense AI data export');
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
@@ -146,18 +202,23 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmLogout(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         content: Text(l10n.logoutConfirm),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.logout)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.logout),
+          ),
         ],
       ),
     );
@@ -167,23 +228,39 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _confirmDeleteData(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
     final bool? ok = await _dangerDialog(
-        context, l10n, l10n.deleteAllData, l10n.deleteAllDataConfirm);
+      context,
+      l10n,
+      l10n.deleteAllData,
+      l10n.deleteAllDataConfirm,
+    );
     if (ok != true) return;
-    final result =
-        await ref.read(profileControllerProvider.notifier).deleteAllData();
+    final result = await ref
+        .read(profileControllerProvider.notifier)
+        .deleteAllData();
     if (!context.mounted) return;
     _showResult(context, l10n, result == DeletionResult.success);
   }
 
   Future<void> _confirmDeleteAccount(
-      BuildContext context, WidgetRef ref, AppLocalizations l10n) async {
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
     final bool? ok = await _dangerDialog(
-        context, l10n, l10n.deleteAccount, l10n.deleteAccountConfirm);
+      context,
+      l10n,
+      l10n.deleteAccount,
+      l10n.deleteAccountConfirm,
+    );
     if (ok != true) return;
-    final result =
-        await ref.read(profileControllerProvider.notifier).deleteAccount();
+    final result = await ref
+        .read(profileControllerProvider.notifier)
+        .deleteAccount();
     if (!context.mounted) return;
     if (result == DeletionResult.reauthRequired) {
       ScaffoldMessenger.of(context)
@@ -196,8 +273,12 @@ class ProfileScreen extends ConsumerWidget {
     _showResult(context, l10n, result == DeletionResult.success);
   }
 
-  Future<bool?> _dangerDialog(BuildContext context, AppLocalizations l10n,
-      String title, String message) {
+  Future<bool?> _dangerDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    String title,
+    String message,
+  ) {
     return showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -205,11 +286,13 @@ class ProfileScreen extends ConsumerWidget {
         content: Text(message),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(
-                backgroundColor: Theme.of(ctx).colorScheme.error),
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
@@ -221,7 +304,10 @@ class ProfileScreen extends ConsumerWidget {
   void _showResult(BuildContext context, AppLocalizations l10n, bool success) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
-      ..showSnackBar(SnackBar(
-          content: Text(success ? l10n.deleted : l10n.somethingWentWrong)));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(success ? l10n.deleted : l10n.somethingWentWrong),
+        ),
+      );
   }
 }

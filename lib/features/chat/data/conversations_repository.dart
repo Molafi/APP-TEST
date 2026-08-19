@@ -62,22 +62,25 @@ class LocalConversationsRepository implements ConversationsRepository {
 
   Future<void> _persist(List<Chat> all) async {
     final list = all
-        .map((c) => {
-              'id': c.id,
-              'title': c.title,
-              'lastMessagePreview': c.lastMessagePreview,
-              'createdAt': c.createdAt.millisecondsSinceEpoch,
-              'updatedAt': c.updatedAt.millisecondsSinceEpoch,
-            })
+        .map(
+          (c) => {
+            'id': c.id,
+            'title': c.title,
+            'lastMessagePreview': c.lastMessagePreview,
+            'createdAt': c.createdAt.millisecondsSinceEpoch,
+            'updatedAt': c.updatedAt.millisecondsSinceEpoch,
+          },
+        )
         .toList();
     await _cache.setString(_key, jsonEncode(list));
   }
 }
 
 class FirestoreConversationsRepository implements ConversationsRepository {
-  FirestoreConversationsRepository(
-      {required this.uid, FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+  FirestoreConversationsRepository({
+    required this.uid,
+    FirebaseFirestore? firestore,
+  }) : _db = firestore ?? FirebaseFirestore.instance;
 
   final String uid;
   final FirebaseFirestore _db;

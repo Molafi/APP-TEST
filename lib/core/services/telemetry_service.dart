@@ -22,16 +22,21 @@ class NoopTelemetry implements TelemetryService {
   @override
   Future<void> logEvent(String name, [Map<String, Object>? params]) async {}
   @override
-  Future<void> recordError(Object error, StackTrace? stack,
-      {bool fatal = false}) async {}
+  Future<void> recordError(
+    Object error,
+    StackTrace? stack, {
+    bool fatal = false,
+  }) async {}
   @override
   Future<void> setEnabled(bool enabled) async {}
 }
 
 class FirebaseTelemetry implements TelemetryService {
-  FirebaseTelemetry({FirebaseAnalytics? analytics, FirebaseCrashlytics? crashlytics})
-      : _analytics = analytics ?? FirebaseAnalytics.instance,
-        _crashlytics = crashlytics ?? FirebaseCrashlytics.instance;
+  FirebaseTelemetry({
+    FirebaseAnalytics? analytics,
+    FirebaseCrashlytics? crashlytics,
+  }) : _analytics = analytics ?? FirebaseAnalytics.instance,
+       _crashlytics = crashlytics ?? FirebaseCrashlytics.instance;
 
   final FirebaseAnalytics _analytics;
   final FirebaseCrashlytics _crashlytics;
@@ -44,8 +49,11 @@ class FirebaseTelemetry implements TelemetryService {
   }
 
   @override
-  Future<void> recordError(Object error, StackTrace? stack,
-      {bool fatal = false}) async {
+  Future<void> recordError(
+    Object error,
+    StackTrace? stack, {
+    bool fatal = false,
+  }) async {
     try {
       await _crashlytics.recordError(error, stack, fatal: fatal);
     } catch (_) {}

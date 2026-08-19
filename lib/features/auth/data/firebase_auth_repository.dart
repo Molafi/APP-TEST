@@ -7,18 +7,15 @@ import 'auth_repository.dart';
 /// Firebase-backed auth. Maps Firebase error codes to friendly typed
 /// [AppException]s and never surfaces raw exception text.
 class FirebaseAuthRepository implements AuthRepository {
-  FirebaseAuthRepository({
-    fb.FirebaseAuth? auth,
-    GoogleSignIn? googleSignIn,
-  })  : _auth = auth ?? fb.FirebaseAuth.instance,
-        _google = googleSignIn ?? GoogleSignIn();
+  FirebaseAuthRepository({fb.FirebaseAuth? auth, GoogleSignIn? googleSignIn})
+    : _auth = auth ?? fb.FirebaseAuth.instance,
+      _google = googleSignIn ?? GoogleSignIn();
 
   final fb.FirebaseAuth _auth;
   final GoogleSignIn _google;
 
   @override
-  Stream<AuthUser?> authStateChanges() =>
-      _auth.authStateChanges().map(_map);
+  Stream<AuthUser?> authStateChanges() => _auth.authStateChanges().map(_map);
 
   @override
   AuthUser? get currentUser => _map(_auth.currentUser);
@@ -27,7 +24,9 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<AuthUser> signInWithEmail(String email, String password) async {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
-          email: email.trim(), password: password);
+        email: email.trim(),
+        password: password,
+      );
       return _requireUser(cred.user);
     } on fb.FirebaseAuthException catch (e) {
       throw _mapError(e);
@@ -42,7 +41,9 @@ class FirebaseAuthRepository implements AuthRepository {
   }) async {
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
-          email: email.trim(), password: password);
+        email: email.trim(),
+        password: password,
+      );
       if (displayName != null && displayName.trim().isNotEmpty) {
         await cred.user?.updateDisplayName(displayName.trim());
       }
@@ -60,8 +61,10 @@ class FirebaseAuthRepository implements AuthRepository {
       final GoogleSignInAccount? account = await _google.signIn();
       if (account == null) {
         // User cancelled — treated as an invalid-input (non-retryable) signal.
-        throw const AppException(AppErrorKind.invalidInput,
-            debugDetail: 'google sign-in cancelled');
+        throw const AppException(
+          AppErrorKind.invalidInput,
+          debugDetail: 'google sign-in cancelled',
+        );
       }
       final GoogleSignInAuthentication gAuth = await account.authentication;
       final fb.OAuthCredential credential = fb.GoogleAuthProvider.credential(
@@ -108,7 +111,9 @@ class FirebaseAuthRepository implements AuthRepository {
     }
     try {
       final cred = fb.EmailAuthProvider.credential(
-          email: user.email!, password: password);
+        email: user.email!,
+        password: password,
+      );
       await user.reauthenticateWithCredential(cred);
     } on fb.FirebaseAuthException catch (e) {
       throw _mapError(e);
@@ -149,18 +154,24 @@ class FirebaseAuthRepository implements AuthRepository {
       case 'invalid-email':
         return const AppException(AppErrorKind.invalidInput);
       case 'user-disabled':
-        return const AppException(AppErrorKind.invalidCredentials,
-            debugDetail: 'user-disabled');
+        return const AppException(
+          AppErrorKind.invalidCredentials,
+          debugDetail: 'user-disabled',
+        );
       case 'user-not-found':
       case 'wrong-password':
       case 'invalid-credential':
         return const AppException(AppErrorKind.invalidCredentials);
       case 'email-already-in-use':
-        return const AppException(AppErrorKind.invalidInput,
-            debugDetail: 'email-already-in-use');
+        return const AppException(
+          AppErrorKind.invalidInput,
+          debugDetail: 'email-already-in-use',
+        );
       case 'weak-password':
-        return const AppException(AppErrorKind.invalidInput,
-            debugDetail: 'weak-password');
+        return const AppException(
+          AppErrorKind.invalidInput,
+          debugDetail: 'weak-password',
+        );
       case 'too-many-requests':
         return const AppException(AppErrorKind.rateLimited);
       case 'network-request-failed':

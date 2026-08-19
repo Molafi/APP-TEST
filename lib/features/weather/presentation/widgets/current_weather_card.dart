@@ -74,14 +74,24 @@ class CurrentWeatherCard extends StatelessWidget {
                 _Metric(
                   icon: Icons.thermostat,
                   label: l10n.feelsLike(
-                      TemperatureFormat.format(c.apparentTemperatureC, unit)),
+                    TemperatureFormat.format(c.apparentTemperatureC, unit),
+                  ),
                 ),
                 if (c.humidity != null)
-                  _Metric(icon: Icons.water_drop_outlined, label: '${l10n.humidity}: ${c.humidity}%'),
+                  _Metric(
+                    icon: Icons.water_drop_outlined,
+                    label: '${l10n.humidity}: ${c.humidity}%',
+                  ),
                 if (c.uvIndex != null)
-                  _Metric(icon: Icons.wb_sunny_outlined, label: '${l10n.uvIndex}: ${c.uvIndex!.toStringAsFixed(1)}'),
+                  _Metric(
+                    icon: Icons.wb_sunny_outlined,
+                    label: '${l10n.uvIndex}: ${c.uvIndex!.toStringAsFixed(1)}',
+                  ),
                 if (c.precipitation != null)
-                  _Metric(icon: Icons.umbrella_outlined, label: '${l10n.precipitation}: ${c.precipitation} mm'),
+                  _Metric(
+                    icon: Icons.umbrella_outlined,
+                    label: '${l10n.precipitation}: ${c.precipitation} mm',
+                  ),
               ],
             ),
           ],
@@ -110,7 +120,11 @@ class _Metric extends StatelessWidget {
 }
 
 class _Provenance extends StatelessWidget {
-  const _Provenance({required this.data, required this.locale, required this.l10n});
+  const _Provenance({
+    required this.data,
+    required this.locale,
+    required this.l10n,
+  });
   final WeatherData data;
   final String locale;
   final AppLocalizations l10n;
@@ -123,16 +137,18 @@ class _Provenance extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(data.fromCache ? Icons.cloud_off : Icons.cloud_done,
-                size: 14),
+            Icon(data.fromCache ? Icons.cloud_off : Icons.cloud_done, size: 14),
             const SizedBox(width: 2),
-            Text(data.fromCache ? l10n.cachedData : l10n.liveData,
-                style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              data.fromCache ? l10n.cachedData : l10n.liveData,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
         Text(
           l10n.lastUpdated(
-              DateFormatter.relativeUpdated(data.fetchedAt, locale)),
+            DateFormatter.relativeUpdated(data.fetchedAt, locale),
+          ),
           style: Theme.of(context).textTheme.bodySmall,
         ),
       ],

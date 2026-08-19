@@ -19,7 +19,9 @@ class ContextStrip extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm, vertical: 2),
+          horizontal: AppSpacing.sm,
+          vertical: 2,
+        ),
         decoration: BoxDecoration(
           color: AppColors.mossGray.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppSpacing.radiusSm),

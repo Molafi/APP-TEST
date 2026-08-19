@@ -31,8 +31,9 @@ class MessageComposer extends ConsumerStatefulWidget {
 }
 
 class _MessageComposerState extends ConsumerState<MessageComposer> {
-  late final TextEditingController _controller =
-      TextEditingController(text: widget.initialDraft);
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialDraft,
+  );
   Uint8List? _pendingImage;
   bool _listening = false;
   String _baseText = '';
@@ -57,8 +58,7 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
         widget.initialDraft != _controller.text) {
       _controller.value = TextEditingValue(
         text: widget.initialDraft,
-        selection:
-            TextSelection.collapsed(offset: widget.initialDraft.length),
+        selection: TextSelection.collapsed(offset: widget.initialDraft.length),
       );
     }
   }
@@ -98,8 +98,9 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
     final bool started = await speech.start(
       localeId: localeId,
       onResult: (words) {
-        final String combined =
-            _baseText.isEmpty ? words : '${_baseText.trimRight()} $words';
+        final String combined = _baseText.isEmpty
+            ? words
+            : '${_baseText.trimRight()} $words';
         _controller.value = TextEditingValue(
           text: combined,
           selection: TextSelection.collapsed(offset: combined.length),
@@ -124,7 +125,9 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.sm,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -136,10 +139,15 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
                     child: Stack(
                       children: [
                         ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                          child: Image.memory(_pendingImage!,
-                              height: 72, width: 72, fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusSm,
+                          ),
+                          child: Image.memory(
+                            _pendingImage!,
+                            height: 72,
+                            width: 72,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                         Positioned(
                           top: -6,
@@ -149,8 +157,11 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
                             icon: const CircleAvatar(
                               radius: 12,
                               backgroundColor: AppColors.errorRed,
-                              child: Icon(Icons.close,
-                                  size: 14, color: Colors.white),
+                              child: Icon(
+                                Icons.close,
+                                size: 14,
+                                color: Colors.white,
+                              ),
                             ),
                             onPressed: () =>
                                 setState(() => _pendingImage = null),
@@ -189,8 +200,9 @@ class _MessageComposerState extends ConsumerState<MessageComposer> {
                       decoration: InputDecoration(
                         hintText: l10n.composerHint,
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusXl),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusXl,
+                          ),
                         ),
                         counterText: '',
                       ),

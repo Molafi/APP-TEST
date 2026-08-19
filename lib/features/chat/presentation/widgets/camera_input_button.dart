@@ -10,7 +10,11 @@ import '../../../../l10n/app_localizations.dart';
 /// image_picker requests OS-level permissions itself; if the user cancels or
 /// denies, no image is returned and nothing crashes.
 class CameraInputButton extends StatelessWidget {
-  const CameraInputButton({super.key, required this.onImage, this.enabled = true});
+  const CameraInputButton({
+    super.key,
+    required this.onImage,
+    this.enabled = true,
+  });
 
   final ValueChanged<Uint8List> onImage;
   final bool enabled;
@@ -39,33 +43,33 @@ class CameraInputButton extends StatelessWidget {
       icon: const Icon(Icons.add_a_photo_outlined),
       onPressed: enabled
           ? () => showModalBottomSheet<void>(
-                context: context,
-                showDragHandle: true,
-                builder: (sheetContext) => SafeArea(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.photo_camera_outlined),
-                        title: Text(l10n.fromCamera),
-                        onTap: () {
-                          Navigator.of(sheetContext).pop();
-                          _pick(context, ImageSource.camera);
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.photo_library_outlined),
-                        title: Text(l10n.fromGallery),
-                        onTap: () {
-                          Navigator.of(sheetContext).pop();
-                          _pick(context, ImageSource.gallery);
-                        },
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                    ],
-                  ),
+              context: context,
+              showDragHandle: true,
+              builder: (sheetContext) => SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.photo_camera_outlined),
+                      title: Text(l10n.fromCamera),
+                      onTap: () {
+                        Navigator.of(sheetContext).pop();
+                        _pick(context, ImageSource.camera);
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.photo_library_outlined),
+                      title: Text(l10n.fromGallery),
+                      onTap: () {
+                        Navigator.of(sheetContext).pop();
+                        _pick(context, ImageSource.gallery);
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                  ],
                 ),
-              )
+              ),
+            )
           : null,
     );
   }

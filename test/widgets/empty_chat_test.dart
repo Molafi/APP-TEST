@@ -22,9 +22,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 20));
 
     // Demo mode is the default when no dart-defines are supplied.
-    expect(
-      find.textContaining('Demo mode'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Demo mode'), findsOneWidget);
   });
 }

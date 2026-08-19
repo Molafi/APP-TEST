@@ -15,10 +15,7 @@ class SpeechService {
   Future<bool> init() async {
     if (_available) return true;
     try {
-      _available = await _speech.initialize(
-        onError: (_) {},
-        onStatus: (_) {},
-      );
+      _available = await _speech.initialize(onError: (_) {}, onStatus: (_) {});
     } catch (_) {
       _available = false;
     }
@@ -33,8 +30,10 @@ class SpeechService {
     if (!await init()) return false;
     await _speech.listen(
       onResult: (r) => onResult(r.recognizedWords),
-      listenOptions:
-          SpeechListenOptions(partialResults: true, localeId: localeId),
+      listenOptions: SpeechListenOptions(
+        partialResults: true,
+        localeId: localeId,
+      ),
     );
     return true;
   }

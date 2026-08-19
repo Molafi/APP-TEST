@@ -32,12 +32,7 @@ class FirestoreChatRepository implements ChatRepository {
 
   @override
   Future<void> saveMessage(ChatMessage message) async {
-    await _db
-        .collection('users')
-        .doc(uid)
-        .collection('chats')
-        .doc(chatId)
-        .set({
+    await _db.collection('users').doc(uid).collection('chats').doc(chatId).set({
       'updatedAt': FieldValue.serverTimestamp(),
       'lastMessagePreview': message.text.length > 80
           ? '${message.text.substring(0, 80)}…'
@@ -52,10 +47,9 @@ class FirestoreChatRepository implements ChatRepository {
 
   @override
   Future<void> updateMessage(ChatMessage message) async {
-    await _messages.doc(message.id).set(
-      message.toMap(),
-      SetOptions(merge: true),
-    );
+    await _messages
+        .doc(message.id)
+        .set(message.toMap(), SetOptions(merge: true));
   }
 
   @override

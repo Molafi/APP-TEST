@@ -12,7 +12,7 @@ import '../domain/location_model.dart';
 /// OSM usage policy. Raw geocoder failures are never surfaced to users.
 class NominatimService {
   NominatimService(this._cache, [ApiClient? client])
-      : _client = client ?? ApiClient();
+    : _client = client ?? ApiClient();
 
   final ApiClient _client;
   final LocalCacheService _cache;
@@ -56,8 +56,10 @@ class NominatimService {
           'zoom': '10',
         },
       );
-      final Map<String, dynamic> json =
-          await _client.getJson(uri, headers: _headers);
+      final Map<String, dynamic> json = await _client.getJson(
+        uri,
+        headers: _headers,
+      );
       final PlantLocation? loc = _fromReverse(json, lat, lon);
       if (loc != null) _writeCache(cacheKey, loc);
       return loc;
@@ -67,7 +69,10 @@ class NominatimService {
   }
 
   /// Free-text city search returning candidate places.
-  Future<List<PlantLocation>> search(String query, {String locale = 'en'}) async {
+  Future<List<PlantLocation>> search(
+    String query, {
+    String locale = 'en',
+  }) async {
     if (query.trim().length < 2) return [];
     await _respectRateLimit();
     try {
@@ -82,8 +87,10 @@ class NominatimService {
       );
       // The search endpoint returns a JSON array; ApiClient wraps non-map JSON
       // under a 'data' key.
-      final Map<String, dynamic> res =
-          await _client.getJson(uri, headers: _headers);
+      final Map<String, dynamic> res = await _client.getJson(
+        uri,
+        headers: _headers,
+      );
       final List list = (res['data'] as List?) ?? const [];
       return list
           .whereType<Map<String, dynamic>>()
@@ -95,7 +102,11 @@ class NominatimService {
     }
   }
 
-  PlantLocation? _fromReverse(Map<String, dynamic> json, double lat, double lon) {
+  PlantLocation? _fromReverse(
+    Map<String, dynamic> json,
+    double lat,
+    double lon,
+  ) {
     final addr = json['address'] as Map<String, dynamic>?;
     if (addr == null) return null;
     final String? city = _pickLocality(addr);

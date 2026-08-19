@@ -44,19 +44,17 @@ class SplashScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.xl),
               Text(
                 l10n.appTitle,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(color: AppColors.parchment),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.parchment,
+                ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 l10n.tagline,
                 textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: AppColors.parchmentDark),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.parchmentDark,
+                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
               if (error == null)
@@ -65,8 +63,9 @@ class SplashScreen extends StatelessWidget {
                   width: 28,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.parchment),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.parchment,
+                    ),
                   ),
                 )
               else ...[

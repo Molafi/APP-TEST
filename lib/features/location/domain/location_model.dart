@@ -28,34 +28,34 @@ class PlantLocation {
   }
 
   PlantLocation copyWith({String? timezone}) => PlantLocation(
-        latitude: latitude,
-        longitude: longitude,
-        city: city,
-        country: country,
-        countryCode: countryCode,
-        timezone: timezone ?? this.timezone,
-        isManual: isManual,
-      );
+    latitude: latitude,
+    longitude: longitude,
+    city: city,
+    country: country,
+    countryCode: countryCode,
+    timezone: timezone ?? this.timezone,
+    isManual: isManual,
+  );
 
   Map<String, dynamic> toMap() => {
-        'latitude': latitude,
-        'longitude': longitude,
-        'city': city,
-        'country': country,
-        'countryCode': countryCode,
-        'timezone': timezone,
-        'isManual': isManual,
-      };
+    'latitude': latitude,
+    'longitude': longitude,
+    'city': city,
+    'country': country,
+    'countryCode': countryCode,
+    'timezone': timezone,
+    'isManual': isManual,
+  };
 
   factory PlantLocation.fromMap(Map<String, dynamic> map) => PlantLocation(
-        latitude: (map['latitude'] as num?)?.toDouble() ?? 0,
-        longitude: (map['longitude'] as num?)?.toDouble() ?? 0,
-        city: (map['city'] as String?) ?? 'Unknown',
-        country: map['country'] as String?,
-        countryCode: map['countryCode'] as String?,
-        timezone: map['timezone'] as String?,
-        isManual: (map['isManual'] as bool?) ?? false,
-      );
+    latitude: (map['latitude'] as num?)?.toDouble() ?? 0,
+    longitude: (map['longitude'] as num?)?.toDouble() ?? 0,
+    city: (map['city'] as String?) ?? 'Unknown',
+    country: map['country'] as String?,
+    countryCode: map['countryCode'] as String?,
+    timezone: map['timezone'] as String?,
+    isManual: (map['isManual'] as bool?) ?? false,
+  );
 
   @override
   bool operator ==(Object other) =>

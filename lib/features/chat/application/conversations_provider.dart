@@ -10,8 +10,9 @@ import '../domain/chat_model.dart';
 /// The id of the conversation currently shown in the chat tab.
 final currentChatIdProvider = StateProvider<String>((ref) => 'default');
 
-final conversationsRepositoryProvider =
-    Provider<ConversationsRepository>((ref) {
+final conversationsRepositoryProvider = Provider<ConversationsRepository>((
+  ref,
+) {
   final user = ref.watch(currentUserProvider);
   if (!Environment.isDemo && user != null) {
     return FirestoreConversationsRepository(uid: user.uid);
@@ -44,8 +45,12 @@ class ConversationsController extends StateNotifier<List<Chat>> {
   Future<String> create({String title = 'New conversation'}) async {
     final String id = _uuid.v4();
     final DateTime now = DateTime.now();
-    final Chat chat =
-        Chat(id: id, title: title, createdAt: now, updatedAt: now);
+    final Chat chat = Chat(
+      id: id,
+      title: title,
+      createdAt: now,
+      updatedAt: now,
+    );
     state = [chat, ...state];
     _ref.read(currentChatIdProvider.notifier).state = id;
     await _repo.upsert(chat);
@@ -76,13 +81,17 @@ class ConversationsController extends StateNotifier<List<Chat>> {
 
   /// Updates recency + preview (and sets the title from the first message when
   /// the conversation is still untitled).
-  Future<void> touch(String id,
-      {String? preview, String? autoTitle}) async {
+  Future<void> touch(String id, {String? preview, String? autoTitle}) async {
     final int i = state.indexWhere((c) => c.id == id);
     final DateTime now = DateTime.now();
     final Chat base = i >= 0
         ? state[i]
-        : Chat(id: id, title: 'New conversation', createdAt: now, updatedAt: now);
+        : Chat(
+            id: id,
+            title: 'New conversation',
+            createdAt: now,
+            updatedAt: now,
+          );
     final bool untitled =
         base.title.isEmpty || base.title == 'New conversation';
     final Chat updated = Chat(
@@ -104,16 +113,16 @@ class ConversationsController extends StateNotifier<List<Chat>> {
     state = state.where((c) => c.id != chat.id).toList();
     // If we deleted the active conversation, switch to another (or default).
     if (_ref.read(currentChatIdProvider) == chat.id) {
-      _ref.read(currentChatIdProvider.notifier).state =
-          state.isNotEmpty ? state.first.id : 'default';
+      _ref.read(currentChatIdProvider.notifier).state = state.isNotEmpty
+          ? state.first.id
+          : 'default';
     }
   }
 
-  String _shorten(String s) =>
-      s.length <= 40 ? s : '${s.substring(0, 40)}…';
+  String _shorten(String s) => s.length <= 40 ? s : '${s.substring(0, 40)}…';
 }
 
 final conversationsControllerProvider =
     StateNotifierProvider<ConversationsController, List<Chat>>((ref) {
-  return ConversationsController(ref);
-});
+      return ConversationsController(ref);
+    });

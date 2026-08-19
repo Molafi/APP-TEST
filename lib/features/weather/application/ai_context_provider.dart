@@ -30,10 +30,8 @@ final aiContextProvider = Provider<AiContext>((ref) {
 
   if (location == null && weather == null) return const AiContext();
 
-  final Map<String, String> values = weather?.toAiContext(
-        location?.city ?? '',
-        location?.country,
-      ) ??
+  final Map<String, String> values =
+      weather?.toAiContext(location?.city ?? '', location?.country) ??
       {
         if (location != null) 'city': location.city,
         if (location?.country != null) 'country': location!.country!,

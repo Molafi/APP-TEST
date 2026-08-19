@@ -10,7 +10,8 @@ class WateringScheduler {
   /// Returns the recommended number of days until the next watering.
   static int intervalDays(Plant plant, WeatherData? weather) {
     // Baseline by location, or the user's own setting if provided.
-    int interval = plant.wateringIntervalDays ??
+    int interval =
+        plant.wateringIntervalDays ??
         (plant.place == PlantPlace.outdoor ? 3 : 7);
 
     if (weather != null) {
@@ -23,9 +24,13 @@ class WateringScheduler {
 
       // Outdoor plants: meaningful rain in the next days → wait longer.
       if (plant.place == PlantPlace.outdoor && weather.daily.isNotEmpty) {
-        final bool rainSoon = weather.daily.take(2).any((d) =>
-            (d.precipitationSum ?? 0) >= 3 ||
-            (d.precipitationProbabilityMax ?? 0) >= 60);
+        final bool rainSoon = weather.daily
+            .take(2)
+            .any(
+              (d) =>
+                  (d.precipitationSum ?? 0) >= 3 ||
+                  (d.precipitationProbabilityMax ?? 0) >= 60,
+            );
         if (rainSoon) interval += 2;
       }
     }
@@ -34,8 +39,11 @@ class WateringScheduler {
   }
 
   /// Next watering date/time — defaults to 9:00 AM local on the target day.
-  static DateTime nextWatering(Plant plant, WeatherData? weather,
-      {DateTime? from}) {
+  static DateTime nextWatering(
+    Plant plant,
+    WeatherData? weather, {
+    DateTime? from,
+  }) {
     final DateTime base = from ?? DateTime.now();
     final int days = intervalDays(plant, weather);
     final DateTime day = base.add(Duration(days: days));

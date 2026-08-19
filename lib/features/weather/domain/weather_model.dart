@@ -51,27 +51,27 @@ class CurrentWeather {
   final DateTime time;
 
   Map<String, dynamic> toMap() => {
-        't': temperatureC,
-        'at': apparentTemperatureC,
-        'h': humidity,
-        'uv': uvIndex,
-        'p': precipitation,
-        'c': condition.name,
-        'time': time.toIso8601String(),
-      };
+    't': temperatureC,
+    'at': apparentTemperatureC,
+    'h': humidity,
+    'uv': uvIndex,
+    'p': precipitation,
+    'c': condition.name,
+    'time': time.toIso8601String(),
+  };
 
   factory CurrentWeather.fromMap(Map<String, dynamic> m) => CurrentWeather(
-        temperatureC: (m['t'] as num?)?.toDouble(),
-        apparentTemperatureC: (m['at'] as num?)?.toDouble(),
-        humidity: (m['h'] as num?)?.toInt(),
-        uvIndex: (m['uv'] as num?)?.toDouble(),
-        precipitation: (m['p'] as num?)?.toDouble(),
-        condition: WeatherCondition.values.firstWhere(
-          (e) => e.name == m['c'],
-          orElse: () => WeatherCondition.unknown,
-        ),
-        time: DateTime.tryParse(m['time'] as String? ?? '') ?? DateTime.now(),
-      );
+    temperatureC: (m['t'] as num?)?.toDouble(),
+    apparentTemperatureC: (m['at'] as num?)?.toDouble(),
+    humidity: (m['h'] as num?)?.toInt(),
+    uvIndex: (m['uv'] as num?)?.toDouble(),
+    precipitation: (m['p'] as num?)?.toDouble(),
+    condition: WeatherCondition.values.firstWhere(
+      (e) => e.name == m['c'],
+      orElse: () => WeatherCondition.unknown,
+    ),
+    time: DateTime.tryParse(m['time'] as String? ?? '') ?? DateTime.now(),
+  );
 }
 
 class HourlyForecast {
@@ -88,21 +88,21 @@ class HourlyForecast {
   final int? precipitationProbability;
 
   Map<String, dynamic> toMap() => {
-        'time': time.toIso8601String(),
-        't': temperatureC,
-        'c': condition.name,
-        'pp': precipitationProbability,
-      };
+    'time': time.toIso8601String(),
+    't': temperatureC,
+    'c': condition.name,
+    'pp': precipitationProbability,
+  };
 
   factory HourlyForecast.fromMap(Map<String, dynamic> m) => HourlyForecast(
-        time: DateTime.tryParse(m['time'] as String? ?? '') ?? DateTime.now(),
-        temperatureC: (m['t'] as num?)?.toDouble(),
-        condition: WeatherCondition.values.firstWhere(
-          (e) => e.name == m['c'],
-          orElse: () => WeatherCondition.unknown,
-        ),
-        precipitationProbability: (m['pp'] as num?)?.toInt(),
-      );
+    time: DateTime.tryParse(m['time'] as String? ?? '') ?? DateTime.now(),
+    temperatureC: (m['t'] as num?)?.toDouble(),
+    condition: WeatherCondition.values.firstWhere(
+      (e) => e.name == m['c'],
+      orElse: () => WeatherCondition.unknown,
+    ),
+    precipitationProbability: (m['pp'] as num?)?.toInt(),
+  );
 }
 
 class DailyForecast {
@@ -125,27 +125,27 @@ class DailyForecast {
   final int? precipitationProbabilityMax;
 
   Map<String, dynamic> toMap() => {
-        'date': date.toIso8601String(),
-        'min': minC,
-        'max': maxC,
-        'c': condition.name,
-        'ps': precipitationSum,
-        'uv': uvIndexMax,
-        'ppm': precipitationProbabilityMax,
-      };
+    'date': date.toIso8601String(),
+    'min': minC,
+    'max': maxC,
+    'c': condition.name,
+    'ps': precipitationSum,
+    'uv': uvIndexMax,
+    'ppm': precipitationProbabilityMax,
+  };
 
   factory DailyForecast.fromMap(Map<String, dynamic> m) => DailyForecast(
-        date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
-        minC: (m['min'] as num?)?.toDouble(),
-        maxC: (m['max'] as num?)?.toDouble(),
-        condition: WeatherCondition.values.firstWhere(
-          (e) => e.name == m['c'],
-          orElse: () => WeatherCondition.unknown,
-        ),
-        precipitationSum: (m['ps'] as num?)?.toDouble(),
-        uvIndexMax: (m['uv'] as num?)?.toDouble(),
-        precipitationProbabilityMax: (m['ppm'] as num?)?.toInt(),
-      );
+    date: DateTime.tryParse(m['date'] as String? ?? '') ?? DateTime.now(),
+    minC: (m['min'] as num?)?.toDouble(),
+    maxC: (m['max'] as num?)?.toDouble(),
+    condition: WeatherCondition.values.firstWhere(
+      (e) => e.name == m['c'],
+      orElse: () => WeatherCondition.unknown,
+    ),
+    precipitationSum: (m['ps'] as num?)?.toDouble(),
+    uvIndexMax: (m['uv'] as num?)?.toDouble(),
+    precipitationProbabilityMax: (m['ppm'] as num?)?.toInt(),
+  );
 }
 
 /// Full weather bundle plus provenance metadata (fetch time + live/cached).
@@ -166,42 +166,42 @@ class WeatherData {
   final String timezone;
   final bool fromCache;
 
-  bool get isStale =>
-      DateTime.now().difference(fetchedAt).inHours >= 3;
+  bool get isStale => DateTime.now().difference(fetchedAt).inHours >= 3;
 
   WeatherData asCached() => WeatherData(
-        current: current,
-        hourly: hourly,
-        daily: daily,
-        fetchedAt: fetchedAt,
-        timezone: timezone,
-        fromCache: true,
-      );
+    current: current,
+    hourly: hourly,
+    daily: daily,
+    fetchedAt: fetchedAt,
+    timezone: timezone,
+    fromCache: true,
+  );
 
   Map<String, dynamic> toMap() => {
-        'current': current.toMap(),
-        'hourly': hourly.map((e) => e.toMap()).toList(),
-        'daily': daily.map((e) => e.toMap()).toList(),
-        'fetchedAt': fetchedAt.toIso8601String(),
-        'timezone': timezone,
-      };
+    'current': current.toMap(),
+    'hourly': hourly.map((e) => e.toMap()).toList(),
+    'daily': daily.map((e) => e.toMap()).toList(),
+    'fetchedAt': fetchedAt.toIso8601String(),
+    'timezone': timezone,
+  };
 
   factory WeatherData.fromMap(Map<String, dynamic> m) => WeatherData(
-        current:
-            CurrentWeather.fromMap(m['current'] as Map<String, dynamic>? ?? {}),
-        hourly: ((m['hourly'] as List?) ?? [])
-            .whereType<Map<String, dynamic>>()
-            .map(HourlyForecast.fromMap)
-            .toList(),
-        daily: ((m['daily'] as List?) ?? [])
-            .whereType<Map<String, dynamic>>()
-            .map(DailyForecast.fromMap)
-            .toList(),
-        fetchedAt:
-            DateTime.tryParse(m['fetchedAt'] as String? ?? '') ?? DateTime.now(),
-        timezone: (m['timezone'] as String?) ?? 'auto',
-        fromCache: true,
-      );
+    current: CurrentWeather.fromMap(
+      m['current'] as Map<String, dynamic>? ?? {},
+    ),
+    hourly: ((m['hourly'] as List?) ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map(HourlyForecast.fromMap)
+        .toList(),
+    daily: ((m['daily'] as List?) ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map(DailyForecast.fromMap)
+        .toList(),
+    fetchedAt:
+        DateTime.tryParse(m['fetchedAt'] as String? ?? '') ?? DateTime.now(),
+    timezone: (m['timezone'] as String?) ?? 'auto',
+    fromCache: true,
+  );
 
   /// Compact context object injected into AI requests. Omits unknown values.
   Map<String, String> toAiContext(String city, String? country) {

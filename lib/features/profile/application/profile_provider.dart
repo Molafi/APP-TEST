@@ -60,7 +60,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
       state = const AsyncData<void>(null);
       return DeletionResult.success;
     } catch (e) {
-      state = AsyncError<void>(ErrorMapper.fromException(e), StackTrace.current);
+      state = AsyncError<void>(
+        ErrorMapper.fromException(e),
+        StackTrace.current,
+      );
       return DeletionResult.failure;
     }
   }
@@ -87,7 +90,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
       }
       return DeletionResult.failure;
     } catch (e) {
-      state = AsyncError<void>(ErrorMapper.fromException(e), StackTrace.current);
+      state = AsyncError<void>(
+        ErrorMapper.fromException(e),
+        StackTrace.current,
+      );
       return DeletionResult.failure;
     }
   }
@@ -119,5 +125,5 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
 
 final profileControllerProvider =
     StateNotifierProvider<ProfileController, AsyncValue<void>>((ref) {
-  return ProfileController(ref);
-});
+      return ProfileController(ref);
+    });

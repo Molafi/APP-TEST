@@ -9,16 +9,16 @@ class WeatherVisuals {
   const WeatherVisuals._();
 
   static IconData icon(WeatherCondition c) => switch (c) {
-        WeatherCondition.clear => Icons.wb_sunny,
-        WeatherCondition.partlyCloudy => Icons.wb_cloudy_outlined,
-        WeatherCondition.cloudy => Icons.cloud,
-        WeatherCondition.fog => Icons.foggy,
-        WeatherCondition.drizzle => Icons.grain,
-        WeatherCondition.rain => Icons.water_drop,
-        WeatherCondition.snow => Icons.ac_unit,
-        WeatherCondition.thunderstorm => Icons.thunderstorm,
-        WeatherCondition.unknown => Icons.help_outline,
-      };
+    WeatherCondition.clear => Icons.wb_sunny,
+    WeatherCondition.partlyCloudy => Icons.wb_cloudy_outlined,
+    WeatherCondition.cloudy => Icons.cloud,
+    WeatherCondition.fog => Icons.foggy,
+    WeatherCondition.drizzle => Icons.grain,
+    WeatherCondition.rain => Icons.water_drop,
+    WeatherCondition.snow => Icons.ac_unit,
+    WeatherCondition.thunderstorm => Icons.thunderstorm,
+    WeatherCondition.unknown => Icons.help_outline,
+  };
 
   /// Localized description. Uses simple English/Arabic labels; extend via ARB
   /// if finer-grained descriptions are needed.

@@ -27,12 +27,14 @@ class DemoAuthRepository implements AuthRepository {
     if (password.length < 8) {
       throw const AppException(AppErrorKind.invalidCredentials);
     }
-    return _emit(AuthUser(
-      uid: 'demo-${email.hashCode.toUnsigned(32)}',
-      email: email,
-      displayName: email.split('@').first,
-      emailVerified: true,
-    ));
+    return _emit(
+      AuthUser(
+        uid: 'demo-${email.hashCode.toUnsigned(32)}',
+        email: email,
+        displayName: email.split('@').first,
+        emailVerified: true,
+      ),
+    );
   }
 
   @override
@@ -42,23 +44,27 @@ class DemoAuthRepository implements AuthRepository {
     String? displayName,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 600));
-    return _emit(AuthUser(
-      uid: 'demo-${email.hashCode.toUnsigned(32)}',
-      email: email,
-      displayName: displayName ?? email.split('@').first,
-      emailVerified: false,
-    ));
+    return _emit(
+      AuthUser(
+        uid: 'demo-${email.hashCode.toUnsigned(32)}',
+        email: email,
+        displayName: displayName ?? email.split('@').first,
+        emailVerified: false,
+      ),
+    );
   }
 
   @override
   Future<AuthUser> signInWithGoogle() async {
     await Future<void>.delayed(const Duration(milliseconds: 500));
-    return _emit(const AuthUser(
-      uid: 'demo-google-user',
-      email: 'gardener@example.com',
-      displayName: 'Demo Gardener',
-      emailVerified: true,
-    ));
+    return _emit(
+      const AuthUser(
+        uid: 'demo-google-user',
+        email: 'gardener@example.com',
+        displayName: 'Demo Gardener',
+        emailVerified: true,
+      ),
+    );
   }
 
   @override

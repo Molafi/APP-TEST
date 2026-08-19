@@ -41,9 +41,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final List<_Page> pages = [
-      _Page(Icons.chat_bubble_outline, l10n.onboardingTitle1, l10n.onboardingBody1),
-      _Page(Icons.camera_alt_outlined, l10n.onboardingTitle2, l10n.onboardingBody2),
-      _Page(Icons.wb_sunny_outlined, l10n.onboardingTitle3, l10n.onboardingBody3),
+      _Page(
+        Icons.chat_bubble_outline,
+        l10n.onboardingTitle1,
+        l10n.onboardingBody1,
+      ),
+      _Page(
+        Icons.camera_alt_outlined,
+        l10n.onboardingTitle2,
+        l10n.onboardingBody2,
+      ),
+      _Page(
+        Icons.wb_sunny_outlined,
+        l10n.onboardingTitle3,
+        l10n.onboardingBody3,
+      ),
       _Page(Icons.shield_outlined, l10n.onboardingTitle4, l10n.onboardingBody4),
     ];
     final bool isLast = _index == pages.length - 1;
@@ -54,10 +66,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           children: [
             Align(
               alignment: AlignmentDirectional.centerEnd,
-              child: TextButton(
-                onPressed: _finish,
-                child: Text(l10n.skip),
-              ),
+              child: TextButton(onPressed: _finish, child: Text(l10n.skip)),
             ),
             Expanded(
               child: PageView.builder(
@@ -74,17 +83,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         if (i == 0)
                           const LeafLogo(size: 96)
                         else
-                          Icon(p.icon,
-                              size: 96,
-                              color: Theme.of(context).colorScheme.primary),
+                          Icon(
+                            p.icon,
+                            size: 96,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         const SizedBox(height: AppSpacing.xxl),
-                        Text(p.title,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineSmall),
+                        Text(
+                          p.title,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
                         const SizedBox(height: AppSpacing.md),
-                        Text(p.body,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyLarge),
+                        Text(
+                          p.body,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
                       ],
                     ),
                   );

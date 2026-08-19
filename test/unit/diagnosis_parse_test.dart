@@ -30,7 +30,8 @@ void main() {
     });
 
     test('strips ```json fences and surrounding prose', () {
-      const raw = 'Here you go:\n```json\n{"whatISee":"x","confidence":"low",'
+      const raw =
+          'Here you go:\n```json\n{"whatISee":"x","confidence":"low",'
           '"isPlantRelated":true,"imageQuality":"good"}\n```';
       final d = Diagnosis.parse(raw);
       expect(d.whatISee, 'x');
@@ -47,12 +48,15 @@ void main() {
     });
 
     test('throws FormatException on non-JSON', () {
-      expect(() => Diagnosis.parse('totally not json'),
-          throwsA(isA<FormatException>()));
+      expect(
+        () => Diagnosis.parse('totally not json'),
+        throwsA(isA<FormatException>()),
+      );
     });
 
     test('defaults unknown enum values safely', () {
-      const raw = '{"confidence":"banana","imageQuality":"weird",'
+      const raw =
+          '{"confidence":"banana","imageQuality":"weird",'
           '"whatISee":"x","isPlantRelated":true}';
       final d = Diagnosis.parse(raw);
       expect(d.confidence, Confidence.low);

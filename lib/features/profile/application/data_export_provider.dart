@@ -29,15 +29,18 @@ class DataExporter {
     if (!Environment.isDemo && user != null) {
       return FirestoreChatRepository(uid: user.uid, chatId: chatId);
     }
-    return LocalChatRepository(_ref.read(localCacheServiceProvider),
-        chatId: chatId);
+    return LocalChatRepository(
+      _ref.read(localCacheServiceProvider),
+      chatId: chatId,
+    );
   }
 
   Future<String> buildJson() async {
     final user = _ref.read(currentUserProvider);
 
-    final conversationsMeta =
-        await _ref.read(conversationsRepositoryProvider).list();
+    final conversationsMeta = await _ref
+        .read(conversationsRepositoryProvider)
+        .list();
     final List<Map<String, dynamic>> conversations = [];
     for (final c in conversationsMeta) {
       final messages = await _chatRepoFor(c.id).loadMessages();
@@ -45,11 +48,13 @@ class DataExporter {
         'id': c.id,
         'title': c.title,
         'messages': messages
-            .map((m) => {
-                  'role': m.role.name,
-                  'text': m.text,
-                  'createdAt': m.createdAt.toIso8601String(),
-                })
+            .map(
+              (m) => {
+                'role': m.role.name,
+                'text': m.text,
+                'createdAt': m.createdAt.toIso8601String(),
+              },
+            )
             .toList(),
       });
     }
@@ -70,10 +75,9 @@ class DataExporter {
       },
       'conversations': conversations,
       'diagnoses': diagnoses
-          .map((d) => {
-                ...d.toMap(),
-                'createdAt': d.createdAt?.toIso8601String(),
-              })
+          .map(
+            (d) => {...d.toMap(), 'createdAt': d.createdAt?.toIso8601String()},
+          )
           .toList(),
       'plants': plants.map((p) => p.toMap()).toList(),
       'reminders': reminders.map((r) => r.toMap()).toList(),

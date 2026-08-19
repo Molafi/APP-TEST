@@ -54,8 +54,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                 builder: (_, __) => _Dots(t: _controller.value),
               ),
             const SizedBox(width: 8),
-            Text(l10n.typing,
-                style: Theme.of(context).textTheme.bodySmall),
+            Text(l10n.typing, style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
@@ -73,7 +72,8 @@ class _Dots extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(3, (i) {
         final double phase = (t + i * 0.2) % 1.0;
-        final double opacity = 0.3 + 0.7 * (phase < 0.5 ? phase * 2 : (1 - phase) * 2);
+        final double opacity =
+            0.3 + 0.7 * (phase < 0.5 ? phase * 2 : (1 - phase) * 2);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Opacity(

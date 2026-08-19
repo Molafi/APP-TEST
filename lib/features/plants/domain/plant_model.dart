@@ -58,28 +58,28 @@ class Plant {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'species': species,
-        'place': place.name,
-        'notes': notes,
-        'imageReference': imageReference,
-        'wateringIntervalDays': wateringIntervalDays,
-        'lastWateredAt': lastWateredAt?.toIso8601String(),
-        'createdAt': (createdAt ?? DateTime.now()).toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'species': species,
+    'place': place.name,
+    'notes': notes,
+    'imageReference': imageReference,
+    'wateringIntervalDays': wateringIntervalDays,
+    'lastWateredAt': lastWateredAt?.toIso8601String(),
+    'createdAt': (createdAt ?? DateTime.now()).toIso8601String(),
+  };
 
   factory Plant.fromMap(Map<String, dynamic> m) => Plant(
-        id: (m['id'] as String?) ?? '',
-        name: (m['name'] as String?) ?? '',
-        species: m['species'] as String?,
-        place: plantPlaceFrom(m['place'] as String?),
-        notes: m['notes'] as String?,
-        imageReference: m['imageReference'] as String?,
-        wateringIntervalDays: (m['wateringIntervalDays'] as num?)?.toInt(),
-        lastWateredAt: _toDate(m['lastWateredAt']),
-        createdAt: _toDate(m['createdAt']),
-      );
+    id: (m['id'] as String?) ?? '',
+    name: (m['name'] as String?) ?? '',
+    species: m['species'] as String?,
+    place: plantPlaceFrom(m['place'] as String?),
+    notes: m['notes'] as String?,
+    imageReference: m['imageReference'] as String?,
+    wateringIntervalDays: (m['wateringIntervalDays'] as num?)?.toInt(),
+    lastWateredAt: _toDate(m['lastWateredAt']),
+    createdAt: _toDate(m['createdAt']),
+  );
 
   static String encodeList(List<Plant> list) =>
       jsonEncode(list.map((e) => e.toMap()).toList());

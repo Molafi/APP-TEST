@@ -17,9 +17,10 @@ class AppTheme {
       error: AppColors.errorRed,
       surface: AppColors.parchment,
     );
-    return _base(scheme, isArabic: isArabic).copyWith(
-      scaffoldBackgroundColor: AppColors.parchment,
-    );
+    return _base(
+      scheme,
+      isArabic: isArabic,
+    ).copyWith(scaffoldBackgroundColor: AppColors.parchment);
   }
 
   static ThemeData dark({required bool isArabic}) {
@@ -29,9 +30,10 @@ class AppTheme {
       surface: AppColors.darkSurface,
       error: AppColors.errorRed,
     );
-    return _base(scheme, isArabic: isArabic).copyWith(
-      scaffoldBackgroundColor: AppColors.forestGreen,
-    );
+    return _base(
+      scheme,
+      isArabic: isArabic,
+    ).copyWith(scaffoldBackgroundColor: AppColors.forestGreen);
   }
 
   static ThemeData _base(ColorScheme scheme, {required bool isArabic}) {
@@ -46,7 +48,9 @@ class AppTheme {
         color: scheme.surface,
         elevation: 1,
         margin: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.sm,
+        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(AppSpacing.radiusLg)),
         ),
@@ -64,7 +68,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
         contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -77,7 +83,9 @@ class AppTheme {
           ),
         ),
       ),
-      snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+      ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         selectedItemColor: scheme.primary,
         unselectedItemColor: AppColors.mossGray,

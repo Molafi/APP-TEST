@@ -44,17 +44,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (Environment.isDemo) return;
     final user = ref.read(currentUserProvider);
     if (user == null) return;
-    await ref.read(profileRepositoryProvider).ensureProfile(
-          UserProfile(uid: user.uid, email: user.email, displayName: user.displayName),
+    await ref
+        .read(profileRepositoryProvider)
+        .ensureProfile(
+          UserProfile(
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+          ),
         );
   }
 
   String _titleFor(AppLocalizations l10n, int tab) => switch (tab) {
-        HomeTab.chat => l10n.chatTitle,
-        HomeTab.diagnose => l10n.diagnoseTitle,
-        HomeTab.weather => l10n.weatherTitle,
-        _ => l10n.profileTitle,
-      };
+    HomeTab.chat => l10n.chatTitle,
+    HomeTab.diagnose => l10n.diagnoseTitle,
+    HomeTab.weather => l10n.weatherTitle,
+    _ => l10n.profileTitle,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +72,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (next?.current.temperatureC == null) return;
       final unit = ref.read(unitSystemProvider);
       final location = ref.read(selectedLocationProvider);
-      ref.read(homeWidgetServiceProvider).update(
+      ref
+          .read(homeWidgetServiceProvider)
+          .update(
             city: location?.city ?? '',
-            temperature:
-                TemperatureFormat.format(next!.current.temperatureC, unit),
+            temperature: TemperatureFormat.format(
+              next!.current.temperatureC,
+              unit,
+            ),
           );
     });
 

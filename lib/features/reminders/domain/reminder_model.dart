@@ -5,14 +5,14 @@ enum ReminderType { watering, fertilizing, repotting, inspection, followUp }
 enum Recurrence { none, daily, weekly }
 
 ReminderType reminderTypeFrom(String? s) => ReminderType.values.firstWhere(
-      (e) => e.name == s,
-      orElse: () => ReminderType.watering,
-    );
+  (e) => e.name == s,
+  orElse: () => ReminderType.watering,
+);
 
 Recurrence recurrenceFrom(String? s) => Recurrence.values.firstWhere(
-      (e) => e.name == s,
-      orElse: () => Recurrence.none,
-    );
+  (e) => e.name == s,
+  orElse: () => Recurrence.none,
+);
 
 class Reminder {
   const Reminder({
@@ -59,27 +59,27 @@ class Reminder {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'plantName': plantName,
-        'type': type.name,
-        'note': note,
-        'scheduledAt': scheduledAt.toIso8601String(),
-        'recurrence': recurrence.name,
-        'enabled': enabled,
-        'createdAt': (createdAt ?? DateTime.now()).toIso8601String(),
-      };
+    'id': id,
+    'plantName': plantName,
+    'type': type.name,
+    'note': note,
+    'scheduledAt': scheduledAt.toIso8601String(),
+    'recurrence': recurrence.name,
+    'enabled': enabled,
+    'createdAt': (createdAt ?? DateTime.now()).toIso8601String(),
+  };
 
   factory Reminder.fromMap(Map<String, dynamic> m) => Reminder(
-        id: (m['id'] as String?) ?? '',
-        plantName: (m['plantName'] as String?) ?? '',
-        type: reminderTypeFrom(m['type'] as String?),
-        note: m['note'] as String?,
-        scheduledAt:
-            DateTime.tryParse(m['scheduledAt'] as String? ?? '') ?? DateTime.now(),
-        recurrence: recurrenceFrom(m['recurrence'] as String?),
-        enabled: (m['enabled'] as bool?) ?? true,
-        createdAt: DateTime.tryParse(m['createdAt'] as String? ?? ''),
-      );
+    id: (m['id'] as String?) ?? '',
+    plantName: (m['plantName'] as String?) ?? '',
+    type: reminderTypeFrom(m['type'] as String?),
+    note: m['note'] as String?,
+    scheduledAt:
+        DateTime.tryParse(m['scheduledAt'] as String? ?? '') ?? DateTime.now(),
+    recurrence: recurrenceFrom(m['recurrence'] as String?),
+    enabled: (m['enabled'] as bool?) ?? true,
+    createdAt: DateTime.tryParse(m['createdAt'] as String? ?? ''),
+  );
 
   static String encodeList(List<Reminder> list) =>
       jsonEncode(list.map((e) => e.toMap()).toList());

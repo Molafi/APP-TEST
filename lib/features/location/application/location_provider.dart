@@ -74,8 +74,9 @@ class LocationController extends StateNotifier<LocationState> {
     final String? raw = _cache.getString(AppConstants.prefSelectedLocation);
     if (raw == null) return;
     try {
-      final PlantLocation loc =
-          PlantLocation.fromMap(jsonDecode(raw) as Map<String, dynamic>);
+      final PlantLocation loc = PlantLocation.fromMap(
+        jsonDecode(raw) as Map<String, dynamic>,
+      );
       state = state.copyWith(location: loc, status: LocationStatus.ready);
     } catch (_) {}
   }
@@ -89,7 +90,8 @@ class LocationController extends StateNotifier<LocationState> {
         lon: pos.lon,
         locale: _locale,
       );
-      final PlantLocation loc = resolved ??
+      final PlantLocation loc =
+          resolved ??
           PlantLocation(
             latitude: pos.lat,
             longitude: pos.lon,
@@ -122,8 +124,10 @@ class LocationController extends StateNotifier<LocationState> {
     }
     state = state.copyWith(searching: true);
     _debounce = Timer(AppConfig.geocodeSearchDebounce, () async {
-      final List<PlantLocation> results =
-          await _geocoder.search(query, locale: _locale);
+      final List<PlantLocation> results = await _geocoder.search(
+        query,
+        locale: _locale,
+      );
       if (!mounted) return;
       state = state.copyWith(searchResults: results, searching: false);
     });
@@ -140,7 +144,9 @@ class LocationController extends StateNotifier<LocationState> {
       clearError: true,
     );
     _cache.setString(
-        AppConstants.prefSelectedLocation, jsonEncode(location.toMap()));
+      AppConstants.prefSelectedLocation,
+      jsonEncode(location.toMap()),
+    );
   }
 
   @override
@@ -152,8 +158,8 @@ class LocationController extends StateNotifier<LocationState> {
 
 final locationControllerProvider =
     StateNotifierProvider<LocationController, LocationState>((ref) {
-  return LocationController(ref);
-});
+      return LocationController(ref);
+    });
 
 /// Convenience: the currently selected location (or null). Watched by the AI
 /// context and weather providers.

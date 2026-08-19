@@ -20,15 +20,17 @@ class AiDiagnosisService {
     Map<String, String> context = const {},
     String? userNote,
   }) async {
-    final String raw = await _gateway.generate(AiRequest(
-      systemPrompt: AiPrompts.system(locale: locale),
-      userText: (userNote?.trim().isNotEmpty ?? false)
-          ? '${userNote!.trim()}\n\n${AiPrompts.diagnosisInstruction()}'
-          : AiPrompts.diagnosisInstruction(),
-      context: context,
-      image: image,
-      jsonMode: true,
-    ));
+    final String raw = await _gateway.generate(
+      AiRequest(
+        systemPrompt: AiPrompts.system(locale: locale),
+        userText: (userNote?.trim().isNotEmpty ?? false)
+            ? '${userNote!.trim()}\n\n${AiPrompts.diagnosisInstruction()}'
+            : AiPrompts.diagnosisInstruction(),
+        context: context,
+        image: image,
+        jsonMode: true,
+      ),
+    );
 
     try {
       return Diagnosis.parse(raw);

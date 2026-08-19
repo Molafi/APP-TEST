@@ -32,15 +32,18 @@ class ImageCompressor {
   Future<PreparedImage> prepare(Uint8List input) async {
     final img.Image? decoded = img.decodeImage(input);
     if (decoded == null) {
-      throw const AppException(AppErrorKind.invalidInput,
-          debugDetail: 'undecodable image');
+      throw const AppException(
+        AppErrorKind.invalidInput,
+        debugDetail: 'undecodable image',
+      );
     }
 
     // Bake in EXIF orientation, then drop metadata by re-encoding.
     img.Image oriented = img.bakeOrientation(decoded);
 
-    final int longest =
-        oriented.width > oriented.height ? oriented.width : oriented.height;
+    final int longest = oriented.width > oriented.height
+        ? oriented.width
+        : oriented.height;
     if (longest > AppConfig.maxImageDimension) {
       final double scale = AppConfig.maxImageDimension / longest;
       oriented = img.copyResize(

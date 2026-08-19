@@ -43,8 +43,10 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 children: [
                   const Icon(Icons.place_outlined, size: 14),
                   const SizedBox(width: 2),
-                  Text(location.city,
-                      style: Theme.of(context).textTheme.bodySmall),
+                  Text(
+                    location.city,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                   const Icon(Icons.arrow_drop_down, size: 16),
                 ],
               ),
@@ -60,10 +62,13 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 WeatherVisuals.icon(weather!.current.condition),
                 size: 18,
                 semanticLabel: WeatherVisuals.label(
-                    weather.current.condition, locale),
+                  weather.current.condition,
+                  locale,
+                ),
               ),
               label: Text(
-                  TemperatureFormat.format(weather.current.temperatureC, unit)),
+                TemperatureFormat.format(weather.current.temperatureC, unit),
+              ),
               onPressed: () =>
                   ref.read(homeTabProvider.notifier).state = HomeTab.weather,
             ),

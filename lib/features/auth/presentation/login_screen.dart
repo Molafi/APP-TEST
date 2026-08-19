@@ -69,8 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: l10n.email,
                 prefixIcon: const Icon(Icons.mail_outline),
               ),
-              validator: (v) =>
-                  localizeValidation(l10n, Validators.email(v)),
+              validator: (v) => localizeValidation(l10n, Validators.email(v)),
             ),
             const SizedBox(height: AppSpacing.lg),
             PasswordField(
@@ -85,9 +84,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: TextButton(
                 onPressed: busy
                     ? null
-                    : () => Navigator.of(context).push(MaterialPageRoute(
+                    : () => Navigator.of(context).push(
+                        MaterialPageRoute(
                           builder: (_) => const ForgotPasswordScreen(),
-                        )),
+                        ),
+                      ),
                 child: Text(l10n.forgotPassword),
               ),
             ),
@@ -98,15 +99,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.login),
             ),
             const SizedBox(height: AppSpacing.md),
             OutlinedButton.icon(
               onPressed: busy
                   ? null
-                  : () =>
-                      ref.read(authControllerProvider.notifier).signInWithGoogle(),
+                  : () => ref
+                        .read(authControllerProvider.notifier)
+                        .signInWithGoogle(),
               icon: const Icon(Icons.g_mobiledata, size: 28),
               label: Text(l10n.continueWithGoogle),
             ),
@@ -114,9 +117,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             TextButton(
               onPressed: busy
                   ? null
-                  : () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => const RegisterScreen(),
-                      )),
+                  : () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                    ),
               child: Text(l10n.noAccountPrompt),
             ),
           ],

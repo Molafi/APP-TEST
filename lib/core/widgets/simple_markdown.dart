@@ -24,25 +24,27 @@ class SimpleMarkdown extends StatelessWidget {
       }
       final String trimmed = line.trimLeft();
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('•  ', style: base),
-              Expanded(
-                child: RichText(
-                  text: _inline(trimmed.substring(2), base),
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('•  ', style: base),
+                Expanded(
+                  child: RichText(text: _inline(trimmed.substring(2), base)),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ));
+        );
       } else {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: RichText(text: _inline(trimmed, base)),
-        ));
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: RichText(text: _inline(trimmed, base)),
+          ),
+        );
       }
     }
 
@@ -63,19 +65,29 @@ class SimpleMarkdown extends StatelessWidget {
         spans.add(TextSpan(text: input.substring(index, m.start), style: base));
       }
       if (m.group(2) != null) {
-        spans.add(TextSpan(
+        spans.add(
+          TextSpan(
             text: m.group(2),
-            style: base.copyWith(fontWeight: FontWeight.bold)));
+            style: base.copyWith(fontWeight: FontWeight.bold),
+          ),
+        );
       } else if (m.group(4) != null) {
-        spans.add(TextSpan(
+        spans.add(
+          TextSpan(
             text: m.group(4),
-            style: base.copyWith(fontStyle: FontStyle.italic)));
+            style: base.copyWith(fontStyle: FontStyle.italic),
+          ),
+        );
       } else if (m.group(6) != null) {
-        spans.add(TextSpan(
+        spans.add(
+          TextSpan(
             text: m.group(6),
             style: base.copyWith(
-                fontFamily: 'monospace',
-                backgroundColor: Colors.black.withValues(alpha: 0.06))));
+              fontFamily: 'monospace',
+              backgroundColor: Colors.black.withValues(alpha: 0.06),
+            ),
+          ),
+        );
       }
       index = m.end;
     }

@@ -27,43 +27,54 @@ class DiagnosisScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final DiagnosisState state = ref.watch(diagnosisControllerProvider);
-    final DiagnosisController controller =
-        ref.read(diagnosisControllerProvider.notifier);
+    final DiagnosisController controller = ref.read(
+      diagnosisControllerProvider.notifier,
+    );
 
-    ref.listen(diagnosisControllerProvider.select((s) => s.error), (prev, next) {
+    ref.listen(diagnosisControllerProvider.select((s) => s.error), (
+      prev,
+      next,
+    ) {
       if (next != null && next != prev) {
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(
-              SnackBar(content: Text(ErrorMapper.message(l10n, next))));
+            SnackBar(content: Text(ErrorMapper.message(l10n, next))),
+          );
       }
     });
 
     return switch (state.stage) {
       DiagnosisStage.capture => Stack(
-          children: [
-            Positioned.fill(
-              child: CameraViewfinder(onImage: controller.setImage),
-            ),
-            Positioned(
-              top: AppSpacing.sm,
-              left: AppSpacing.sm,
-              child: SafeArea(
-                child: TextButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const DiagnosisHistoryScreen()),
+        children: [
+          Positioned.fill(
+            child: CameraViewfinder(onImage: controller.setImage),
+          ),
+          Positioned(
+            top: AppSpacing.sm,
+            left: AppSpacing.sm,
+            child: SafeArea(
+              child: TextButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const DiagnosisHistoryScreen(),
                   ),
-                  icon: const Icon(Icons.history),
-                  label: Text(l10n.diagnosisHistory),
                 ),
+                icon: const Icon(Icons.history),
+                label: Text(l10n.diagnosisHistory),
               ),
             ),
-          ],
-        ),
-      DiagnosisStage.confirm => _ConfirmView(state: state, controller: controller),
-      DiagnosisStage.analyzing =>
-        _AnalyzingView(state: state, onCancel: controller.cancelAnalysis),
+          ),
+        ],
+      ),
+      DiagnosisStage.confirm => _ConfirmView(
+        state: state,
+        controller: controller,
+      ),
+      DiagnosisStage.analyzing => _AnalyzingView(
+        state: state,
+        onCancel: controller.cancelAnalysis,
+      ),
       DiagnosisStage.result => _ResultView(state: state),
     };
   }
@@ -134,13 +145,17 @@ class _ConfirmView extends StatelessWidget {
     try {
       final Directory dir = Directory.systemTemp;
       final File temp = File(
-          '${dir.path}/ps_crop_${DateTime.now().millisecondsSinceEpoch}.jpg');
+        '${dir.path}/ps_crop_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
       await temp.writeAsBytes(bytes, flush: true);
 
       final CroppedFile? cropped = await ImageCropper().cropImage(
         sourcePath: temp.path,
         uiSettings: [
-          AndroidUiSettings(toolbarTitle: l10n.cropImage, lockAspectRatio: false),
+          AndroidUiSettings(
+            toolbarTitle: l10n.cropImage,
+            lockAspectRatio: false,
+          ),
           IOSUiSettings(title: l10n.cropImage),
         ],
       );
@@ -206,8 +221,12 @@ class _ResultView extends ConsumerWidget {
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-              child: Image.memory(state.imageBytes!,
-                  height: 200, width: double.infinity, fit: BoxFit.cover),
+              child: Image.memory(
+                state.imageBytes!,
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         DiagnosisResultCard(diagnosis: d, locale: locale),
@@ -220,7 +239,9 @@ class _ResultView extends ConsumerWidget {
               FilledButton.icon(
                 onPressed: state.saved ? null : controller.saveCurrent,
                 icon: Icon(state.saved ? Icons.check : Icons.save_outlined),
-                label: Text(state.saved ? l10n.diagnosisSaved : l10n.saveDiagnosis),
+                label: Text(
+                  state.saved ? l10n.diagnosisSaved : l10n.saveDiagnosis,
+                ),
               ),
               OutlinedButton.icon(
                 onPressed: () => _askFollowUp(context, ref, d),
@@ -255,7 +276,10 @@ class _ResultView extends ConsumerWidget {
   }
 
   Future<void> _share(
-      BuildContext context, AppLocalizations l10n, Diagnosis d) async {
+    BuildContext context,
+    AppLocalizations l10n,
+    Diagnosis d,
+  ) async {
     // Open the native share sheet with a plain-text summary.
     try {
       await Share.share(d.toShareText());

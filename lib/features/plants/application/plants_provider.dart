@@ -25,9 +25,9 @@ class PlantsState {
   bool get isEmpty => plants.isEmpty;
 
   PlantsState copyWith({List<Plant>? plants, bool? isLoading}) => PlantsState(
-        plants: plants ?? this.plants,
-        isLoading: isLoading ?? this.isLoading,
-      );
+    plants: plants ?? this.plants,
+    isLoading: isLoading ?? this.isLoading,
+  );
 }
 
 class PlantsController extends StateNotifier<PlantsState> {
@@ -59,7 +59,8 @@ class PlantsController extends StateNotifier<PlantsState> {
     String? notes,
     int? wateringIntervalDays,
   }) async {
-    final Plant plant = existing?.copyWith(
+    final Plant plant =
+        existing?.copyWith(
           name: name,
           species: species,
           place: place,
@@ -89,7 +90,8 @@ class PlantsController extends StateNotifier<PlantsState> {
   Future<void> remove(Plant plant) async {
     await _repo.delete(plant.id);
     state = state.copyWith(
-        plants: state.plants.where((p) => p.id != plant.id).toList());
+      plants: state.plants.where((p) => p.id != plant.id).toList(),
+    );
   }
 
   void _replaceInState(Plant plant) {
@@ -106,5 +108,5 @@ class PlantsController extends StateNotifier<PlantsState> {
 
 final plantsControllerProvider =
     StateNotifierProvider<PlantsController, PlantsState>((ref) {
-  return PlantsController(ref);
-});
+      return PlantsController(ref);
+    });

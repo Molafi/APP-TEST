@@ -5,8 +5,7 @@ import '../config/app_config.dart';
 class Validators {
   const Validators._();
 
-  static final RegExp _emailRegex =
-      RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
+  static final RegExp _emailRegex = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
 
   static String? email(String? value) {
     final String v = (value ?? '').trim();

@@ -25,8 +25,10 @@ class LeafLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color c = color ?? AppColors.leafGreen;
-    final String svg = _svg.replaceAll('COLOR',
-        '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}');
+    final String svg = _svg.replaceAll(
+      'COLOR',
+      '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}',
+    );
     return SvgPicture.string(
       svg,
       width: size,

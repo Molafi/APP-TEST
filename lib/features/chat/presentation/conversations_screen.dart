@@ -47,9 +47,13 @@ class ConversationsScreen extends ConsumerWidget {
                 return ListTile(
                   selected: active,
                   leading: Icon(
-                      active ? Icons.chat : Icons.chat_bubble_outline),
-                  title: Text(c.title,
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                    active ? Icons.chat : Icons.chat_bubble_outline,
+                  ),
+                  title: Text(
+                    c.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   subtitle: Text(
                     c.lastMessagePreview ??
                         DateFormatter.relativeUpdated(c.updatedAt, locale),
@@ -85,8 +89,12 @@ class ConversationsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _rename(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, Chat c) async {
+  Future<void> _rename(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Chat c,
+  ) async {
     final controller = TextEditingController(text: c.title);
     final String? title = await showDialog<String>(
       context: context,
@@ -95,10 +103,13 @@ class ConversationsScreen extends ConsumerWidget {
         content: TextField(controller: controller, autofocus: true),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              child: Text(l10n.save)),
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: Text(l10n.save),
+          ),
         ],
       ),
     );
@@ -109,19 +120,25 @@ class ConversationsScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _delete(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, Chat c) async {
+  Future<void> _delete(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Chat c,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         content: Text(l10n.deleteConversationConfirm),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.delete)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );

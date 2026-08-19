@@ -8,7 +8,11 @@ import '../../domain/diagnosis_model.dart';
 /// Structured diagnosis card. Confidence and likelihood are always shown with
 /// an icon + text label (never colour alone) for accessibility.
 class DiagnosisResultCard extends StatelessWidget {
-  const DiagnosisResultCard({super.key, required this.diagnosis, this.locale = 'en'});
+  const DiagnosisResultCard({
+    super.key,
+    required this.diagnosis,
+    this.locale = 'en',
+  });
 
   final Diagnosis diagnosis;
   final String locale;
@@ -19,10 +23,7 @@ class DiagnosisResultCard extends StatelessWidget {
 
     // Guard rails for non-plant / poor image results.
     if (!diagnosis.isPlantRelated) {
-      return _NoticeCard(
-        icon: Icons.help_outline,
-        text: l10n.notPlantRelated,
-      );
+      return _NoticeCard(icon: Icons.help_outline, text: l10n.notPlantRelated);
     }
     if (diagnosis.needsMoreInformation ||
         diagnosis.imageQuality != ImageQuality.good) {
@@ -45,9 +46,11 @@ class DiagnosisResultCard extends StatelessWidget {
               _Section(
                 emoji: '🌿',
                 title: l10n.diagnosisPlant,
-                body: Text(diagnosis.scientificName != null
-                    ? '${diagnosis.plantName} (${diagnosis.scientificName})'
-                    : diagnosis.plantName!),
+                body: Text(
+                  diagnosis.scientificName != null
+                      ? '${diagnosis.plantName} (${diagnosis.scientificName})'
+                      : diagnosis.plantName!,
+                ),
               ),
             if (diagnosis.whatISee.isNotEmpty)
               _Section(
@@ -68,20 +71,28 @@ class DiagnosisResultCard extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _LikelihoodChip(likelihood: i.likelihood, l10n: l10n),
+                            _LikelihoodChip(
+                              likelihood: i.likelihood,
+                              l10n: l10n,
+                            ),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(i.name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600)),
+                                  Text(
+                                    i.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                   if (i.reason.isNotEmpty)
-                                    Text(i.reason,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
+                                    Text(
+                                      i.reason,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
                                 ],
                               ),
                             ),
@@ -115,9 +126,9 @@ class DiagnosisResultCard extends StatelessWidget {
                   ? diagnosis.disclaimer
                   : l10n.aiDisclaimerLong,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.mossGray,
-                  ),
+                fontStyle: FontStyle.italic,
+                color: AppColors.mossGray,
+              ),
             ),
           ],
         ),
@@ -126,16 +137,34 @@ class DiagnosisResultCard extends StatelessWidget {
   }
 
   Widget _confidenceBadge(BuildContext context, AppLocalizations l10n) {
-    final (IconData icon, Color color, String label) = switch (diagnosis.confidence) {
-      Confidence.high => (Icons.verified, AppColors.confidenceHigh, l10n.confidenceHigh),
-      Confidence.medium => (Icons.check_circle_outline, AppColors.confidenceMedium, l10n.confidenceMedium),
-      Confidence.low => (Icons.info_outline, AppColors.confidenceLow, l10n.confidenceLow),
+    final (
+      IconData icon,
+      Color color,
+      String label,
+    ) = switch (diagnosis.confidence) {
+      Confidence.high => (
+        Icons.verified,
+        AppColors.confidenceHigh,
+        l10n.confidenceHigh,
+      ),
+      Confidence.medium => (
+        Icons.check_circle_outline,
+        AppColors.confidenceMedium,
+        l10n.confidenceMedium,
+      ),
+      Confidence.low => (
+        Icons.info_outline,
+        AppColors.confidenceLow,
+        l10n.confidenceLow,
+      ),
     };
     return Semantics(
       label: l10n.a11yConfidence(label),
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.xs,
+        ),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
@@ -145,8 +174,10 @@ class DiagnosisResultCard extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: color),
             const SizedBox(width: AppSpacing.xs),
-            Text('${l10n.diagnosisConfidence}: $label',
-                style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+            Text(
+              '${l10n.diagnosisConfidence}: $label',
+              style: TextStyle(color: color, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
@@ -155,7 +186,11 @@ class DiagnosisResultCard extends StatelessWidget {
 }
 
 class _Section extends StatelessWidget {
-  const _Section({required this.emoji, required this.title, required this.body});
+  const _Section({
+    required this.emoji,
+    required this.title,
+    required this.body,
+  });
   final String emoji;
   final String title;
   final Widget body;
@@ -167,8 +202,10 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$emoji  $title',
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            '$emoji  $title',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.xs),
           body,
         ],
@@ -185,9 +222,21 @@ class _LikelihoodChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color c, String label, IconData icon) = switch (likelihood) {
-      Likelihood.high => (AppColors.confidenceHigh, l10n.likelihoodHigh, Icons.arrow_upward),
-      Likelihood.medium => (AppColors.confidenceMedium, l10n.likelihoodMedium, Icons.drag_handle),
-      Likelihood.low => (AppColors.confidenceLow, l10n.likelihoodLow, Icons.arrow_downward),
+      Likelihood.high => (
+        AppColors.confidenceHigh,
+        l10n.likelihoodHigh,
+        Icons.arrow_upward,
+      ),
+      Likelihood.medium => (
+        AppColors.confidenceMedium,
+        l10n.likelihoodMedium,
+        Icons.drag_handle,
+      ),
+      Likelihood.low => (
+        AppColors.confidenceLow,
+        l10n.likelihoodLow,
+        Icons.arrow_downward,
+      ),
     };
     return Tooltip(
       message: label,
@@ -210,7 +259,10 @@ class _BulletList extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 2),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [const Text('•  '), Expanded(child: Text(s))],
+              children: [
+                const Text('•  '),
+                Expanded(child: Text(s)),
+              ],
             ),
           ),
       ],
@@ -233,8 +285,10 @@ class _NumberedList extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${i + 1}.  ',
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
+                Text(
+                  '${i + 1}.  ',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
                 Expanded(child: Text(items[i])),
               ],
             ),
@@ -263,8 +317,11 @@ class _NoticeCard extends StatelessWidget {
                 Icon(icon, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
-                    child: Text(text,
-                        style: Theme.of(context).textTheme.bodyLarge)),
+                  child: Text(
+                    text,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
               ],
             ),
             if (followUps != null && followUps!.isNotEmpty) ...[
@@ -274,7 +331,10 @@ class _NoticeCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 2),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [const Text('•  '), Expanded(child: Text(q))],
+                    children: [
+                      const Text('•  '),
+                      Expanded(child: Text(q)),
+                    ],
                   ),
                 ),
             ],

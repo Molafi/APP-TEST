@@ -67,9 +67,7 @@ class PlantDetailScreen extends ConsumerWidget {
           _InfoRow(
             icon: Icons.local_florist_outlined,
             label: l10n.plantSpecies,
-            value: (plant.species?.isNotEmpty ?? false)
-                ? plant.species!
-                : '—',
+            value: (plant.species?.isNotEmpty ?? false) ? plant.species! : '—',
           ),
           _InfoRow(
             icon: Icons.home_outlined,
@@ -86,8 +84,10 @@ class PlantDetailScreen extends ConsumerWidget {
             ),
           if (plant.notes != null && plant.notes!.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
-            Text(l10n.plantNotes,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.plantNotes,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(plant.notes!),
           ],
@@ -130,19 +130,26 @@ class PlantDetailScreen extends ConsumerWidget {
     Navigator.of(context).popUntil((r) => r.isFirst);
   }
 
-  Future<void> _scheduleWatering(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, Plant plant) async {
+  Future<void> _scheduleWatering(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Plant plant,
+  ) async {
     // Request notification permission the first time if needed.
     if (!ref.read(notificationsEnabledProvider)) {
-      final outcome =
-          await ref.read(permissionServiceProvider).requestNotifications();
+      final outcome = await ref
+          .read(permissionServiceProvider)
+          .requestNotifications();
       await ref
           .read(notificationsEnabledProvider.notifier)
           .set(outcome == PermissionOutcome.granted);
     }
     final weather = ref.read(currentWeatherDataProvider);
     final DateTime when = WateringScheduler.nextWatering(plant, weather);
-    await ref.read(reminderControllerProvider.notifier).add(
+    await ref
+        .read(reminderControllerProvider.notifier)
+        .add(
           plantName: plant.name,
           type: ReminderType.watering,
           scheduledAt: when,
@@ -156,19 +163,25 @@ class PlantDetailScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, Plant plant) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Plant plant,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         content: Text('${l10n.delete} "${plant.name}"?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.delete)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
@@ -179,7 +192,11 @@ class PlantDetailScreen extends ConsumerWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
   final IconData icon;
   final String label;
   final String value;

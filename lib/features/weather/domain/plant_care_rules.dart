@@ -18,8 +18,9 @@ class PlantCareRules {
         : current.uvIndex;
     if ((uvToday ?? 0) >= 6) tips.add(PlantCareTip.highUv);
 
-    final double? minToday =
-        data.daily.isNotEmpty ? data.daily.first.minC : current.temperatureC;
+    final double? minToday = data.daily.isNotEmpty
+        ? data.daily.first.minC
+        : current.temperatureC;
     if ((minToday ?? 99) <= 0) tips.add(PlantCareTip.freezing);
 
     if ((current.temperatureC ?? 0) >= 32) tips.add(PlantCareTip.hot);
@@ -27,9 +28,13 @@ class PlantCareRules {
     if ((current.humidity ?? 0) >= 70) tips.add(PlantCareTip.highHumidity);
 
     // "No rain expected" over the coming days.
-    final bool dryStretch = data.daily.take(5).every((d) =>
-        (d.precipitationSum ?? 0) < 0.2 &&
-        (d.precipitationProbabilityMax ?? 0) < 20);
+    final bool dryStretch = data.daily
+        .take(5)
+        .every(
+          (d) =>
+              (d.precipitationSum ?? 0) < 0.2 &&
+              (d.precipitationProbabilityMax ?? 0) < 20,
+        );
     if (data.daily.length >= 3 && dryStretch) tips.add(PlantCareTip.noRain);
 
     if (tips.isEmpty) tips.add(PlantCareTip.mild);

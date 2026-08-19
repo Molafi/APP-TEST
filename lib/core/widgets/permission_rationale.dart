@@ -34,13 +34,17 @@ class PermissionRationale extends StatelessWidget {
           children: [
             Icon(icon, size: 56, color: Theme.of(context).colorScheme.primary),
             const SizedBox(height: AppSpacing.lg),
-            Text(title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: AppSpacing.sm),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const SizedBox(height: AppSpacing.xl),
             FilledButton(onPressed: onPrimary, child: Text(primaryLabel)),
             if (secondaryLabel != null && onSecondary != null) ...[

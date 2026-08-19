@@ -42,7 +42,7 @@ enum UnitSystem { metric, imperial }
 extension UnitSystemX on UnitSystem {
   String get id => name;
   static UnitSystem fromId(String? id) => UnitSystem.values.firstWhere(
-        (e) => e.name == id,
-        orElse: () => UnitSystem.metric,
-      );
+    (e) => e.name == id,
+    orElse: () => UnitSystem.metric,
+  );
 }

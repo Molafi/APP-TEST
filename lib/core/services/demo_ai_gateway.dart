@@ -76,7 +76,7 @@ class DemoAiGateway extends AiGateway {
 
     final String ctx = request.context['temperature'] != null
         ? '\n\nYour local conditions (${request.context['city'] ?? 'your area'}, '
-            '${request.context['temperature']}) are factored into this advice.'
+              '${request.context['temperature']}) are factored into this advice.'
         : '';
 
     return '🌿 **Assessment**\n$assessment\n\n'
@@ -110,11 +110,11 @@ class DemoAiGateway extends AiGateway {
         'needsMoreInformation': true,
         'followUpQuestions': [
           'Could you retake the photo in bright, indirect light?',
-          'Please fill the frame with the affected leaf or area.'
+          'Please fill the frame with the affected leaf or area.',
         ],
         'disclaimer':
             'AI suggestions may be inaccurate and do not replace a qualified '
-                'botanist or agricultural professional.'
+            'botanist or agricultural professional.',
       });
     }
 
@@ -125,40 +125,38 @@ class DemoAiGateway extends AiGateway {
       'scientificName': null,
       'whatISee':
           'Several leaves show yellowing at the margins with a few small brown '
-              'spots. Overall the plant looks otherwise upright.',
+          'spots. Overall the plant looks otherwise upright.',
       'possibleIssues': [
         {
           'name': 'Overwatering / root stress',
           'likelihood': 'medium',
-          'reason': 'Marginal yellowing is commonly linked to soggy soil.'
+          'reason': 'Marginal yellowing is commonly linked to soggy soil.',
         },
         {
           'name': 'Nutrient deficiency',
           'likelihood': 'low',
-          'reason': 'Uniform yellowing can indicate low nitrogen.'
-        }
+          'reason': 'Uniform yellowing can indicate low nitrogen.',
+        },
       ],
       'treatmentSteps': [
         'Let the top few centimetres of soil dry before watering again.',
         'Ensure the pot has drainage holes and empty any saucer.',
-        'Remove severely affected leaves with clean scissors.'
+        'Remove severely affected leaves with clean scissors.',
       ],
       'preventionTips': [
         'Water based on soil moisture, not a fixed schedule.',
-        'Provide bright, indirect light and good airflow.'
+        'Provide bright, indirect light and good airflow.',
       ],
       'safetyNotes': [
-        'If using any fertilizer, follow label rates and keep away from pets.'
+        'If using any fertilizer, follow label rates and keep away from pets.',
       ],
       'confidence': 'medium',
       'needsMoreInformation': false,
-      'followUpQuestions': [
-        'How often are you currently watering this plant?'
-      ],
+      'followUpQuestions': ['How often are you currently watering this plant?'],
       'disclaimer':
           'AI suggestions may be inaccurate and do not replace a qualified '
-              'botanist, horticulturist or local agricultural authority. This is '
-              'a demo response.'
+          'botanist, horticulturist or local agricultural authority. This is '
+          'a demo response.',
     });
   }
 }
