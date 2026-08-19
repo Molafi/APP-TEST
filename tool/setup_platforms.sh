@@ -33,10 +33,12 @@ if [[ -f android/app/build.gradle.kts ]]; then
   fi
 fi
 
-echo "==> Generating android/ and ios/ (org: $ORG)"
+echo "==> Generating android/, ios/ and web/ (org: $ORG)"
 # --platforms is deliberate: a bare `flutter create .` can clobber lib/main.dart
 # and test/widget_test.dart with template versions.
-flutter create --platforms=android,ios --org "$ORG" .
+# web is included because it needs no native configuration and gives you a
+# zero-credential way to run the app (`flutter run -d chrome`).
+flutter create --platforms=android,ios,web --org "$ORG" .
 
 MANIFEST="android/app/src/main/AndroidManifest.xml"
 GRADLE="android/app/build.gradle.kts"

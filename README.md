@@ -37,17 +37,25 @@ and plant-care advice — in **English or Arabic (full RTL)**.
 
 ---
 
-## 🚦 Demo mode (default)
+## 🚦 Demo mode (default) — how to run
 
 The app ships configured to run in **demo mode**: an in-memory auth fake, local
-(SharedPreferences) storage, canned AI responses, and a sample location. This
-means it launches and works end-to-end **without any Firebase or Groq setup**.
+(SharedPreferences) storage, canned AI responses, and a sample location. It works
+end-to-end **without any Firebase or Groq setup** — any email/password logs in.
+
+Requires **Flutter 3.35 or newer** (see Quality gates).
 
 ```bash
+tool/setup_platforms.sh com.yourcompany   # once: creates android/, ios/, web/
 flutter pub get
-flutter gen-l10n            # regenerates lib/l10n/app_localizations*.dart
-flutter run                 # DEMO_MODE=true by default
+flutter run -d chrome                     # fastest: no Android SDK or Xcode needed
 ```
+
+`flutter run` with no `-d` targets a connected device or emulator instead.
+
+**Verified working:** the demo flow was driven end to end in a real browser —
+onboarding → skip → login → chat, with the AI returning a structured Markdown
+answer and the weather context strip populated.
 
 > Note: `lib/l10n/app_localizations*.dart` is committed so the project analyzes
 > immediately, and the committed copies are the exact `gen-l10n` output. Because
