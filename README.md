@@ -223,8 +223,25 @@ it does and for anyone merging by hand.
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 ```
-(`RECORD_AUDIO` is needed for voice dictation via `speech_to_text`.)
+(`RECORD_AUDIO` is needed for voice dictation via `speech_to_text`;
+`RECEIVE_BOOT_COMPLETED` lets pending reminders survive a reboot.)
+
+Android 11+ package visibility — inside `<queries>`, or `speech_to_text` and
+`flutter_tts` silently do nothing:
+```xml
+<intent><action android:name="android.speech.RecognitionService" /></intent>
+<intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>
+```
+
+`image_cropper` needs its activity declared inside `<application>`:
+```xml
+<activity
+    android:name="com.yalantis.ucrop.UCropActivity"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+```
 - `minSdkVersion 23` (Firebase Auth), `compileSdk`/`targetSdk` = latest stable.
 - **Enable core library desugaring** (required by `flutter_local_notifications`).
   In `android/app/build.gradle.kts`, inside `compileOptions { ... }` add:
@@ -403,6 +420,16 @@ native files.
   nothing.
 - Reminder notification bodies are **hardcoded English**
   (`reminder_provider.dart`), so they don't follow the app language.
+- `NotificationService.scheduleReminder` **swallows all failures** into a
+  `debugPrint`, so a rejected schedule still shows as an enabled reminder.
+- "Delete all my data" has two edge cases: a conversation with **>500 messages**
+  exceeds Firestore's `WriteBatch` limit, and if the local `conversations` index
+  is ever corrupt, `LocalConversationsRepository.list()` returns `[]` and the
+  orphaned `chat_messages_<id>` blobs cannot be reached (`LocalCacheService` has
+  no key enumeration, so there is no prefix sweep).
+- The four bug fixes in this branch **ship without regression tests**. Deletion,
+  weekly recurrence and composer teardown have no coverage; the empty-state
+  overflow is only covered incidentally by the existing widget tests.
 - There is **no profile editing UI** despite the `editProfile`/`displayName`
   strings; the Profile "Edit profile" tile opens Settings. The Terms of Service
   tile also opens the Privacy screen — there is no ToS content.

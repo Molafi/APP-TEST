@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -24,6 +25,7 @@ class NotificationService {
   Future<void> init() async {
     if (_initialised) return;
     tzdata.initializeTimeZones();
+    await _setLocalTimeZone();
     const AndroidInitializationSettings android = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -41,6 +43,20 @@ class NotificationService {
         >()
         ?.createNotificationChannel(_channel);
     _initialised = true;
+  }
+
+  /// Points `tz.local` at the device's zone. Without this it stays UTC, so a
+  /// reminder picked for 23:00 would be scheduled as 23:00 UTC — and because
+  /// weekly reminders match on weekday *and* time, an off-UTC user could get
+  /// them on the wrong day entirely.
+  Future<void> _setLocalTimeZone() async {
+    try {
+      final String name = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(name));
+    } catch (_) {
+      // Unknown/unavailable zone: fall back to the UTC default rather than
+      // preventing reminders from being scheduled at all.
+    }
   }
 
   Future<void> scheduleReminder({

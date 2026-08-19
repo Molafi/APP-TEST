@@ -21,6 +21,12 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
+          # Pinned rather than floating on `channel: stable`: the repo is
+          # formatted with the Dart 3.9 tall-style formatter and the
+          # `dart format --set-exit-if-changed` gate below would break whenever
+          # stable's formatter changes. 3.35 is also the floor required by
+          # RadioGroup in settings_screen.dart.
+          flutter-version: "3.35.x"
           channel: stable
           cache: true
 

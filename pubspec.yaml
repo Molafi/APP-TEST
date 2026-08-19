@@ -68,6 +68,9 @@ dependencies:
   # Notifications
   flutter_local_notifications: ^17.2.3
   timezone: ^0.9.4
+  # Resolves the device's IANA zone so reminders fire in local time rather than
+  # UTC (timezone's default for tz.local).
+  flutter_timezone: ^3.0.1
 
 dev_dependencies:
   flutter_test:

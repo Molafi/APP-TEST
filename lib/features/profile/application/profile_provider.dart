@@ -38,15 +38,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
   Future<DeletionResult> deleteAllData() async {
     state = const AsyncLoading<void>();
     try {
-      // chatRepositoryProvider is scoped to the *active* conversation, so
-      // deleting through it alone would leave every other conversation's
-      // messages on disk. Delete each conversation explicitly instead: the
-      // repository's delete() also drops that chat's `chat_messages_<id>` cache
-      // entry (local) or its messages subcollection (Firestore).
-      final conversationsRepo = _ref.read(conversationsRepositoryProvider);
-      for (final chat in await conversationsRepo.list()) {
-        await conversationsRepo.delete(chat.id);
-      }
+      // Cheap, reliable deletions first. The per-conversation sweep below is N
+      // sequential round trips against Firestore and is by far the most likely
+      // step to fail; running it last means a network failure can no longer
+      // abort deletions that would otherwise have completed.
       await _ref.read(chatRepositoryProvider).deleteAll();
       await _ref.read(diagnosisRepositoryProvider).deleteAll();
       await _ref.read(plantsRepositoryProvider).deleteAll();
@@ -55,6 +50,17 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
       for (final r in [...reminders]) {
         await reminderCtrl.remove(r);
       }
+
+      // chatRepositoryProvider above is scoped to the *active* conversation, so
+      // it leaves every other conversation's messages behind. Delete each one
+      // explicitly: the repository's delete() also drops that chat's
+      // `chat_messages_<id>` cache entry (local) or its messages subcollection
+      // (Firestore).
+      final conversationsRepo = _ref.read(conversationsRepositoryProvider);
+      for (final chat in await conversationsRepo.list()) {
+        await conversationsRepo.delete(chat.id);
+      }
+
       _clearPrivateCaches();
       _clearPrivateState();
       state = const AsyncData<void>(null);
@@ -117,6 +123,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
   /// Invalidates user-specific providers so no stale private data lingers.
   void _clearPrivateState() {
     _ref.invalidate(chatControllerProvider);
+    // Without this the conversations list keeps rendering deleted titles and
+    // last-message previews (user-authored content) until restart, and opening
+    // one would re-upsert its metadata.
+    _ref.invalidate(conversationsControllerProvider);
     _ref.invalidate(diagnosisControllerProvider);
     _ref.invalidate(diagnosisHistoryProvider);
     _ref.invalidate(plantsControllerProvider);
