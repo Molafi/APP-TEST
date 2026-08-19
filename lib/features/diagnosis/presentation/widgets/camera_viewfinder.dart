@@ -24,7 +24,14 @@ class CameraViewfinder extends ConsumerStatefulWidget {
   ConsumerState<CameraViewfinder> createState() => _CameraViewfinderState();
 }
 
-enum _CamState { initializing, rationale, denied, permanentlyDenied, unsupported, ready }
+enum _CamState {
+  initializing,
+  rationale,
+  denied,
+  permanentlyDenied,
+  unsupported,
+  ready,
+}
 
 class _CameraViewfinderState extends ConsumerState<CameraViewfinder>
     with WidgetsBindingObserver {
@@ -64,8 +71,9 @@ class _CameraViewfinderState extends ConsumerState<CameraViewfinder>
 
   Future<void> _requestAndStart() async {
     setState(() => _stateEnum = _CamState.initializing);
-    final PermissionOutcome outcome =
-        await ref.read(permissionServiceProvider).requestCamera();
+    final PermissionOutcome outcome = await ref
+        .read(permissionServiceProvider)
+        .requestCamera();
     if (!mounted) return;
     switch (outcome) {
       case PermissionOutcome.granted:
@@ -153,8 +161,9 @@ class _CameraViewfinderState extends ConsumerState<CameraViewfinder>
 
   Future<void> _pickFromGallery() async {
     try {
-      final XFile? file =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
+      final XFile? file = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
       if (file == null) return;
       widget.onImage(await file.readAsBytes());
     } catch (_) {}

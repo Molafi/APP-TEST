@@ -16,18 +16,18 @@ class Chat {
   final String? lastMessagePreview;
 
   Map<String, dynamic> toMap() => {
-        'title': title,
-        'lastMessagePreview': lastMessagePreview,
-        // timestamps set with server values by the repository.
-      };
+    'title': title,
+    'lastMessagePreview': lastMessagePreview,
+    // timestamps set with server values by the repository.
+  };
 
   factory Chat.fromMap(String id, Map<String, dynamic> map) => Chat(
-        id: id,
-        title: (map['title'] as String?) ?? 'Conversation',
-        createdAt: _toDate(map['createdAt']) ?? DateTime.now(),
-        updatedAt: _toDate(map['updatedAt']) ?? DateTime.now(),
-        lastMessagePreview: map['lastMessagePreview'] as String?,
-      );
+    id: id,
+    title: (map['title'] as String?) ?? 'Conversation',
+    createdAt: _toDate(map['createdAt']) ?? DateTime.now(),
+    updatedAt: _toDate(map['updatedAt']) ?? DateTime.now(),
+    lastMessagePreview: map['lastMessagePreview'] as String?,
+  );
 
   static DateTime? _toDate(Object? value) {
     if (value == null) return null;

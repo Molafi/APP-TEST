@@ -28,8 +28,10 @@ final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   if (!Environment.isDemo && user != null) {
     return FirestoreChatRepository(uid: user.uid, chatId: chatId);
   }
-  return LocalChatRepository(ref.watch(localCacheServiceProvider),
-      chatId: chatId);
+  return LocalChatRepository(
+    ref.watch(localCacheServiceProvider),
+    chatId: chatId,
+  );
 });
 
 @immutable
@@ -99,7 +101,9 @@ class ChatController extends StateNotifier<ChatState> {
     } catch (e) {
       if (!mounted) return;
       state = state.copyWith(
-          isLoading: false, error: ErrorMapper.fromException(e));
+        isLoading: false,
+        error: ErrorMapper.fromException(e),
+      );
     }
   }
 
@@ -193,8 +197,7 @@ class ChatController extends StateNotifier<ChatState> {
           state = state.copyWith(
             isTyping: false,
             messages: [
-              for (final m in state.messages)
-                m.id == userMsg.id ? sentUser : m,
+              for (final m in state.messages) m.id == userMsg.id ? sentUser : m,
               ChatMessage(
                 id: assistantId,
                 role: MessageRole.assistant,
@@ -230,15 +233,21 @@ class ChatController extends StateNotifier<ChatState> {
       unawaited(_repo.saveMessage(finalAssistant));
       // Update the conversation list (recency, preview, and auto-title from the
       // first user message).
-      unawaited(_ref
-          .read(conversationsControllerProvider.notifier)
-          .touch(_ref.read(currentChatIdProvider),
-              preview: latest, autoTitle: userMsg.text));
+      unawaited(
+        _ref
+            .read(conversationsControllerProvider.notifier)
+            .touch(
+              _ref.read(currentChatIdProvider),
+              preview: latest,
+              autoTitle: userMsg.text,
+            ),
+      );
     } catch (e) {
       if (!mounted || seq != _requestSeq) return;
       final AppException err = ErrorMapper.fromException(e);
-      final ChatMessage failedUser =
-          userMsg.copyWith(status: MessageStatus.failed);
+      final ChatMessage failedUser = userMsg.copyWith(
+        status: MessageStatus.failed,
+      );
       state = state.copyWith(
         isTyping: false,
         error: err,
@@ -286,7 +295,8 @@ final _localeCodeProvider = Provider<String>((ref) {
   return code == 'ar' ? 'ar' : 'en';
 });
 
-final chatControllerProvider =
-    StateNotifierProvider<ChatController, ChatState>((ref) {
-  return ChatController(ref);
-});
+final chatControllerProvider = StateNotifierProvider<ChatController, ChatState>(
+  (ref) {
+    return ChatController(ref);
+  },
+);

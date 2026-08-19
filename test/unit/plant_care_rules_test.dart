@@ -60,14 +60,14 @@ void main() {
   });
 
   test('dry stretch triggers noRain tip', () {
-    final tips =
-        PlantCareRules.compute(_build(precipSum: 0, precipProb: 5));
+    final tips = PlantCareRules.compute(_build(precipSum: 0, precipProb: 5));
     expect(tips, contains(PlantCareTip.noRain));
   });
 
   test('mild fallback when nothing notable', () {
     final tips = PlantCareRules.compute(
-        _build(temp: 20, humidity: 40, uvMax: 3, minC: 12));
+      _build(temp: 20, humidity: 40, uvMax: 3, minC: 12),
+    );
     expect(tips, contains(PlantCareTip.mild));
   });
 }

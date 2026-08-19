@@ -8,8 +8,12 @@ import 'test_app.dart';
 void main() {
   testWidgets('renders email, password and login button', (tester) async {
     final overrides = await defaultOverrides();
-    await pumpApp(tester, const LoginScreen(),
-        overrides: overrides, scaffoldWrap: (c) => c);
+    await pumpApp(
+      tester,
+      const LoginScreen(),
+      overrides: overrides,
+      scaffoldWrap: (c) => c,
+    );
 
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Password'), findsOneWidget);
@@ -19,8 +23,12 @@ void main() {
 
   testWidgets('shows validation errors on empty submit', (tester) async {
     final overrides = await defaultOverrides();
-    await pumpApp(tester, const LoginScreen(),
-        overrides: overrides, scaffoldWrap: (c) => c);
+    await pumpApp(
+      tester,
+      const LoginScreen(),
+      overrides: overrides,
+      scaffoldWrap: (c) => c,
+    );
 
     // Tap the primary Log in button (the FilledButton).
     await tester.tap(find.widgetWithText(FilledButton, 'Log in'));
@@ -32,13 +40,18 @@ void main() {
 
   testWidgets('renders in Arabic (RTL)', (tester) async {
     final overrides = await defaultOverrides();
-    await pumpApp(tester, const LoginScreen(),
-        overrides: overrides,
-        locale: const Locale('ar'),
-        scaffoldWrap: (c) => c);
+    await pumpApp(
+      tester,
+      const LoginScreen(),
+      overrides: overrides,
+      locale: const Locale('ar'),
+      scaffoldWrap: (c) => c,
+    );
 
     expect(find.text('البريد الإلكتروني'), findsOneWidget);
-    expect(Directionality.of(tester.element(find.byType(LoginScreen))),
-        TextDirection.rtl);
+    expect(
+      Directionality.of(tester.element(find.byType(LoginScreen))),
+      TextDirection.rtl,
+    );
   });
 }

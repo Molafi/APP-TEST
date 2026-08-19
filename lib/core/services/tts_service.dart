@@ -12,11 +12,11 @@ class TtsService {
   bool _speaking = false;
 
   static String _voiceLocale(String appLocale) => switch (appLocale) {
-        'ar' => 'ar',
-        'fr' => 'fr-FR',
-        'es' => 'es-ES',
-        _ => 'en-US',
-      };
+    'ar' => 'ar',
+    'fr' => 'fr-FR',
+    'es' => 'es-ES',
+    _ => 'en-US',
+  };
 
   Future<void> speak(String text, {String locale = 'en'}) async {
     try {

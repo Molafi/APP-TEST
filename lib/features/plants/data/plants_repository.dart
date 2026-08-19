@@ -19,8 +19,7 @@ class LocalPlantsRepository implements PlantsRepository {
   final LocalCacheService _cache;
 
   @override
-  Future<List<Plant>> load() async =>
-      Plant.decodeList(_cache.getString(_key));
+  Future<List<Plant>> load() async => Plant.decodeList(_cache.getString(_key));
 
   @override
   Future<void> upsert(Plant plant) async {
@@ -48,7 +47,7 @@ class LocalPlantsRepository implements PlantsRepository {
 /// Firestore-backed store: users/{uid}/plants/{id}.
 class FirestorePlantsRepository implements PlantsRepository {
   FirestorePlantsRepository({required this.uid, FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+    : _db = firestore ?? FirebaseFirestore.instance;
 
   final String uid;
   final FirebaseFirestore _db;

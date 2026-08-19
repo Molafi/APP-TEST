@@ -51,18 +51,24 @@ class RemindersScreen extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        tooltip: r.enabled ? l10n.reminderPause : l10n.reminderResume,
-                        icon: Icon(r.enabled
-                            ? Icons.pause_circle_outline
-                            : Icons.play_circle_outline),
-                        onPressed: () =>
-                            ref.read(reminderControllerProvider.notifier).toggle(r),
+                        tooltip: r.enabled
+                            ? l10n.reminderPause
+                            : l10n.reminderResume,
+                        icon: Icon(
+                          r.enabled
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
+                        ),
+                        onPressed: () => ref
+                            .read(reminderControllerProvider.notifier)
+                            .toggle(r),
                       ),
                       IconButton(
                         tooltip: l10n.delete,
                         icon: const Icon(Icons.delete_outline),
-                        onPressed: () =>
-                            ref.read(reminderControllerProvider.notifier).remove(r),
+                        onPressed: () => ref
+                            .read(reminderControllerProvider.notifier)
+                            .remove(r),
                       ),
                     ],
                   ),
@@ -74,33 +80,37 @@ class RemindersScreen extends ConsumerWidget {
   }
 
   IconData _typeIcon(ReminderType t) => switch (t) {
-        ReminderType.watering => Icons.water_drop_outlined,
-        ReminderType.fertilizing => Icons.spa_outlined,
-        ReminderType.repotting => Icons.yard_outlined,
-        ReminderType.inspection => Icons.search,
-        ReminderType.followUp => Icons.chat_outlined,
-      };
+    ReminderType.watering => Icons.water_drop_outlined,
+    ReminderType.fertilizing => Icons.spa_outlined,
+    ReminderType.repotting => Icons.yard_outlined,
+    ReminderType.inspection => Icons.search,
+    ReminderType.followUp => Icons.chat_outlined,
+  };
 
   String _typeLabel(AppLocalizations l10n, ReminderType t) => switch (t) {
-        ReminderType.watering => l10n.reminderWatering,
-        ReminderType.fertilizing => l10n.reminderFertilizing,
-        ReminderType.repotting => l10n.reminderRepotting,
-        ReminderType.inspection => l10n.reminderInspection,
-        ReminderType.followUp => l10n.reminderFollowUp,
-      };
+    ReminderType.watering => l10n.reminderWatering,
+    ReminderType.fertilizing => l10n.reminderFertilizing,
+    ReminderType.repotting => l10n.reminderRepotting,
+    ReminderType.inspection => l10n.reminderInspection,
+    ReminderType.followUp => l10n.reminderFollowUp,
+  };
 
   String _recurrenceLabel(AppLocalizations l10n, Recurrence r) => switch (r) {
-        Recurrence.none => l10n.recurrenceNone,
-        Recurrence.daily => l10n.recurrenceDaily,
-        Recurrence.weekly => l10n.recurrenceWeekly,
-      };
+    Recurrence.none => l10n.recurrenceNone,
+    Recurrence.daily => l10n.recurrenceDaily,
+    Recurrence.weekly => l10n.recurrenceWeekly,
+  };
 
   Future<void> _openEditor(
-      BuildContext context, WidgetRef ref, Reminder? existing) async {
+    BuildContext context,
+    WidgetRef ref,
+    Reminder? existing,
+  ) async {
     // Ask for notification permission the first time reminders are used.
     if (existing == null && !ref.read(notificationsEnabledProvider)) {
-      final outcome =
-          await ref.read(permissionServiceProvider).requestNotifications();
+      final outcome = await ref
+          .read(permissionServiceProvider)
+          .requestNotifications();
       await ref
           .read(notificationsEnabledProvider.notifier)
           .set(outcome == PermissionOutcome.granted);
@@ -127,14 +137,16 @@ class _ReminderEditor extends ConsumerStatefulWidget {
 }
 
 class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
-  late final TextEditingController _name =
-      TextEditingController(text: widget.existing?.plantName ?? '');
-  late final TextEditingController _note =
-      TextEditingController(text: widget.existing?.note ?? '');
+  late final TextEditingController _name = TextEditingController(
+    text: widget.existing?.plantName ?? '',
+  );
+  late final TextEditingController _note = TextEditingController(
+    text: widget.existing?.note ?? '',
+  );
   late ReminderType _type = widget.existing?.type ?? ReminderType.watering;
-  late Recurrence _recurrence =
-      widget.existing?.recurrence ?? Recurrence.none;
-  late DateTime _when = widget.existing?.scheduledAt ??
+  late Recurrence _recurrence = widget.existing?.recurrence ?? Recurrence.none;
+  late DateTime _when =
+      widget.existing?.scheduledAt ??
       DateTime.now().add(const Duration(hours: 1));
 
   @override
@@ -157,8 +169,15 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
       initialTime: TimeOfDay.fromDateTime(_when),
     );
     if (time == null) return;
-    setState(() => _when =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute));
+    setState(
+      () => _when = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      ),
+    );
   }
 
   Future<void> _save() async {
@@ -179,13 +198,15 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
         recurrence: _recurrence,
       );
     } else {
-      await controller.update(widget.existing!.copyWith(
-        plantName: _name.text.trim(),
-        type: _type,
-        note: _note.text.trim(),
-        scheduledAt: _when,
-        recurrence: _recurrence,
-      ));
+      await controller.update(
+        widget.existing!.copyWith(
+          plantName: _name.text.trim(),
+          type: _type,
+          note: _note.text.trim(),
+          scheduledAt: _when,
+          recurrence: _recurrence,
+        ),
+      );
     }
     if (mounted) await Navigator.of(context).maybePop();
   }
@@ -200,8 +221,7 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.addReminder,
-              style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.addReminder, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSpacing.lg),
           TextField(
             controller: _name,
@@ -213,20 +233,25 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
             decoration: InputDecoration(labelText: l10n.reminderType),
             items: [
               DropdownMenuItem(
-                  value: ReminderType.watering,
-                  child: Text(l10n.reminderWatering)),
+                value: ReminderType.watering,
+                child: Text(l10n.reminderWatering),
+              ),
               DropdownMenuItem(
-                  value: ReminderType.fertilizing,
-                  child: Text(l10n.reminderFertilizing)),
+                value: ReminderType.fertilizing,
+                child: Text(l10n.reminderFertilizing),
+              ),
               DropdownMenuItem(
-                  value: ReminderType.repotting,
-                  child: Text(l10n.reminderRepotting)),
+                value: ReminderType.repotting,
+                child: Text(l10n.reminderRepotting),
+              ),
               DropdownMenuItem(
-                  value: ReminderType.inspection,
-                  child: Text(l10n.reminderInspection)),
+                value: ReminderType.inspection,
+                child: Text(l10n.reminderInspection),
+              ),
               DropdownMenuItem(
-                  value: ReminderType.followUp,
-                  child: Text(l10n.reminderFollowUp)),
+                value: ReminderType.followUp,
+                child: Text(l10n.reminderFollowUp),
+              ),
             ],
             onChanged: (v) => setState(() => _type = v ?? _type),
           ),
@@ -236,11 +261,17 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
             decoration: InputDecoration(labelText: l10n.reminderRecurrence),
             items: [
               DropdownMenuItem(
-                  value: Recurrence.none, child: Text(l10n.recurrenceNone)),
+                value: Recurrence.none,
+                child: Text(l10n.recurrenceNone),
+              ),
               DropdownMenuItem(
-                  value: Recurrence.daily, child: Text(l10n.recurrenceDaily)),
+                value: Recurrence.daily,
+                child: Text(l10n.recurrenceDaily),
+              ),
               DropdownMenuItem(
-                  value: Recurrence.weekly, child: Text(l10n.recurrenceWeekly)),
+                value: Recurrence.weekly,
+                child: Text(l10n.recurrenceWeekly),
+              ),
             ],
             onChanged: (v) => setState(() => _recurrence = v ?? _recurrence),
           ),
@@ -250,7 +281,8 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
             leading: const Icon(Icons.schedule),
             title: Text(l10n.reminderDateTime),
             subtitle: Text(
-                '${DateFormatter.dayAndDate(_when, locale)} · ${DateFormatter.time(_when, locale)}'),
+              '${DateFormatter.dayAndDate(_when, locale)} · ${DateFormatter.time(_when, locale)}',
+            ),
             trailing: const Icon(Icons.edit_calendar_outlined),
             onTap: _pickDateTime,
           ),

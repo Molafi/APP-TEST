@@ -7,22 +7,22 @@ enum Confidence { low, medium, high }
 enum ImageQuality { good, poor, unusable }
 
 Likelihood likelihoodFrom(String? s) => switch (s?.toLowerCase()) {
-      'high' => Likelihood.high,
-      'medium' => Likelihood.medium,
-      _ => Likelihood.low,
-    };
+  'high' => Likelihood.high,
+  'medium' => Likelihood.medium,
+  _ => Likelihood.low,
+};
 
 Confidence confidenceFrom(String? s) => switch (s?.toLowerCase()) {
-      'high' => Confidence.high,
-      'medium' => Confidence.medium,
-      _ => Confidence.low,
-    };
+  'high' => Confidence.high,
+  'medium' => Confidence.medium,
+  _ => Confidence.low,
+};
 
 ImageQuality imageQualityFrom(String? s) => switch (s?.toLowerCase()) {
-      'good' => ImageQuality.good,
-      'poor' => ImageQuality.poor,
-      _ => ImageQuality.unusable,
-    };
+  'good' => ImageQuality.good,
+  'poor' => ImageQuality.poor,
+  _ => ImageQuality.unusable,
+};
 
 class PossibleIssue {
   const PossibleIssue({
@@ -35,14 +35,17 @@ class PossibleIssue {
   final Likelihood likelihood;
   final String reason;
 
-  Map<String, dynamic> toMap() =>
-      {'name': name, 'likelihood': likelihood.name, 'reason': reason};
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'likelihood': likelihood.name,
+    'reason': reason,
+  };
 
   factory PossibleIssue.fromMap(Map<String, dynamic> m) => PossibleIssue(
-        name: (m['name'] as String?)?.trim() ?? '',
-        likelihood: likelihoodFrom(m['likelihood'] as String?),
-        reason: (m['reason'] as String?)?.trim() ?? '',
-      );
+    name: (m['name'] as String?)?.trim() ?? '',
+    likelihood: likelihoodFrom(m['likelihood'] as String?),
+    reason: (m['reason'] as String?)?.trim() ?? '',
+  );
 }
 
 /// Strongly typed diagnosis result. Optional fields tolerate omission; parsing
@@ -133,7 +136,11 @@ class Diagnosis {
 
   factory Diagnosis.fromJson(Map<String, dynamic> j) {
     List<String> strList(Object? v) => (v is List)
-        ? v.whereType<Object>().map((e) => e.toString().trim()).where((e) => e.isNotEmpty).toList()
+        ? v
+              .whereType<Object>()
+              .map((e) => e.toString().trim())
+              .where((e) => e.isNotEmpty)
+              .toList()
         : <String>[];
 
     return Diagnosis(
@@ -148,10 +155,10 @@ class Diagnosis {
       whatISee: (j['whatISee'] as String?)?.trim() ?? '',
       possibleIssues: (j['possibleIssues'] is List)
           ? (j['possibleIssues'] as List)
-              .whereType<Map<String, dynamic>>()
-              .map(PossibleIssue.fromMap)
-              .where((e) => e.name.isNotEmpty)
-              .toList()
+                .whereType<Map<String, dynamic>>()
+                .map(PossibleIssue.fromMap)
+                .where((e) => e.name.isNotEmpty)
+                .toList()
           : <PossibleIssue>[],
       treatmentSteps: strList(j['treatmentSteps']),
       preventionTips: strList(j['preventionTips']),
@@ -193,27 +200,29 @@ class Diagnosis {
   }
 
   Map<String, dynamic> toMap() => {
-        'isPlantRelated': isPlantRelated,
-        'imageQuality': imageQuality.name,
-        'plantName': plantName,
-        'scientificName': scientificName,
-        'whatISee': whatISee,
-        'possibleIssues': possibleIssues.map((e) => e.toMap()).toList(),
-        'treatmentSteps': treatmentSteps,
-        'preventionTips': preventionTips,
-        'safetyNotes': safetyNotes,
-        'confidence': confidence.name,
-        'needsMoreInformation': needsMoreInformation,
-        'followUpQuestions': followUpQuestions,
-        'disclaimer': disclaimer,
-        'imageReference': imageReference,
-        'locationContext': locationContext,
-      };
+    'isPlantRelated': isPlantRelated,
+    'imageQuality': imageQuality.name,
+    'plantName': plantName,
+    'scientificName': scientificName,
+    'whatISee': whatISee,
+    'possibleIssues': possibleIssues.map((e) => e.toMap()).toList(),
+    'treatmentSteps': treatmentSteps,
+    'preventionTips': preventionTips,
+    'safetyNotes': safetyNotes,
+    'confidence': confidence.name,
+    'needsMoreInformation': needsMoreInformation,
+    'followUpQuestions': followUpQuestions,
+    'disclaimer': disclaimer,
+    'imageReference': imageReference,
+    'locationContext': locationContext,
+  };
 
   factory Diagnosis.fromStored(String id, Map<String, dynamic> map) {
-    final Diagnosis base = Diagnosis.fromJson(map['diagnosis'] is Map<String, dynamic>
-        ? map['diagnosis'] as Map<String, dynamic>
-        : map);
+    final Diagnosis base = Diagnosis.fromJson(
+      map['diagnosis'] is Map<String, dynamic>
+          ? map['diagnosis'] as Map<String, dynamic>
+          : map,
+    );
     return base.withMeta(
       id: id,
       imageReference: map['imageReference'] as String?,

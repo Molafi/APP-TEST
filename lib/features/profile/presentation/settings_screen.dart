@@ -36,15 +36,25 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 RadioListTile<String>(
-                    value: 'system', title: Text(l10n.themeSystem)),
+                  value: 'system',
+                  title: Text(l10n.themeSystem),
+                ),
                 const RadioListTile<String>(
-                    value: 'en', title: Text('English')),
+                  value: 'en',
+                  title: Text('English'),
+                ),
                 const RadioListTile<String>(
-                    value: 'ar', title: Text('العربية')),
+                  value: 'ar',
+                  title: Text('العربية'),
+                ),
                 const RadioListTile<String>(
-                    value: 'fr', title: Text('Français')),
+                  value: 'fr',
+                  title: Text('Français'),
+                ),
                 const RadioListTile<String>(
-                    value: 'es', title: Text('Español')),
+                  value: 'es',
+                  title: Text('Español'),
+                ),
               ],
             ),
           ),
@@ -52,16 +62,23 @@ class SettingsScreen extends ConsumerWidget {
           _SectionHeader(title: l10n.theme),
           RadioGroup<ThemeMode>(
             groupValue: themeMode,
-            onChanged: (v) =>
-                ref.read(themeModeProvider.notifier).setMode(v ?? ThemeMode.system),
+            onChanged: (v) => ref
+                .read(themeModeProvider.notifier)
+                .setMode(v ?? ThemeMode.system),
             child: Column(
               children: [
                 RadioListTile<ThemeMode>(
-                    value: ThemeMode.system, title: Text(l10n.themeSystem)),
+                  value: ThemeMode.system,
+                  title: Text(l10n.themeSystem),
+                ),
                 RadioListTile<ThemeMode>(
-                    value: ThemeMode.light, title: Text(l10n.themeLight)),
+                  value: ThemeMode.light,
+                  title: Text(l10n.themeLight),
+                ),
                 RadioListTile<ThemeMode>(
-                    value: ThemeMode.dark, title: Text(l10n.themeDark)),
+                  value: ThemeMode.dark,
+                  title: Text(l10n.themeDark),
+                ),
               ],
             ),
           ),
@@ -69,14 +86,19 @@ class SettingsScreen extends ConsumerWidget {
           _SectionHeader(title: l10n.units),
           RadioGroup<UnitSystem>(
             groupValue: unit,
-            onChanged: (v) =>
-                ref.read(unitSystemProvider.notifier).set(v ?? UnitSystem.metric),
+            onChanged: (v) => ref
+                .read(unitSystemProvider.notifier)
+                .set(v ?? UnitSystem.metric),
             child: Column(
               children: [
                 RadioListTile<UnitSystem>(
-                    value: UnitSystem.metric, title: Text(l10n.unitsMetric)),
+                  value: UnitSystem.metric,
+                  title: Text(l10n.unitsMetric),
+                ),
                 RadioListTile<UnitSystem>(
-                    value: UnitSystem.imperial, title: Text(l10n.unitsImperial)),
+                  value: UnitSystem.imperial,
+                  title: Text(l10n.unitsImperial),
+                ),
               ],
             ),
           ),
@@ -93,7 +115,9 @@ class SettingsScreen extends ConsumerWidget {
                     .read(notificationsEnabledProvider.notifier)
                     .set(outcome == PermissionOutcome.granted);
               } else {
-                await ref.read(notificationsEnabledProvider.notifier).set(false);
+                await ref
+                    .read(notificationsEnabledProvider.notifier)
+                    .set(false);
               }
             },
           ),
@@ -101,8 +125,7 @@ class SettingsScreen extends ConsumerWidget {
             title: Text(l10n.imageRetention),
             subtitle: Text(l10n.imageRetentionBody),
             value: retention,
-            onChanged: (v) =>
-                ref.read(imageRetentionProvider.notifier).set(v),
+            onChanged: (v) => ref.read(imageRetentionProvider.notifier).set(v),
           ),
           SwitchListTile(
             title: Text(l10n.analytics),
@@ -129,12 +152,17 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xs),
-      child: Text(title,
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall
-              ?.copyWith(color: Theme.of(context).colorScheme.primary)),
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.xs,
+      ),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 }

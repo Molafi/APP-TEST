@@ -37,11 +37,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
-    final bool ok = await ref.read(authControllerProvider.notifier).register(
-          _email.text.trim(),
-          _password.text,
-          _name.text.trim(),
-        );
+    final bool ok = await ref
+        .read(authControllerProvider.notifier)
+        .register(_email.text.trim(), _password.text, _name.text.trim());
     if (ok && mounted) {
       await Navigator.of(context).maybePop();
     }
@@ -100,7 +98,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               label: l10n.confirmPassword,
               onSubmitted: busy ? null : _submit,
               validator: (v) => localizeValidation(
-                  l10n, Validators.confirmPassword(v, _password.text)),
+                l10n,
+                Validators.confirmPassword(v, _password.text),
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
             FilledButton(
@@ -109,7 +109,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.register),
             ),
             const SizedBox(height: AppSpacing.md),

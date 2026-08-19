@@ -59,7 +59,8 @@ class WeatherScreen extends ConsumerWidget {
         icon: Icons.cloud_off,
         title: l10n.weatherUnavailable,
         action: FilledButton(
-          onPressed: () => ref.read(weatherControllerProvider.notifier).refresh(),
+          onPressed: () =>
+              ref.read(weatherControllerProvider.notifier).refresh(),
           child: Text(l10n.retry),
         ),
       );

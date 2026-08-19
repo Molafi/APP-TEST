@@ -20,7 +20,9 @@ Future<void> pumpApp(
         locale: locale,
         supportedLocales: AppConstants.supportedLocales,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
-        home: scaffoldWrap != null ? scaffoldWrap(child) : Scaffold(body: child),
+        home: scaffoldWrap != null
+            ? scaffoldWrap(child)
+            : Scaffold(body: child),
       ),
     ),
   );

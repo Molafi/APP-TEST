@@ -24,8 +24,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          localCacheServiceProvider
-              .overrideWithValue(LocalCacheService(prefs)),
+          localCacheServiceProvider.overrideWithValue(LocalCacheService(prefs)),
         ],
         child: const PlantSenseApp(),
       ),
@@ -34,7 +33,9 @@ void main() {
 
     // Log in with demo credentials (any valid email + 8+ char password).
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email').first, 'demo@plant.example');
+      find.widgetWithText(TextFormField, 'Email').first,
+      'demo@plant.example',
+    );
     await tester.enterText(find.byType(TextFormField).at(1), 'password123');
     await tester.tap(find.widgetWithText(FilledButton, 'Log in'));
     await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -44,7 +45,9 @@ void main() {
 
     // Send a message.
     await tester.enterText(
-        find.byType(TextField).last, 'Why are my leaves yellow?');
+      find.byType(TextField).last,
+      'Why are my leaves yellow?',
+    );
     await tester.pump();
     await tester.tap(find.byIcon(Icons.send));
     await tester.pumpAndSettle(const Duration(seconds: 2));

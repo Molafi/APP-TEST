@@ -12,9 +12,9 @@ import 'retry_policy.dart';
 /// image bytes.
 class ApiClient {
   ApiClient({http.Client? client, RetryPolicy? retryPolicy})
-      : _client = client ?? http.Client(),
-        _retry = retryPolicy ??
-            RetryPolicy(maxAttempts: AppConfig.httpMaxRetries);
+    : _client = client ?? http.Client(),
+      _retry =
+          retryPolicy ?? RetryPolicy(maxAttempts: AppConfig.httpMaxRetries);
 
   final http.Client _client;
   final RetryPolicy _retry;
@@ -42,10 +42,7 @@ class ApiClient {
       final http.Response res = await _client
           .post(
             uri,
-            headers: {
-              'Content-Type': 'application/json',
-              ...?headers,
-            },
+            headers: {'Content-Type': 'application/json', ...?headers},
             body: body is String ? body : jsonEncode(body),
           )
           .timeout(timeout ?? AppConfig.httpTimeout);

@@ -28,8 +28,10 @@ class HourlyForecastStrip extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Text(l10n.hourlyForecast,
-              style: Theme.of(context).textTheme.titleMedium),
+          child: Text(
+            l10n.hourlyForecast,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         SizedBox(
@@ -48,16 +50,23 @@ class HourlyForecastStrip extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(DateFormatter.time(h.time, locale),
-                          style: Theme.of(context).textTheme.bodySmall),
+                      Text(
+                        DateFormatter.time(h.time, locale),
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                       Icon(
                         WeatherVisuals.icon(h.condition),
-                        semanticLabel: WeatherVisuals.label(h.condition, locale),
+                        semanticLabel: WeatherVisuals.label(
+                          h.condition,
+                          locale,
+                        ),
                       ),
                       Text(TemperatureFormat.format(h.temperatureC, unit)),
                       if (h.precipitationProbability != null)
-                        Text(l10n.rainChance(h.precipitationProbability!),
-                            style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          l10n.rainChance(h.precipitationProbability!),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                     ],
                   ),
                 ),

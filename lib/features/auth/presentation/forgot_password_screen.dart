@@ -30,8 +30,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
-    final bool ok =
-        await ref.read(authControllerProvider.notifier).sendReset(_email.text.trim());
+    final bool ok = await ref
+        .read(authControllerProvider.notifier)
+        .sendReset(_email.text.trim());
     if (ok && mounted) setState(() => _sent = true);
   }
 
@@ -77,7 +78,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ? const SizedBox(
                       height: 20,
                       width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.sendResetLink),
             ),
             const SizedBox(height: AppSpacing.md),

@@ -13,15 +13,22 @@ class AppTextStyles {
     final TextTheme display = isArabic
         ? GoogleFonts.cairoTextTheme(base)
         : GoogleFonts.playfairDisplayTextTheme(base);
-    final TextTheme body =
-        isArabic ? GoogleFonts.cairoTextTheme(base) : GoogleFonts.interTextTheme(base);
+    final TextTheme body = isArabic
+        ? GoogleFonts.cairoTextTheme(base)
+        : GoogleFonts.interTextTheme(base);
 
     return base.copyWith(
       displayLarge: display.displayLarge?.copyWith(fontWeight: FontWeight.w700),
-      displayMedium: display.displayMedium?.copyWith(fontWeight: FontWeight.w700),
+      displayMedium: display.displayMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+      ),
       displaySmall: display.displaySmall?.copyWith(fontWeight: FontWeight.w600),
-      headlineMedium: display.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
-      headlineSmall: display.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+      headlineMedium: display.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+      headlineSmall: display.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
       titleLarge: body.titleLarge?.copyWith(fontWeight: FontWeight.w600),
       titleMedium: body.titleMedium?.copyWith(fontWeight: FontWeight.w600),
       bodyLarge: body.bodyLarge,

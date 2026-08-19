@@ -39,7 +39,9 @@ class AuthScaffold extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(AppSpacing.lg),
                             decoration: BoxDecoration(
-                              color: AppColors.leafGreen.withValues(alpha: 0.12),
+                              color: AppColors.leafGreen.withValues(
+                                alpha: 0.12,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: const LeafLogo(size: 72),
@@ -55,9 +57,8 @@ class AuthScaffold extends StatelessWidget {
                         Text(
                           subtitle,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.mossGray,
-                              ),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.mossGray),
                         ),
                         const SizedBox(height: AppSpacing.xxl),
                         child,

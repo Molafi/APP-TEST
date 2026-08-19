@@ -17,8 +17,7 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       overrides: [
-        localCacheServiceProvider
-            .overrideWithValue(LocalCacheService(prefs)),
+        localCacheServiceProvider.overrideWithValue(LocalCacheService(prefs)),
       ],
       child: const PlantSenseApp(),
     ),

@@ -16,7 +16,7 @@ abstract class ProfileRepository {
 
 class FirestoreProfileRepository implements ProfileRepository {
   FirestoreProfileRepository({FirebaseFirestore? firestore})
-      : _db = firestore ?? FirebaseFirestore.instance;
+    : _db = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _db;
 

@@ -44,10 +44,7 @@ void main() {
 
     test('tolerates missing hourly/daily', () {
       final json = {
-        'current': {
-          'temperature_2m': 10.0,
-          'weather_code': 3,
-        },
+        'current': {'temperature_2m': 10.0, 'weather_code': 3},
       };
       final WeatherData data = OpenMeteoService.parse(json);
       expect(data.current.condition, WeatherCondition.cloudy);
@@ -58,11 +55,17 @@ void main() {
   });
 
   group('TemperatureFormat', () {
-    test('metric', () =>
-        expect(TemperatureFormat.format(20.4, UnitSystem.metric), '20°C'));
-    test('imperial rounds F', () =>
-        expect(TemperatureFormat.format(0, UnitSystem.imperial), '32°F'));
-    test('null', () =>
-        expect(TemperatureFormat.format(null, UnitSystem.metric), '—'));
+    test(
+      'metric',
+      () => expect(TemperatureFormat.format(20.4, UnitSystem.metric), '20°C'),
+    );
+    test(
+      'imperial rounds F',
+      () => expect(TemperatureFormat.format(0, UnitSystem.imperial), '32°F'),
+    );
+    test(
+      'null',
+      () => expect(TemperatureFormat.format(null, UnitSystem.metric), '—'),
+    );
   });
 }

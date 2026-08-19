@@ -28,44 +28,49 @@ class MyPlantsScreen extends ConsumerWidget {
       body: state.isLoading
           ? const AppLoadingView()
           : state.isEmpty
-              ? AppEmptyView(
-                  icon: Icons.local_florist_outlined,
-                  title: l10n.plantsEmpty,
-                  message: l10n.plantsEmptyBody,
-                  action: FilledButton.icon(
-                    onPressed: () => showPlantEditor(context),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.addPlant),
+          ? AppEmptyView(
+              icon: Icons.local_florist_outlined,
+              title: l10n.plantsEmpty,
+              message: l10n.plantsEmptyBody,
+              action: FilledButton.icon(
+                onPressed: () => showPlantEditor(context),
+                icon: const Icon(Icons.add),
+                label: Text(l10n.addPlant),
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.only(bottom: 96),
+              itemCount: state.plants.length,
+              separatorBuilder: (_, __) => const Divider(height: 1),
+              itemBuilder: (context, i) {
+                final Plant p = state.plants[i];
+                return ListTile(
+                  leading: CircleAvatar(
+                    child: Text(
+                      p.name.isNotEmpty
+                          ? p.name.characters.first.toUpperCase()
+                          : '🌿',
+                    ),
                   ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 96),
-                  itemCount: state.plants.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, i) {
-                    final Plant p = state.plants[i];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        child: Text(p.name.isNotEmpty
-                            ? p.name.characters.first.toUpperCase()
-                            : '🌿'),
-                      ),
-                      title: Text(p.name),
-                      subtitle: Text([
-                        if (p.species != null && p.species!.isNotEmpty) p.species!,
-                        p.place == PlantPlace.outdoor
-                            ? l10n.plantOutdoor
-                            : l10n.plantIndoor,
-                      ].join(' · ')),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => PlantDetailScreen(plantId: p.id),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                  title: Text(p.name),
+                  subtitle: Text(
+                    [
+                      if (p.species != null && p.species!.isNotEmpty)
+                        p.species!,
+                      p.place == PlantPlace.outdoor
+                          ? l10n.plantOutdoor
+                          : l10n.plantIndoor,
+                    ].join(' · '),
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PlantDetailScreen(plantId: p.id),
+                    ),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

@@ -32,8 +32,9 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final LocationState state = ref.watch(locationControllerProvider);
-    final LocationController controller =
-        ref.read(locationControllerProvider.notifier);
+    final LocationController controller = ref.read(
+      locationControllerProvider.notifier,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -41,11 +42,12 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.selectCity,
-              style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.selectCity, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSpacing.sm),
-          Text(l10n.locationRationale,
-              style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            l10n.locationRationale,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
           const SizedBox(height: AppSpacing.lg),
           FilledButton.icon(
             onPressed: state.status == LocationStatus.locating
@@ -61,7 +63,8 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
                 ? const SizedBox(
                     height: 18,
                     width: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2))
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.my_location),
             label: Text(l10n.useMyLocation),
           ),
@@ -89,9 +92,10 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
                   ? const Padding(
                       padding: EdgeInsets.all(12),
                       child: SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2)),
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     )
                   : null,
             ),

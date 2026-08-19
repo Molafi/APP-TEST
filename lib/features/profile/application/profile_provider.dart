@@ -7,6 +7,7 @@ import '../../../core/errors/error_mapper.dart';
 import '../../../core/services/local_cache_service.dart';
 import '../../auth/application/auth_provider.dart';
 import '../../chat/application/chat_provider.dart';
+import '../../chat/application/conversations_provider.dart';
 import '../../diagnosis/application/diagnosis_provider.dart';
 import '../../plants/application/plants_provider.dart';
 import '../../reminders/application/reminder_provider.dart';
@@ -37,6 +38,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
   Future<DeletionResult> deleteAllData() async {
     state = const AsyncLoading<void>();
     try {
+      // Cheap, reliable deletions first. The per-conversation sweep below is N
+      // sequential round trips against Firestore and is by far the most likely
+      // step to fail; running it last means a network failure can no longer
+      // abort deletions that would otherwise have completed.
       await _ref.read(chatRepositoryProvider).deleteAll();
       await _ref.read(diagnosisRepositoryProvider).deleteAll();
       await _ref.read(plantsRepositoryProvider).deleteAll();
@@ -45,12 +50,26 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
       for (final r in [...reminders]) {
         await reminderCtrl.remove(r);
       }
+
+      // chatRepositoryProvider above is scoped to the *active* conversation, so
+      // it leaves every other conversation's messages behind. Delete each one
+      // explicitly: the repository's delete() also drops that chat's
+      // `chat_messages_<id>` cache entry (local) or its messages subcollection
+      // (Firestore).
+      final conversationsRepo = _ref.read(conversationsRepositoryProvider);
+      for (final chat in await conversationsRepo.list()) {
+        await conversationsRepo.delete(chat.id);
+      }
+
       _clearPrivateCaches();
       _clearPrivateState();
       state = const AsyncData<void>(null);
       return DeletionResult.success;
     } catch (e) {
-      state = AsyncError<void>(ErrorMapper.fromException(e), StackTrace.current);
+      state = AsyncError<void>(
+        ErrorMapper.fromException(e),
+        StackTrace.current,
+      );
       return DeletionResult.failure;
     }
   }
@@ -77,7 +96,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
       }
       return DeletionResult.failure;
     } catch (e) {
-      state = AsyncError<void>(ErrorMapper.fromException(e), StackTrace.current);
+      state = AsyncError<void>(
+        ErrorMapper.fromException(e),
+        StackTrace.current,
+      );
       return DeletionResult.failure;
     }
   }
@@ -86,7 +108,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
     final LocalCacheService cache = _ref.read(localCacheServiceProvider);
     // Clear private, user-scoped keys only. Locale/theme are preserved.
     cache.clearPrivate([
+      // Per-conversation message keys are removed by the loop in
+      // deleteAllData(); this covers the default chat and the index itself.
       'chat_messages_default',
+      'conversations',
       'diagnoses_local',
       'plants_local',
       AppConstants.prefReminders,
@@ -98,6 +123,10 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
   /// Invalidates user-specific providers so no stale private data lingers.
   void _clearPrivateState() {
     _ref.invalidate(chatControllerProvider);
+    // Without this the conversations list keeps rendering deleted titles and
+    // last-message previews (user-authored content) until restart, and opening
+    // one would re-upsert its metadata.
+    _ref.invalidate(conversationsControllerProvider);
     _ref.invalidate(diagnosisControllerProvider);
     _ref.invalidate(diagnosisHistoryProvider);
     _ref.invalidate(plantsControllerProvider);
@@ -106,5 +135,5 @@ class ProfileController extends StateNotifier<AsyncValue<void>> {
 
 final profileControllerProvider =
     StateNotifierProvider<ProfileController, AsyncValue<void>>((ref) {
-  return ProfileController(ref);
-});
+      return ProfileController(ref);
+    });

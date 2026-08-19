@@ -37,8 +37,10 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
       _guard(() => _repo.signInWithEmail(email, password));
 
   Future<bool> register(String email, String password, String displayName) =>
-      _guard(() =>
-          _repo.registerWithEmail(email, password, displayName: displayName));
+      _guard(
+        () =>
+            _repo.registerWithEmail(email, password, displayName: displayName),
+      );
 
   Future<bool> signInWithGoogle() => _guard(_repo.signInWithGoogle);
 
@@ -64,5 +66,5 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, AsyncValue<void>>((ref) {
-  return AuthController(ref.watch(authRepositoryProvider));
-});
+      return AuthController(ref.watch(authRepositoryProvider));
+    });

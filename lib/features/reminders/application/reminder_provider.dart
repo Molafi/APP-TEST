@@ -11,8 +11,7 @@ import '../domain/reminder_model.dart';
 /// the user first enabling reminders (and granting permission).
 class ReminderController extends StateNotifier<List<Reminder>> {
   ReminderController(this._cache, this._notifications)
-      : super(Reminder.decodeList(
-            _cache.getString(AppConstants.prefReminders)));
+    : super(Reminder.decodeList(_cache.getString(AppConstants.prefReminders)));
 
   final LocalCacheService _cache;
   final NotificationService _notifications;
@@ -34,15 +33,15 @@ class ReminderController extends StateNotifier<List<Reminder>> {
       recurrence: recurrence,
       createdAt: DateTime.now(),
     );
-    state = [...state, reminder]..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+    state = [...state, reminder]
+      ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     await _persist();
     await _schedule(reminder);
   }
 
   Future<void> update(Reminder reminder) async {
-    state = [
-      for (final r in state) r.id == reminder.id ? reminder : r,
-    ]..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+    state = [for (final r in state) r.id == reminder.id ? reminder : r]
+      ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     await _persist();
     await _notifications.cancel(reminder.notificationId);
     if (reminder.enabled) await _schedule(reminder);
@@ -69,16 +68,17 @@ class ReminderController extends StateNotifier<List<Reminder>> {
       body: r.note ?? _defaultBody(r.type),
       scheduledAt: r.scheduledAt,
       repeatsDaily: r.recurrence == Recurrence.daily,
+      repeatsWeekly: r.recurrence == Recurrence.weekly,
     );
   }
 
   String _defaultBody(ReminderType type) => switch (type) {
-        ReminderType.watering => 'Time to water your plant.',
-        ReminderType.fertilizing => 'Time to fertilize your plant.',
-        ReminderType.repotting => 'Time to repot your plant.',
-        ReminderType.inspection => 'Time to inspect your plant.',
-        ReminderType.followUp => 'Follow up on your plant diagnosis.',
-      };
+    ReminderType.watering => 'Time to water your plant.',
+    ReminderType.fertilizing => 'Time to fertilize your plant.',
+    ReminderType.repotting => 'Time to repot your plant.',
+    ReminderType.inspection => 'Time to inspect your plant.',
+    ReminderType.followUp => 'Follow up on your plant diagnosis.',
+  };
 
   Future<void> _persist() =>
       _cache.setString(AppConstants.prefReminders, Reminder.encodeList(state));
@@ -86,8 +86,8 @@ class ReminderController extends StateNotifier<List<Reminder>> {
 
 final reminderControllerProvider =
     StateNotifierProvider<ReminderController, List<Reminder>>((ref) {
-  return ReminderController(
-    ref.watch(localCacheServiceProvider),
-    ref.watch(notificationServiceProvider),
-  );
-});
+      return ReminderController(
+        ref.watch(localCacheServiceProvider),
+        ref.watch(notificationServiceProvider),
+      );
+    });

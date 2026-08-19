@@ -28,14 +28,18 @@ class _PlantEditor extends ConsumerStatefulWidget {
 }
 
 class _PlantEditorState extends ConsumerState<_PlantEditor> {
-  late final TextEditingController _name =
-      TextEditingController(text: widget.existing?.name ?? '');
-  late final TextEditingController _species =
-      TextEditingController(text: widget.existing?.species ?? '');
-  late final TextEditingController _notes =
-      TextEditingController(text: widget.existing?.notes ?? '');
+  late final TextEditingController _name = TextEditingController(
+    text: widget.existing?.name ?? '',
+  );
+  late final TextEditingController _species = TextEditingController(
+    text: widget.existing?.species ?? '',
+  );
+  late final TextEditingController _notes = TextEditingController(
+    text: widget.existing?.notes ?? '',
+  );
   late final TextEditingController _interval = TextEditingController(
-      text: widget.existing?.wateringIntervalDays?.toString() ?? '');
+    text: widget.existing?.wateringIntervalDays?.toString() ?? '',
+  );
   late PlantPlace _place = widget.existing?.place ?? PlantPlace.indoor;
 
   @override
@@ -55,7 +59,9 @@ class _PlantEditorState extends ConsumerState<_PlantEditor> {
         ..showSnackBar(SnackBar(content: Text(l10n.reminderPlantName)));
       return;
     }
-    await ref.read(plantsControllerProvider.notifier).addOrUpdate(
+    await ref
+        .read(plantsControllerProvider.notifier)
+        .addOrUpdate(
           existing: widget.existing,
           name: _name.text.trim(),
           species: _species.text.trim().isEmpty ? null : _species.text.trim(),
@@ -75,8 +81,10 @@ class _PlantEditorState extends ConsumerState<_PlantEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(widget.existing == null ? l10n.addPlant : l10n.editPlant,
-              style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            widget.existing == null ? l10n.addPlant : l10n.editPlant,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: AppSpacing.lg),
           TextField(
             controller: _name,
@@ -93,9 +101,13 @@ class _PlantEditorState extends ConsumerState<_PlantEditor> {
             decoration: InputDecoration(labelText: l10n.plantLocation),
             items: [
               DropdownMenuItem(
-                  value: PlantPlace.indoor, child: Text(l10n.plantIndoor)),
+                value: PlantPlace.indoor,
+                child: Text(l10n.plantIndoor),
+              ),
               DropdownMenuItem(
-                  value: PlantPlace.outdoor, child: Text(l10n.plantOutdoor)),
+                value: PlantPlace.outdoor,
+                child: Text(l10n.plantOutdoor),
+              ),
             ],
             onChanged: (v) => setState(() => _place = v ?? _place),
           ),

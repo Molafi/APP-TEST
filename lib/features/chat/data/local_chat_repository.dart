@@ -52,11 +52,13 @@ class LocalChatRepository implements ChatRepository {
 
   Future<void> _persist(List<ChatMessage> all) async {
     final List<Map<String, dynamic>> list = all
-        .map((m) => {
-              'id': m.id,
-              ...m.toMap(),
-              'createdAt': m.createdAt.millisecondsSinceEpoch,
-            })
+        .map(
+          (m) => {
+            'id': m.id,
+            ...m.toMap(),
+            'createdAt': m.createdAt.millisecondsSinceEpoch,
+          },
+        )
         .toList();
     await _cache.setString(_key, jsonEncode(list));
   }

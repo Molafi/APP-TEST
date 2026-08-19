@@ -30,13 +30,15 @@ class AiChatService {
         ? turns.sublist(turns.length - AppConfig.maxContextMessages)
         : turns;
 
-    return _gateway.generate(_request(
-      locale: locale,
-      userText: userText,
-      history: trimmed,
-      context: context,
-      image: image,
-    ));
+    return _gateway.generate(
+      _request(
+        locale: locale,
+        userText: userText,
+        history: trimmed,
+        context: context,
+        image: image,
+      ),
+    );
   }
 
   /// Streams the reply as cumulative text (each event is the full text so far).
@@ -55,13 +57,15 @@ class AiChatService {
         ? turns.sublist(turns.length - AppConfig.maxContextMessages)
         : turns;
 
-    return _gateway.generateStream(_request(
-      locale: locale,
-      userText: userText,
-      history: trimmed,
-      context: context,
-      image: image,
-    ));
+    return _gateway.generateStream(
+      _request(
+        locale: locale,
+        userText: userText,
+        history: trimmed,
+        context: context,
+        image: image,
+      ),
+    );
   }
 
   AiRequest _request({

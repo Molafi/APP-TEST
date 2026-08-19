@@ -35,18 +35,22 @@ class MessageBubble extends StatelessWidget {
     final Color bubbleColor = _isUser
         ? AppColors.soilAmber
         : (dark ? AppColors.darkSurfaceAlt : AppColors.parchment);
-    final Color textColor =
-        _isUser ? Colors.white : (dark ? AppColors.parchment : AppColors.forestGreen);
+    final Color textColor = _isUser
+        ? Colors.white
+        : (dark ? AppColors.parchment : AppColors.forestGreen);
 
     return Align(
-      alignment:
-          _isUser ? AlignmentDirectional.centerEnd : AlignmentDirectional.centerStart,
+      alignment: _isUser
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
       child: Container(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.82,
         ),
         margin: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xs,
+        ),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: bubbleColor,
@@ -75,10 +79,9 @@ class MessageBubble extends StatelessWidget {
               ),
             SimpleMarkdown(
               message.text,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: textColor),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: textColor),
             ),
             const SizedBox(height: AppSpacing.xs),
             Row(
@@ -87,9 +90,9 @@ class MessageBubble extends StatelessWidget {
                 Text(
                   DateFormatter.messageTimestamp(message.createdAt, locale),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: textColor.withValues(alpha: 0.7),
-                        fontSize: 11,
-                      ),
+                    color: textColor.withValues(alpha: 0.7),
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 _StatusOrActions(
@@ -133,12 +136,18 @@ class _StatusOrActions extends StatelessWidget {
         case MessageStatus.sending:
           return Semantics(
             label: l10n.sending,
-            child: Icon(Icons.schedule,
-                size: 13, color: textColor.withValues(alpha: 0.7)),
+            child: Icon(
+              Icons.schedule,
+              size: 13,
+              color: textColor.withValues(alpha: 0.7),
+            ),
           );
         case MessageStatus.sent:
-          return Icon(Icons.check,
-              size: 13, color: textColor.withValues(alpha: 0.7));
+          return Icon(
+            Icons.check,
+            size: 13,
+            color: textColor.withValues(alpha: 0.7),
+          );
         case MessageStatus.failed:
           return InkWell(
             onTap: onRetry,
@@ -147,8 +156,10 @@ class _StatusOrActions extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline, size: 13, color: Colors.white),
                 const SizedBox(width: 2),
-                Text(l10n.retry,
-                    style: const TextStyle(color: Colors.white, fontSize: 11)),
+                Text(
+                  l10n.retry,
+                  style: const TextStyle(color: Colors.white, fontSize: 11),
+                ),
               ],
             ),
           );
@@ -167,20 +178,25 @@ class _StatusOrActions extends StatelessWidget {
                 ..showSnackBar(SnackBar(content: Text(l10n.copied)));
             }
           },
-          child: Icon(Icons.copy,
-              size: 13,
-              color: textColor.withValues(alpha: 0.7),
-              semanticLabel: l10n.copy),
+          child: Icon(
+            Icons.copy,
+            size: 13,
+            color: textColor.withValues(alpha: 0.7),
+            semanticLabel: l10n.copy,
+          ),
         ),
         const SizedBox(width: AppSpacing.sm),
         Consumer(
           builder: (context, ref, _) => InkWell(
-            onTap: () =>
-                ref.read(ttsServiceProvider).speak(message.text, locale: locale),
-            child: Icon(Icons.volume_up,
-                size: 14,
-                color: textColor.withValues(alpha: 0.7),
-                semanticLabel: l10n.readAloud),
+            onTap: () => ref
+                .read(ttsServiceProvider)
+                .speak(message.text, locale: locale),
+            child: Icon(
+              Icons.volume_up,
+              size: 14,
+              color: textColor.withValues(alpha: 0.7),
+              semanticLabel: l10n.readAloud,
+            ),
           ),
         ),
       ],

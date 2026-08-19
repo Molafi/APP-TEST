@@ -101,14 +101,17 @@ class DiagnosisController extends StateNotifier<DiagnosisState> {
       final AiContext ctx = _ref.read(aiContextProvider);
       final String locale = _ref.read(localeProvider)?.languageCode ?? 'en';
 
-      final Diagnosis result =
-          await _ref.read(aiDiagnosisServiceProvider).analyze(
-                locale: locale,
-                image: AiImage(
-                    base64: prepared.base64, mimeType: prepared.mimeType),
-                context: ctx.values,
-                userNote: note,
-              );
+      final Diagnosis result = await _ref
+          .read(aiDiagnosisServiceProvider)
+          .analyze(
+            locale: locale,
+            image: AiImage(
+              base64: prepared.base64,
+              mimeType: prepared.mimeType,
+            ),
+            context: ctx.values,
+            userNote: note,
+          );
 
       if (!mounted || seq != _seq) return; // superseded/cancelled
 
@@ -139,12 +142,9 @@ class DiagnosisController extends StateNotifier<DiagnosisState> {
     if (result == null || state.saved) return;
     final bool retain = _ref.read(imageRetentionProvider);
     try {
-      final Diagnosis stored =
-          await _ref.read(diagnosisRepositoryProvider).save(
-                result,
-                imageBytes: state.imageBytes,
-                retainImage: retain,
-              );
+      final Diagnosis stored = await _ref
+          .read(diagnosisRepositoryProvider)
+          .save(result, imageBytes: state.imageBytes, retainImage: retain);
       if (!mounted) return;
       state = state.copyWith(result: stored, saved: true);
       // Refresh the history list.
@@ -163,8 +163,8 @@ class DiagnosisController extends StateNotifier<DiagnosisState> {
 
 final diagnosisControllerProvider =
     StateNotifierProvider<DiagnosisController, DiagnosisState>((ref) {
-  return DiagnosisController(ref);
-});
+      return DiagnosisController(ref);
+    });
 
 /// Loads saved diagnosis history.
 final diagnosisHistoryProvider = FutureProvider<List<Diagnosis>>((ref) {

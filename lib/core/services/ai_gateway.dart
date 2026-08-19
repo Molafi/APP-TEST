@@ -50,24 +50,25 @@ class AiRequest {
   /// delimited from the instruction.
   String composeUserText() {
     if (context.isEmpty) return userText;
-    final String ctx =
-        context.entries.map((e) => '${e.key}: ${e.value}').join(', ');
+    final String ctx = context.entries
+        .map((e) => '${e.key}: ${e.value}')
+        .join(', ');
     return '[context] $ctx\n[user] $userText';
   }
 
   /// Payload sent to the secure Cloud Function proxy (unchanged across
   /// providers — the function decides which provider/model to call).
   Map<String, dynamic> toBackendPayload() => {
-        'system': systemPrompt,
-        'text': userText,
-        'context': context,
-        'history': history
-            .map((t) => {'role': t.fromUser ? 'user' : 'model', 'text': t.text})
-            .toList(),
-        if (image != null)
-          'image': {'mimeType': image!.mimeType, 'data': image!.base64},
-        'jsonMode': jsonMode,
-      };
+    'system': systemPrompt,
+    'text': userText,
+    'context': context,
+    'history': history
+        .map((t) => {'role': t.fromUser ? 'user' : 'model', 'text': t.text})
+        .toList(),
+    if (image != null)
+      'image': {'mimeType': image!.mimeType, 'data': image!.base64},
+    'jsonMode': jsonMode,
+  };
 }
 
 /// Transport-agnostic AI gateway. Returns raw model text; callers parse.
@@ -147,7 +148,8 @@ class OpenAiCompatibleGateway extends AiGateway {
         return await _call(request, model, hasImage);
       } on AppException catch (e) {
         // Only fall through for "this model can't be used" style errors.
-        final bool modelIssue = e.kind == AppErrorKind.modelUnavailable ||
+        final bool modelIssue =
+            e.kind == AppErrorKind.modelUnavailable ||
             e.kind == AppErrorKind.notFound ||
             e.kind == AppErrorKind.invalidInput;
         if (!modelIssue) rethrow;
@@ -179,8 +181,11 @@ class OpenAiCompatibleGateway extends AiGateway {
   }
 
   Map<String, dynamic> _buildBody(
-      AiRequest request, String model, bool hasImage,
-      {bool stream = false}) {
+    AiRequest request,
+    String model,
+    bool hasImage, {
+    bool stream = false,
+  }) {
     return {
       'model': model,
       'messages': _buildMessages(request, hasImage),
@@ -194,8 +199,7 @@ class OpenAiCompatibleGateway extends AiGateway {
     };
   }
 
-  Future<String> _call(
-      AiRequest request, String model, bool hasImage) async {
+  Future<String> _call(AiRequest request, String model, bool hasImage) async {
     final Map<String, dynamic> res = await _client.postJson(
       Uri.parse('$baseUrl/chat/completions'),
       headers: {'Authorization': 'Bearer $apiKey'},
@@ -215,27 +219,30 @@ class OpenAiCompatibleGateway extends AiGateway {
       return;
     }
 
-    final String model =
-        (hasImage ? visionModels : textModels).first;
+    final String model = (hasImage ? visionModels : textModels).first;
     final http.Client client = http.Client();
     try {
       final http.Request req =
           http.Request('POST', Uri.parse('$baseUrl/chat/completions'))
             ..headers['Authorization'] = 'Bearer $apiKey'
             ..headers['Content-Type'] = 'application/json'
-            ..body = jsonEncode(_buildBody(request, model, hasImage, stream: true));
+            ..body = jsonEncode(
+              _buildBody(request, model, hasImage, stream: true),
+            );
 
-      final http.StreamedResponse res =
-          await client.send(req).timeout(AppConfig.aiTimeout);
+      final http.StreamedResponse res = await client
+          .send(req)
+          .timeout(AppConfig.aiTimeout);
 
       if (res.statusCode < 200 || res.statusCode >= 300) {
         throw ErrorMapper.fromHttpStatus(res.statusCode);
       }
 
       final StringBuffer acc = StringBuffer();
-      await for (final String line in res.stream
-          .transform(utf8.decoder)
-          .transform(const LineSplitter())) {
+      await for (final String line
+          in res.stream
+              .transform(utf8.decoder)
+              .transform(const LineSplitter())) {
         if (!line.startsWith('data:')) continue;
         final String data = line.substring(5).trim();
         if (data.isEmpty) continue;

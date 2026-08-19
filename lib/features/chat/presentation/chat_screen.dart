@@ -43,8 +43,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _maybeAutoScroll() {
     if (!_scroll.hasClients) return;
-    final bool nearBottom = _scroll.position.pixels >=
-        _scroll.position.maxScrollExtent - 120;
+    final bool nearBottom =
+        _scroll.position.pixels >= _scroll.position.maxScrollExtent - 120;
     if (nearBottom) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scroll.hasClients) {
@@ -67,11 +67,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         content: Text(l10n.deleteConversationConfirm),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.delete)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
@@ -85,8 +87,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ChatState state = ref.watch(chatControllerProvider);
     final String locale = ref.watch(localeProvider)?.languageCode ?? 'en';
-    final ChatController controller =
-        ref.read(chatControllerProvider.notifier);
+    final ChatController controller = ref.read(chatControllerProvider.notifier);
 
     // Prefill an initial prompt from the constructor once.
     if (!_prefilled && widget.initialPrompt != null && !state.isLoading) {
@@ -114,20 +115,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(
-              SnackBar(content: Text(ErrorMapper.message(l10n, next))));
+            SnackBar(content: Text(ErrorMapper.message(l10n, next))),
+          );
       }
     });
 
     return Column(
       children: [
-        if (Environment.isDemo)
-          _DemoBanner(text: l10n.demoModeBanner),
+        if (Environment.isDemo) _DemoBanner(text: l10n.demoModeBanner),
         Row(
           children: [
             TextButton.icon(
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const ConversationsScreen(),
-              )),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ConversationsScreen()),
+              ),
               icon: const Icon(Icons.forum_outlined, size: 18),
               label: Text(l10n.conversations),
             ),
@@ -151,28 +152,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           child: state.isLoading
               ? const AppLoadingView()
               : state.isEmpty
-                  ? _EmptyChat(onStarter: (s) => controller.setDraft(s))
-                  : ListView.builder(
-                      controller: _scroll,
-                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                      itemCount: state.messages.length + (state.isTyping ? 1 : 0),
-                      itemBuilder: (context, i) {
-                        if (i >= state.messages.length) {
-                          return const Align(
-                            alignment: AlignmentDirectional.centerStart,
-                            child: TypingIndicator(),
-                          );
-                        }
-                        final ChatMessage m = state.messages[i];
-                        return MessageBubble(
-                          message: m,
-                          locale: locale,
-                          onRetry: m.status == MessageStatus.failed
-                              ? () => controller.retry(m)
-                              : null,
-                        );
-                      },
-                    ),
+              ? _EmptyChat(onStarter: (s) => controller.setDraft(s))
+              : ListView.builder(
+                  controller: _scroll,
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  itemCount: state.messages.length + (state.isTyping ? 1 : 0),
+                  itemBuilder: (context, i) {
+                    if (i >= state.messages.length) {
+                      return const Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TypingIndicator(),
+                      );
+                    }
+                    final ChatMessage m = state.messages[i];
+                    return MessageBubble(
+                      message: m,
+                      locale: locale,
+                      onRetry: m.status == MessageStatus.failed
+                          ? () => controller.retry(m)
+                          : null,
+                    );
+                  },
+                ),
         ),
         MessageComposer(
           initialDraft: state.draft,
@@ -196,14 +197,16 @@ class _DemoBanner extends StatelessWidget {
       width: double.infinity,
       color: Theme.of(context).colorScheme.secondaryContainer,
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xs,
+      ),
       child: Row(
         children: [
           const Icon(Icons.science_outlined, size: 16),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
-              child: Text(text,
-                  style: Theme.of(context).textTheme.bodySmall)),
+            child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+          ),
         ],
       ),
     );
@@ -235,10 +238,7 @@ class _EmptyChat extends StatelessWidget {
         runSpacing: AppSpacing.sm,
         children: [
           for (final String s in starters)
-            ActionChip(
-              label: Text(s),
-              onPressed: () => onStarter(s),
-            ),
+            ActionChip(label: Text(s), onPressed: () => onStarter(s)),
         ],
       ),
     );

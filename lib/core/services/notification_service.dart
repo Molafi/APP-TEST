@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -9,13 +10,12 @@ import 'package:timezone/timezone.dart' as tz;
 /// permission. Nothing is scheduled at startup.
 class NotificationService {
   NotificationService([FlutterLocalNotificationsPlugin? plugin])
-      : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialised = false;
 
-  static const AndroidNotificationChannel _channel =
-      AndroidNotificationChannel(
+  static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'plant_care_reminders',
     'Plant care reminders',
     description: 'Watering, fertilizing and inspection reminders.',
@@ -25,8 +25,10 @@ class NotificationService {
   Future<void> init() async {
     if (_initialised) return;
     tzdata.initializeTimeZones();
-    const AndroidInitializationSettings android =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    await _setLocalTimeZone();
+    const AndroidInitializationSettings android = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const DarwinInitializationSettings darwin = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -37,9 +39,24 @@ class NotificationService {
     );
     await _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(_channel);
     _initialised = true;
+  }
+
+  /// Points `tz.local` at the device's zone. Without this it stays UTC, so a
+  /// reminder picked for 23:00 would be scheduled as 23:00 UTC — and because
+  /// weekly reminders match on weekday *and* time, an off-UTC user could get
+  /// them on the wrong day entirely.
+  Future<void> _setLocalTimeZone() async {
+    try {
+      final String name = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(name));
+    } catch (_) {
+      // Unknown/unavailable zone: fall back to the UTC default rather than
+      // preventing reminders from being scheduled at all.
+    }
   }
 
   Future<void> scheduleReminder({
@@ -48,10 +65,10 @@ class NotificationService {
     required String body,
     required DateTime scheduledAt,
     bool repeatsDaily = false,
+    bool repeatsWeekly = false,
   }) async {
     await init();
-    final tz.TZDateTime when =
-        tz.TZDateTime.from(scheduledAt, tz.local);
+    final tz.TZDateTime when = tz.TZDateTime.from(scheduledAt, tz.local);
     try {
       await _plugin.zonedSchedule(
         id,
@@ -69,8 +86,13 @@ class NotificationService {
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents:
-            repeatsDaily ? DateTimeComponents.time : null,
+        // `time` repeats every day at the same clock time;
+        // `dayOfWeekAndTime` repeats on the same weekday each week.
+        matchDateTimeComponents: repeatsWeekly
+            ? DateTimeComponents.dayOfWeekAndTime
+            : repeatsDaily
+            ? DateTimeComponents.time
+            : null,
       );
     } catch (e) {
       // Scheduling failures must never crash the app.
@@ -82,5 +104,6 @@ class NotificationService {
   Future<void> cancelAll() => _plugin.cancelAll();
 }
 
-final notificationServiceProvider =
-    Provider<NotificationService>((ref) => NotificationService());
+final notificationServiceProvider = Provider<NotificationService>(
+  (ref) => NotificationService(),
+);

@@ -22,8 +22,10 @@ class PrivacyScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          Text(l10n.privacyIntro,
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            l10n.privacyIntro,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: AppSpacing.lg),
           for (final (icon, text) in items)
             Padding(
@@ -34,16 +36,21 @@ class PrivacyScreen extends StatelessWidget {
                   Icon(icon, color: Theme.of(context).colorScheme.primary),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
-                      child: Text(text,
-                          style: Theme.of(context).textTheme.bodyMedium)),
+                    child: Text(
+                      text,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ],
               ),
             ),
           const Divider(),
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.md),
-            child: Text(l10n.aiDisclaimerLong,
-                style: Theme.of(context).textTheme.bodySmall),
+            child: Text(
+              l10n.aiDisclaimerLong,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ),
         ],
       ),

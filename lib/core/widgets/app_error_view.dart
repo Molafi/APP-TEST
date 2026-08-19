@@ -32,9 +32,11 @@ class AppErrorView extends StatelessWidget {
           children: [
             Icon(icon, size: 48, semanticLabel: l10n.a11yError),
             const SizedBox(height: AppSpacing.lg),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             if (onRetry != null) ...[
               const SizedBox(height: AppSpacing.xl),
               FilledButton.icon(

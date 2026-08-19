@@ -37,8 +37,7 @@ class RetryPolicy {
 
   Duration _backoff(int attempt, Duration? retryAfter) {
     if (retryAfter != null) return retryAfter;
-    final int expMs =
-        (baseDelay.inMilliseconds * pow(2, attempt - 1)).toInt();
+    final int expMs = (baseDelay.inMilliseconds * pow(2, attempt - 1)).toInt();
     final int cappedMs = min(expMs, maxDelay.inMilliseconds);
     // Full jitter.
     return Duration(milliseconds: _random.nextInt(cappedMs + 1));

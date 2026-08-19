@@ -7,7 +7,7 @@ import '../../../core/services/local_cache_service.dart';
 /// so it is shown only once.
 class OnboardingNotifier extends StateNotifier<bool> {
   OnboardingNotifier(this._cache)
-      : super(_cache.getBool(AppConstants.prefOnboardingComplete));
+    : super(_cache.getBool(AppConstants.prefOnboardingComplete));
 
   final LocalCacheService _cache;
 
@@ -19,5 +19,5 @@ class OnboardingNotifier extends StateNotifier<bool> {
 
 final onboardingCompleteProvider =
     StateNotifierProvider<OnboardingNotifier, bool>((ref) {
-  return OnboardingNotifier(ref.watch(localCacheServiceProvider));
-});
+      return OnboardingNotifier(ref.watch(localCacheServiceProvider));
+    });

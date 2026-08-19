@@ -81,12 +81,13 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
 
   Future<void> _persist(List<Diagnosis> all) async {
     final List<Map<String, dynamic>> list = all
-        .map((d) => {
-              'id': d.id,
-              ...d.toMap(),
-              'createdAt':
-                  (d.createdAt ?? DateTime.now()).millisecondsSinceEpoch,
-            })
+        .map(
+          (d) => {
+            'id': d.id,
+            ...d.toMap(),
+            'createdAt': (d.createdAt ?? DateTime.now()).millisecondsSinceEpoch,
+          },
+        )
         .toList();
     await _cache.setString(_key, jsonEncode(list));
   }
@@ -99,8 +100,8 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
     required this.uid,
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
-  })  : _db = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+  }) : _db = firestore ?? FirebaseFirestore.instance,
+       _storage = storage ?? FirebaseStorage.instance;
 
   final String uid;
   final FirebaseFirestore _db;
@@ -112,8 +113,10 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
 
   @override
   Future<List<Diagnosis>> load() async {
-    final snap =
-        await _col.orderBy('createdAt', descending: true).limit(50).get();
+    final snap = await _col
+        .orderBy('createdAt', descending: true)
+        .limit(50)
+        .get();
     return snap.docs.map((d) => Diagnosis.fromStored(d.id, d.data())).toList();
   }
 
@@ -127,8 +130,9 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
     String? imageRef;
 
     if (retainImage && imageBytes != null) {
-      final Reference ref =
-          _storage.ref().child('users/$uid/diagnoses/$id.jpg');
+      final Reference ref = _storage.ref().child(
+        'users/$uid/diagnoses/$id.jpg',
+      );
       await ref.putData(
         imageBytes,
         SettableMetadata(contentType: 'image/jpeg'),
@@ -136,7 +140,10 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
       imageRef = ref.fullPath;
     }
 
-    final Diagnosis stored = diagnosis.withMeta(id: id, imageReference: imageRef);
+    final Diagnosis stored = diagnosis.withMeta(
+      id: id,
+      imageReference: imageRef,
+    );
     await _col.doc(id).set({
       'diagnosis': diagnosis.toMap(),
       'imageReference': imageRef,

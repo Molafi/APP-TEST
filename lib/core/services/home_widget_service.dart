@@ -26,7 +26,9 @@ class HomeWidgetService {
         await HomeWidget.saveWidgetData<String>('condition', condition);
       }
       await HomeWidget.saveWidgetData<String>(
-          'nextWatering', nextWatering ?? '');
+        'nextWatering',
+        nextWatering ?? '',
+      );
       await HomeWidget.updateWidget(
         androidName: _androidProvider,
         iOSName: _iOSName,
@@ -37,5 +39,6 @@ class HomeWidgetService {
   }
 }
 
-final homeWidgetServiceProvider =
-    Provider<HomeWidgetService>((ref) => const HomeWidgetService());
+final homeWidgetServiceProvider = Provider<HomeWidgetService>(
+  (ref) => const HomeWidgetService(),
+);

@@ -56,17 +56,17 @@ class UserProfile {
   }
 
   Map<String, dynamic> toMap() => {
-        'uid': uid,
-        'email': email,
-        'displayName': displayName,
-        'photoUrl': photoUrl,
-        'locale': locale,
-        'unitSystem': unitSystem.id,
-        'selectedLocation': selectedLocation?.toMap(),
-        'imageRetentionEnabled': imageRetentionEnabled,
-        'notificationsEnabled': notificationsEnabled,
-        // Timestamps are set with server values by the repository layer.
-      };
+    'uid': uid,
+    'email': email,
+    'displayName': displayName,
+    'photoUrl': photoUrl,
+    'locale': locale,
+    'unitSystem': unitSystem.id,
+    'selectedLocation': selectedLocation?.toMap(),
+    'imageRetentionEnabled': imageRetentionEnabled,
+    'notificationsEnabled': notificationsEnabled,
+    // Timestamps are set with server values by the repository layer.
+  };
 
   factory UserProfile.fromMap(String uid, Map<String, dynamic> map) {
     return UserProfile(
@@ -77,10 +77,11 @@ class UserProfile {
       locale: (map['locale'] as String?) ?? 'en',
       unitSystem: UnitSystemX.fromId(map['unitSystem'] as String?),
       selectedLocation: map['selectedLocation'] is Map<String, dynamic>
-          ? PlantLocation.fromMap(map['selectedLocation'] as Map<String, dynamic>)
+          ? PlantLocation.fromMap(
+              map['selectedLocation'] as Map<String, dynamic>,
+            )
           : null,
-      imageRetentionEnabled:
-          (map['imageRetentionEnabled'] as bool?) ?? false,
+      imageRetentionEnabled: (map['imageRetentionEnabled'] as bool?) ?? false,
       notificationsEnabled: (map['notificationsEnabled'] as bool?) ?? false,
       createdAt: _toDate(map['createdAt']),
       updatedAt: _toDate(map['updatedAt']),

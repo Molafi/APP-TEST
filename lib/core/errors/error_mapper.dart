@@ -14,29 +14,47 @@ class ErrorMapper {
   static AppException fromHttpStatus(int status, {String? body}) {
     switch (status) {
       case 400:
-        return const AppException(AppErrorKind.invalidInput,
-            debugDetail: 'HTTP 400');
+        return const AppException(
+          AppErrorKind.invalidInput,
+          debugDetail: 'HTTP 400',
+        );
       case 401:
-        return const AppException(AppErrorKind.unauthenticated,
-            debugDetail: 'HTTP 401');
+        return const AppException(
+          AppErrorKind.unauthenticated,
+          debugDetail: 'HTTP 401',
+        );
       case 403:
-        return const AppException(AppErrorKind.unauthenticated,
-            debugDetail: 'HTTP 403');
+        return const AppException(
+          AppErrorKind.unauthenticated,
+          debugDetail: 'HTTP 403',
+        );
       case 404:
-        return const AppException(AppErrorKind.modelUnavailable,
-            debugDetail: 'HTTP 404');
+        return const AppException(
+          AppErrorKind.modelUnavailable,
+          debugDetail: 'HTTP 404',
+        );
       case 408:
-        return const AppException(AppErrorKind.timeout, debugDetail: 'HTTP 408');
+        return const AppException(
+          AppErrorKind.timeout,
+          debugDetail: 'HTTP 408',
+        );
       case 413:
-        return const AppException(AppErrorKind.imageTooLarge,
-            debugDetail: 'HTTP 413');
+        return const AppException(
+          AppErrorKind.imageTooLarge,
+          debugDetail: 'HTTP 413',
+        );
       case 429:
-        return const AppException(AppErrorKind.rateLimited,
-            debugDetail: 'HTTP 429', retryAfter: Duration(seconds: 30));
+        return const AppException(
+          AppErrorKind.rateLimited,
+          debugDetail: 'HTTP 429',
+          retryAfter: Duration(seconds: 30),
+        );
       default:
         if (status >= 500) {
-          return AppException(AppErrorKind.providerUnavailable,
-              debugDetail: 'HTTP $status');
+          return AppException(
+            AppErrorKind.providerUnavailable,
+            debugDetail: 'HTTP $status',
+          );
         }
         return AppException(AppErrorKind.unknown, debugDetail: 'HTTP $status');
     }

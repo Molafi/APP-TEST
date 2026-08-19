@@ -68,8 +68,9 @@ class WeatherController extends StateNotifier<WeatherState> {
     final String? raw = _cache.getString(AppConstants.prefCachedWeather);
     if (raw == null) return;
     try {
-      final WeatherData cached =
-          WeatherData.fromMap(jsonDecode(raw) as Map<String, dynamic>);
+      final WeatherData cached = WeatherData.fromMap(
+        jsonDecode(raw) as Map<String, dynamic>,
+      );
       state = state.copyWith(data: cached);
     } catch (_) {}
   }
@@ -98,7 +99,9 @@ class WeatherController extends StateNotifier<WeatherState> {
       if (!mounted) return;
       state = WeatherState(data: data);
       await _cache.setString(
-          AppConstants.prefCachedWeather, jsonEncode(data.toMap()));
+        AppConstants.prefCachedWeather,
+        jsonEncode(data.toMap()),
+      );
     } catch (e) {
       if (!mounted) return;
       // Keep any cached data visible; surface a non-blocking error.
@@ -121,8 +124,8 @@ class WeatherController extends StateNotifier<WeatherState> {
 
 final weatherControllerProvider =
     StateNotifierProvider<WeatherController, WeatherState>((ref) {
-  return WeatherController(ref);
-});
+      return WeatherController(ref);
+    });
 
 /// The latest weather data (live or cached), or null. Watched by the AI context
 /// and the app-bar weather chip. In demo mode this still works via the sample
@@ -138,6 +141,7 @@ final weatherBootstrapProvider = Provider<void>((ref) {
   if (Environment.isDemo) {
     // Trigger a location resolution which seeds weather via the listener.
     Future<void>.microtask(
-        () => ref.read(locationControllerProvider.notifier).useMyLocation());
+      () => ref.read(locationControllerProvider.notifier).useMyLocation(),
+    );
   }
 });

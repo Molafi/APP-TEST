@@ -28,8 +28,10 @@ class WeeklyForecastList extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Text(l10n.sevenDayForecast,
-              style: Theme.of(context).textTheme.titleMedium),
+          child: Text(
+            l10n.sevenDayForecast,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         const SizedBox(height: AppSpacing.sm),
         Card(
@@ -38,7 +40,9 @@ class WeeklyForecastList extends StatelessWidget {
               for (final DailyForecast d in days)
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
                   child: Row(
                     children: [
                       SizedBox(
@@ -47,7 +51,10 @@ class WeeklyForecastList extends StatelessWidget {
                       ),
                       Icon(
                         WeatherVisuals.icon(d.condition),
-                        semanticLabel: WeatherVisuals.label(d.condition, locale),
+                        semanticLabel: WeatherVisuals.label(
+                          d.condition,
+                          locale,
+                        ),
                       ),
                       const Spacer(),
                       if (d.precipitationProbabilityMax != null)
@@ -56,9 +63,10 @@ class WeeklyForecastList extends StatelessWidget {
                           child: Row(
                             children: [
                               const Icon(Icons.water_drop_outlined, size: 14),
-                              Text('${d.precipitationProbabilityMax}%',
-                                  style:
-                                      Theme.of(context).textTheme.bodySmall),
+                              Text(
+                                '${d.precipitationProbabilityMax}%',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
                             ],
                           ),
                         ),

@@ -22,8 +22,9 @@ class FakeAiGateway extends AiGateway {
 }
 
 /// Builds a real [LocalCacheService] backed by mocked SharedPreferences.
-Future<LocalCacheService> makeTestCache(
-    [Map<String, Object> initial = const {}]) async {
+Future<LocalCacheService> makeTestCache([
+  Map<String, Object> initial = const {},
+]) async {
   SharedPreferences.setMockInitialValues(initial);
   final prefs = await SharedPreferences.getInstance();
   return LocalCacheService(prefs);

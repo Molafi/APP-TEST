@@ -39,5 +39,6 @@ class LocationRepository {
   }
 }
 
-final locationRepositoryProvider =
-    Provider<LocationRepository>((ref) => const LocationRepository());
+final locationRepositoryProvider = Provider<LocationRepository>(
+  (ref) => const LocationRepository(),
+);

@@ -53,13 +53,13 @@ class ChatMessage {
   }
 
   Map<String, dynamic> toMap() => {
-        'role': role.name,
-        'text': text,
-        'status': status.name,
-        'imageReference': imageReference,
-        'weatherContext': weatherContext,
-        // createdAt set with server timestamp by the repository.
-      };
+    'role': role.name,
+    'text': text,
+    'status': status.name,
+    'imageReference': imageReference,
+    'weatherContext': weatherContext,
+    // createdAt set with server timestamp by the repository.
+  };
 
   factory ChatMessage.fromMap(String id, Map<String, dynamic> map) {
     return ChatMessage(

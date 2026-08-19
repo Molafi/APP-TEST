@@ -19,8 +19,9 @@ class DiagnosisHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    final AsyncValue<List<Diagnosis>> history =
-        ref.watch(diagnosisHistoryProvider);
+    final AsyncValue<List<Diagnosis>> history = ref.watch(
+      diagnosisHistoryProvider,
+    );
     final String locale = ref.watch(localeProvider)?.languageCode ?? 'en';
 
     return Scaffold(
@@ -71,31 +72,41 @@ class DiagnosisHistoryScreen extends ConsumerWidget {
   }
 
   void _openDetail(BuildContext context, Diagnosis d, String locale) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (ctx) => Scaffold(
-        appBar: AppBar(
-            title: Text(d.plantName ??
-                AppLocalizations.of(ctx).diagnosisHistory)),
-        body: ListView(
-          children: [DiagnosisResultCard(diagnosis: d, locale: locale)],
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => Scaffold(
+          appBar: AppBar(
+            title: Text(
+              d.plantName ?? AppLocalizations.of(ctx).diagnosisHistory,
+            ),
+          ),
+          body: ListView(
+            children: [DiagnosisResultCard(diagnosis: d, locale: locale)],
+          ),
         ),
       ),
-    ));
+    );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref,
-      AppLocalizations l10n, Diagnosis d) async {
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    Diagnosis d,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         content: Text(l10n.deleteConversationConfirm),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(l10n.cancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(l10n.delete)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
