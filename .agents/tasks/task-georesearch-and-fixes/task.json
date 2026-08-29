@@ -1,0 +1,7 @@
+{
+  "task_id": "task-georesearch-and-fixes",
+  "task_description": "Fix concrete documented defects in the PlantSense AI Flutter app and add a new GeoResearch soil-analysis feature (soil depth, sodium/salinity, nutrients N/P/K, pH, organic matter, notable substances/contaminants, and soil geometry/texture from an optional image), location-aware and demo-mode usable, following the app's existing feature-first + AI-gateway + structured-JSON patterns. Keep flutter analyze clean and flutter test green throughout.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

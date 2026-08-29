@@ -1,0 +1,24 @@
+{
+  "id": "FEAT-002",
+  "type": "fix",
+  "description": "Fix concrete, well-defined defects documented in README 'Known limitations'. The tree currently analyzes clean and all tests pass, so these are behavioral bugs (not compile errors). Scope is limited to defects with a clear correct behavior so the working app is not destabilized: (a) NotificationService.scheduleReminder swallows all failures so a rejected schedule still shows as enabled; (b) reminder notification bodies are hardcoded English and ignore the app language; (c) Firestore batch deletes for conversations with >500 messages exceed Firestore's 500-op WriteBatch limit. Add regression tests for the fixes that are unit-testable.",
+  "status": "pending",
+  "steps": [
+    "Read lib/core/services/notification_service.dart. In scheduleReminder, stop swallowing scheduling failures silently: let the error propagate (rethrow) or return a boolean/throw so callers know scheduling failed. Then in lib/features/reminders/application/reminder_provider.dart _schedule(), if scheduling throws, do not leave the reminder marked enabled: catch the failure and persist the reminder with enabled=false (revert the toggle) so UI state matches reality. Keep behavior a no-op-safe on platforms without notifications, but a genuine rejection must not present as enabled.",
+    "Localize reminder notification bodies. Currently ReminderController._defaultBody returns hardcoded English strings. Move the default body text into the .arb files (add keys like reminderBodyWatering, reminderBodyFertilizing, reminderBodyRepotting, reminderBodyInspection, reminderBodyFollowUp) and resolve them via AppLocalizations in the app's current locale. Because a StateNotifier has no BuildContext, thread the localized strings in from where a BuildContext/locale is available (e.g. pass the resolved body/title strings into ReminderController.add/update from the presentation layer, or resolve via the app locale the same way other services do). Match the existing localization approach used elsewhere in the app; do not introduce a new global-context hack that breaks tests. If full locale threading is disproportionate, at minimum make the bodies come from AppLocalizations at the call site and keep _defaultBody as an English fallback.",
+    "Fix the >500-message Firestore batch limit. Find every place that does `_db.batch()` + loops calling `batch.delete(...)` (diagnosis_repository.dart deleteAll, and the chat/conversations repository message deletion, and any 'delete all my data' path in profile). Chunk deletes into batches of at most 500 operations, committing each chunk before starting the next. Extract a small helper if the same pattern repeats. Preserve existing best-effort Storage cleanup.",
+    "Add/adjust the .arb entries in lib/l10n/app_en.arb (template) and mirror them into app_ar.arb (translate to Arabic), app_fr.arb and app_es.arb (English fallback is acceptable for fr/es per existing convention). Then run `flutter pub get` (or `flutter gen-l10n`) to regenerate AppLocalizations.",
+    "Add regression tests: (1) a unit/provider test that a scheduling failure results in the reminder NOT being enabled (use a fake NotificationService that throws, following test/mocks patterns); (2) a unit test that the batched-delete helper splits >500 items into multiple commits (test the pure chunking helper if extracted). Follow existing test style in test/unit and test/providers and reuse fakes/mocks in test/mocks/mocks.dart."
+  ],
+  "acceptance_criteria": [
+    "When NotificationService scheduling fails, the affected reminder is not left in the enabled state (verified by a test with a throwing fake)",
+    "Reminder notification default bodies are sourced from AppLocalizations / .arb rather than hardcoded English literals in reminder_provider.dart",
+    "Firestore delete-all paths chunk operations to <=500 per WriteBatch and commit each chunk (a conversation with >500 messages deletes fully without hitting the batch limit)",
+    "`flutter analyze` still reports 'No issues found!' and `flutter test` passes including the new regression tests"
+  ],
+  "verification": [
+    "export PATH=\"/opt/flutter-sdk/bin:$PATH\" && flutter pub get && flutter analyze && flutter test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

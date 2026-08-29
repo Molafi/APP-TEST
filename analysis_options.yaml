@@ -8,6 +8,7 @@ analyzer:
     - "**/*.freezed.dart"
     - "lib/l10n/generated/**"
     - "lib/firebase_options.dart"
+    - build/**
 
 linter:
   rules:

@@ -1,0 +1,25 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Integrate the GeoResearch feature into the app: add it to home navigation, add canned demo output so demo mode stays fully usable, localize all its strings across the four .arb files, and add tests. This makes the feature reachable, offline-usable, translated, and covered. Depends on FEAT-003.",
+  "status": "pending",
+  "steps": [
+    "Wire navigation. In lib/features/home/application/home_provider.dart add a HomeTab constant/index for GeoResearch (and adjust the profile/other indices consistently). In lib/features/home/presentation/home_screen.dart add the GeoResearchScreen into the IndexedStack children in the SAME order as the NavigationBar destinations, add a NavigationDestination (choose a fitting Material icon, e.g. Icons.terrain_outlined / Icons.terrain or Icons.landscape_outlined / Icons.landscape, or Icons.science_outlined) with an l10n label, and extend _titleFor() to return the new tab's title. Verify the PopScope 'back returns to Chat' logic and IndexedStack index bounds still hold with the extra tab. Note: NavigationBar with 5 destinations is fine in Material 3.",
+    "Add demo output. In lib/core/services/demo_ai_gateway.dart, the DemoAiGateway currently returns diagnosis JSON for any jsonMode request. Distinguish the soil-research request from the diagnosis request (e.g. by detecting a marker substring that AiPrompts.soilResearchInstruction() includes in the userText/systemPrompt) and return a deterministic, valid SoilReport JSON (populating soil type, estimated depth, salinity/sodium levels, N/P/K nutrients, pH, organic matter, a couple of substances, a geometry/structure description, suitable plants, recommendations, safety notes, conservative confidence, and the estimate/lab-test disclaimer). Keep the existing diagnosis demo path working. Ensure the demo JSON parses cleanly via SoilReport.parse.",
+    "Localize. Add all new user-facing GeoResearch strings (tab label, title, screen labels/buttons, result card section headings, level chips low/medium/high if not already present, disclaimer text, follow-up CTA) and the FEAT-002 reminder body keys to lib/l10n/app_en.arb (template, with @-metadata/placeholders where needed). Mirror every new key into app_ar.arb (Arabic translation), app_fr.arb and app_es.arb (English fallback values are acceptable per the existing partial-translation convention, but the KEYS must exist in all files that already carry them; match how existing keys are distributed across the arb files). Replace any temporary literal strings left in FEAT-003's UI with AppLocalizations getters. Run `flutter pub get` (or `flutter gen-l10n`) to regenerate lib/l10n/app_localizations*.dart. Do NOT hand-edit the generated Dart.",
+    "Add tests. Create test/unit/soil_report_parse_test.dart mirroring test/unit/diagnosis_parse_test.dart: assert SoilReport.parse handles clean JSON, ```json-fenced JSON with surrounding prose, and malformed/partial JSON (graceful degradation or FormatException as designed). If practical, add a small provider or service test using a fake AiGateway (see test/mocks/mocks.dart and test/widgets/test_app.dart) verifying SoilResearchService.analyze returns a populated SoilReport for canned gateway output and surfaces AppException on malformed output. Follow existing test conventions; do not contact any network.",
+    "Run the full gate: `flutter pub get && flutter analyze && flutter test`. Fix everything until analyze is clean and all tests (existing + new) pass. Confirm the new tab renders (analyze-level / widget-test level; no device build needed)."
+  ],
+  "acceptance_criteria": [
+    "GeoResearch is reachable as a home tab (added to IndexedStack + NavigationBar + _titleFor with an l10n label), and tab indices/titles remain consistent",
+    "Demo mode returns valid SoilReport JSON for the soil-research request (SoilReport.parse succeeds) while diagnosis demo output still works",
+    "All GeoResearch strings and the reminder-body strings exist in app_en.arb and are mirrored into app_ar/app_fr/app_es per convention; generated AppLocalizations compiles",
+    "test/unit/soil_report_parse_test.dart exists and passes, covering clean, fenced-with-prose, and malformed JSON",
+    "`flutter analyze` reports 'No issues found!' and `flutter test` passes all tests"
+  ],
+  "verification": [
+    "export PATH=\"/opt/flutter-sdk/bin:$PATH\" && flutter pub get && flutter analyze && flutter test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
