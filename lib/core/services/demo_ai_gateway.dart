@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'ai_gateway.dart';
+import 'ai_prompts.dart';
 
 /// Canned, deterministic AI responses used when no AI provider is configured
 /// (demo mode) or in tests. Produces valid diagnosis JSON when [jsonMode] is
@@ -17,9 +18,19 @@ class DemoAiGateway extends AiGateway {
     await Future<void>.delayed(const Duration(milliseconds: 900));
 
     if (request.jsonMode) {
+      if (_isSoilResearch(request)) {
+        return _demoSoilReportJson(request);
+      }
       return _demoDiagnosisJson(request);
     }
     return _demoChatAnswer(request);
+  }
+
+  /// Detects a GeoResearch (soil-research) structured request by the stable
+  /// marker that [AiPrompts.soilResearchInstruction] embeds in the user text.
+  bool _isSoilResearch(AiRequest request) {
+    return request.userText.contains(AiPrompts.soilResearchMarker) ||
+        request.systemPrompt.contains(AiPrompts.soilResearchMarker);
   }
 
   @override
@@ -157,6 +168,111 @@ class DemoAiGateway extends AiGateway {
           'AI suggestions may be inaccurate and do not replace a qualified '
           'botanist, horticulturist or local agricultural authority. This is '
           'a demo response.',
+    });
+  }
+
+  /// Deterministic, valid [SoilReport] JSON for the GeoResearch flow. Values
+  /// are qualitative ESTIMATES only — the notes and disclaimer make clear that
+  /// exact sodium/salinity/nutrient figures require a professional soil-lab
+  /// test. Parses cleanly via SoilReport.parse.
+  String _demoSoilReportJson(AiRequest request) {
+    final String? city = request.context['city'];
+    final bool hasImage = request.image != null;
+    final String locationSummary = city != null && city.trim().isNotEmpty
+        ? 'Estimated regional soil profile near $city (demo).'
+        : 'Estimated regional soil profile for your area (demo).';
+
+    return const JsonEncoder.withIndent('  ').convert({
+      'isSoilRelated': true,
+      'imageQuality': hasImage ? 'good' : 'unusable',
+      'locationSummary': locationSummary,
+      'soilType': 'Sandy loam (estimated from regional context)',
+      'soilDepth':
+          'Moderately deep (roughly 60–100 cm topsoil, estimate only)',
+      'salinity': {
+        'level': 'low',
+        'note':
+            'Salinity appears low based on regional patterns. Exact salt '
+            'content requires a professional soil-lab test.',
+      },
+      'sodium': {
+        'level': 'low',
+        'note':
+            'Sodium is likely within a safe range for most plants. A lab test '
+            'is needed to confirm exact sodium levels.',
+      },
+      'phLevel': 'Approximately neutral (around 6.5–7.5, estimate)',
+      'organicMatter':
+          'Moderate — typical of managed regional soils (estimate).',
+      'nutrients': [
+        {
+          'name': 'Nitrogen',
+          'level': 'medium',
+          'note':
+              'Likely moderate; supplement for leafy growth. Lab test needed '
+              'for exact values.',
+        },
+        {
+          'name': 'Phosphorus',
+          'level': 'low',
+          'note':
+              'Often limited in sandy soils; a lab test confirms exact '
+              'phosphorus levels.',
+        },
+        {
+          'name': 'Potassium',
+          'level': 'medium',
+          'note':
+              'Estimated moderate. Confirm with a professional soil test.',
+        },
+      ],
+      'substances': [
+        {
+          'name': 'Carbonates (lime)',
+          'concern': 'low',
+          'note':
+              'Common in the region; usually not a concern at low levels.',
+        },
+        {
+          'name': 'Clay minerals',
+          'concern': 'low',
+          'note':
+              'A small clay fraction aids water retention. Estimate only.',
+        },
+      ],
+      'geometry': hasImage
+          ? 'Granular to fine-crumb structure visible in the photo, with '
+                'moderate aggregation (estimate).'
+          : 'Structure not assessed — attach a soil/site photo to estimate '
+                'geometry (granular, blocky, or compacted).',
+      'suitablePlants': [
+        'Tomatoes',
+        'Peppers',
+        'Rosemary',
+        'Lavender',
+        'Olive',
+      ],
+      'recommendations': [
+        'Add organic compost to improve structure and nutrient retention.',
+        'Test drainage before planting moisture-sensitive species.',
+        'Obtain a professional soil-lab test for exact nutrient, sodium and '
+            'salinity values before major planting or building work.',
+      ],
+      'safetyNotes': [
+        'Do not rely on these estimates for construction, drainage or '
+            'foundation decisions — commission a geotechnical/soil survey.',
+        'Keep any soil amendments and fertilizers away from children and pets.',
+      ],
+      'confidence': 'low',
+      'needsMoreInformation': !hasImage,
+      'followUpQuestions': [
+        'Could you attach a clear photo of the soil or site?',
+        'What do you plan to grow or build here?',
+      ],
+      'disclaimer':
+          'These are approximate, location-based ESTIMATES and not measured '
+          'values. Exact soil depth, sodium, salinity and nutrient figures '
+          'require a professional soil-lab test. This is a demo response.',
     });
   }
 }
