@@ -34,5 +34,10 @@
   "myPlants": "Mes plantes",
   "logout": "Se déconnecter",
   "exportData": "Télécharger mes données",
-  "demoModeBanner": "Mode démo — données d'exemple. Configurez Firebase et Groq pour toutes les fonctionnalités."
+  "demoModeBanner": "Mode démo — données d'exemple. Configurez Firebase et Groq pour toutes les fonctionnalités.",
+  "georesearchBuildNotice": "Évaluation préliminaire uniquement. Ceci n'est PAS un rapport géotechnique et ne doit pas servir au dimensionnement des fondations. Faites réaliser une étude géotechnique agréée avant de construire.",
+  "georesearchGwNotice": "Estimation régionale. Une étude hydrogéologique et un permis de forage sont requis avant tout forage.",
+  "georesearchTopoNotice": "Estimation documentaire. Des courbes de niveau exploitables en conception exigent un levé topographique agréé (instruments ou drone).",
+  "georesearchEstimateNotice": "Ce sont des estimations basées sur votre localisation et votre photo. Les valeurs exactes de sodium, de salinité et de nutriments nécessitent une analyse de sol en laboratoire.",
+  "georesearchAerialNotice": "Les images aériennes ne sont qu'un contexte non daté et ne constituent pas un levé aérien actuel."
 }

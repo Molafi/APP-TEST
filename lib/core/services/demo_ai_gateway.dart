@@ -182,10 +182,28 @@ class DemoAiGateway extends AiGateway {
         ? 'Estimated regional soil profile near $city (demo).'
         : 'Estimated regional soil profile for your area (demo).';
 
+    // Mirror the real flow's handling of user requirements and official data so
+    // demo mode exercises both branches.
+    final String purpose = request.context['surveyPurpose'] ?? 'general';
+    final String? requirements = request.context['userRequirements'];
+    final bool officialData =
+        (request.context['landRecordAvailable'] ?? 'false') == 'true';
+
     return const JsonEncoder.withIndent('  ').convert({
       'isSoilRelated': true,
       'imageQuality': hasImage ? 'good' : 'unusable',
       'locationSummary': locationSummary,
+      'purpose': purpose,
+      'userRequirements': requirements,
+      'dataSources': <String>[
+        if (officialData)
+          'Official Land Department record supplied by the user (authoritative)'
+        else
+          'Estimated from location and regional context only — no official '
+              'land record was provided',
+        if (hasImage) 'Site/soil photo attached by the user',
+        'Regional climate and geology patterns (demo data)',
+      ],
       'soilType': 'Sandy loam (estimated from regional context)',
       'soilDepth':
           'Moderately deep (roughly 60–100 cm topsoil, estimate only)',
@@ -245,6 +263,119 @@ class DemoAiGateway extends AiGateway {
                 'moderate aggregation (estimate).'
           : 'Structure not assessed — attach a soil/site photo to estimate '
                 'geometry (granular, blocky, or compacted).',
+      // Deliberately NO 'landRecord' key: the official record shown in a report
+      // is attached by the app from what the user entered, never echoed back by
+      // the model. Mirrors the real prompt, whose schema omits it too.
+      'siteLocation': {
+        'address': city,
+        'elevation': 'Approximately 300–450 m above sea level (estimate)',
+        'areaEstimate': officialData
+            ? request.context['landRegisteredArea']
+            : 'Not known — provide an official record or plot dimensions',
+        'boundaryDescription':
+            'Boundaries not surveyed in this demo. A licensed cadastral survey '
+            'is required to fix the plot extent.',
+        'accessNotes':
+            'Assumed reachable by a local road; verify machinery access on site.',
+        'terrainSetting': 'Gently undulating plain with scattered cultivation',
+      },
+      'topography': {
+        'summary':
+            'Gently sloping ground with no major relief; suitable for most '
+            'layouts with modest levelling (demo estimate).',
+        'elevationRange': 'Roughly 8–12 m variation across the plot (estimate)',
+        'slope': 'Gentle',
+        'slopePercent': 3.5,
+        'aspect': 'South-facing',
+        'landform': 'Alluvial plain margin',
+        'relief': 'Low relief',
+        'contourSummary':
+            'Contours would run broadly east–west; a 0.5 m interval is typical '
+            'for plot-scale design.',
+        'drainagePattern':
+            'Surface water drains gently toward the south-east.',
+        'runoffNotes':
+            'Minor ponding possible in low corners after heavy rain.',
+        'floodRisk': 'low',
+        'erosionRisk': 'medium',
+        'gradingNotes':
+            'Expect light cut-and-fill to create level building or planting '
+            'platforms.',
+        'notes': [
+          'Derived from regional terrain patterns, not from measured survey '
+              'points.',
+        ],
+      },
+      'groundwater': {
+        'summary':
+            'A moderately productive shallow aquifer is typical for this kind '
+            'of setting (demo estimate).',
+        'waterTableDepth': 'Roughly 15–30 m below ground level (estimate)',
+        'aquiferType': 'Unconfined alluvial aquifer',
+        'yieldPotential': 'medium',
+        'waterQuality':
+            'Likely usable for irrigation; test for salinity and nitrates '
+            'before drinking use.',
+        'salinityRisk': 'low',
+        'seasonalVariation':
+            'Water table typically rises after the wet season and falls in late '
+            'summer.',
+        'rechargeNotes':
+            'Recharge mainly from seasonal rainfall infiltration.',
+        'wellFeasibility':
+            'A borehole appears feasible in principle, subject to a '
+            'hydrogeological study and a drilling permit.',
+        'drillingDepthEstimate': 'Commonly 40–60 m to ensure year-round supply',
+        'contaminationRisk': 'low',
+        'notes': [
+          'No site-specific borehole data was available for this demo.',
+        ],
+      },
+      'buildingSuitability': {
+        'summary':
+            'Preliminary screening suggests generally workable ground for light '
+            'to medium structures (demo estimate only).',
+        'suitability': 'medium',
+        'bearingCapacity':
+            'Likely moderate for sandy loam over firmer substrata — '
+            'qualitative only, no design value implied.',
+        'bedrockDepth': 'Probably deeper than 10 m (estimate)',
+        'foundationSuggestion':
+            'Shallow strip or pad footings are a plausible starting hypothesis; '
+            'a geotechnical engineer must confirm.',
+        'settlementRisk': 'medium',
+        'expansiveSoilRisk': 'low',
+        'seismicNotes':
+            'Check the current national seismic zoning map and apply the local '
+            'building code.',
+        'excavationNotes':
+            'Sandy soils may need shoring for trenches deeper than about 1.2 m.',
+        'drainageRequirements':
+            'Provide perimeter drainage and grade surfaces away from '
+            'foundations.',
+        'constraints': [
+          'Erosion risk on the sloping margin during construction',
+          'Plot boundaries unverified without an official cadastral record',
+        ],
+        'requiredStudies': [
+          'Geotechnical investigation with boreholes and bearing tests',
+          'Licensed topographic survey for design-grade contours',
+          'Hydrogeological study if a well is planned',
+          'Local authority planning and zoning confirmation',
+        ],
+      },
+      'aerialImagery': {
+        'interpretation':
+            'An aerial view of this area typically shows a patchwork of '
+            'cultivated plots separated by tracks, with scattered tree cover '
+            'along field edges.',
+        'landCover': 'Mixed cultivation with scattered trees and bare ground',
+        'visibleFeatures': [
+          'Field boundaries and access tracks',
+          'Seasonal drainage lines',
+          'Scattered built structures nearby',
+        ],
+      },
       'suitablePlants': [
         'Tomatoes',
         'Peppers',

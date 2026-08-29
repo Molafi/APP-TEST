@@ -12,7 +12,9 @@ import '../../home/application/home_provider.dart';
 import '../../weather/application/ai_context_provider.dart';
 import '../application/soil_research_provider.dart';
 import '../domain/soil_report_model.dart';
+import 'widgets/aerial_view_card.dart';
 import 'widgets/soil_report_card.dart';
+import 'widgets/survey_inputs_section.dart';
 
 /// Stage-driven GeoResearch (soil analysis) flow. Provided as a tab body; the
 /// Home shell supplies the Scaffold and app bar.
@@ -64,6 +66,10 @@ class _InputView extends ConsumerWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         Text(l10n.georesearchIntro, style: Theme.of(context).textTheme.bodyLarge),
+        const SizedBox(height: AppSpacing.lg),
+
+        // Purpose, free-text requirements and optional Land Department data.
+        SurveyInputsSection(state: state, controller: controller),
         const SizedBox(height: AppSpacing.lg),
 
         // Location context strip (or a hint to set a location).
@@ -218,6 +224,19 @@ class _ResultView extends ConsumerWidget {
               ),
             ),
           ),
+        // Aerial/satellite context view. Without coordinates there is no tile
+        // to show, so explain why rather than silently omitting the card.
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          child: report.aerialImagery != null
+              ? AerialViewCard(info: report.aerialImagery!)
+              : Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.satellite_alt_outlined),
+                    title: Text(l10n.georesearchAerialUnavailable),
+                  ),
+                ),
+        ),
         SoilReportCard(report: report),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),

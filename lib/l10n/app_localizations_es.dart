@@ -498,7 +498,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get georesearchEstimateNotice =>
-      'These are estimates based on your location and photo. Exact sodium, salinity and nutrient values require a professional soil-lab test.';
+      'Estas son estimaciones basadas en su ubicación y su foto. Los valores exactos de sodio, salinidad y nutrientes requieren un análisis de suelo en laboratorio.';
 
   @override
   String get georesearchSave => 'Save report';
@@ -515,6 +515,221 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get georesearchHistoryEmptyBody =>
       'Analyze your soil to build your history.';
+
+  @override
+  String get georesearchPurpose => 'What do you need this survey for?';
+
+  @override
+  String get georesearchPurposeGeneral => 'General';
+
+  @override
+  String get georesearchPurposeAgriculture => 'Farming';
+
+  @override
+  String get georesearchPurposeBuilding => 'Building';
+
+  @override
+  String get georesearchPurposeWellDrilling => 'Water well';
+
+  @override
+  String get georesearchRequirements => 'Your requirements';
+
+  @override
+  String get georesearchRequirementsHint =>
+      'Describe what you plan to do with this land, e.g. build a two-storey house, plant olive trees, drill a well.';
+
+  @override
+  String get georesearchLandRecordSection => 'Land Department data (optional)';
+
+  @override
+  String get georesearchLandRecordToggle =>
+      'I have official Land Department data';
+
+  @override
+  String get georesearchLandRecordHelp =>
+      'If official records are available, enter them and the survey will use them as authoritative instead of estimating.';
+
+  @override
+  String get georesearchLandRecordSource => 'Issuing authority / registry';
+
+  @override
+  String get georesearchLandParcelId => 'Parcel / plot / deed number';
+
+  @override
+  String get georesearchLandRegisteredArea => 'Registered area';
+
+  @override
+  String get georesearchLandZoning => 'Zoning / permitted use';
+
+  @override
+  String get georesearchLandClassification => 'Land classification';
+
+  @override
+  String get georesearchLandOwnershipType => 'Ownership type';
+
+  @override
+  String get georesearchLandOfficialNotes => 'Other official notes';
+
+  @override
+  String get georesearchLandRecordOfficial => 'Official record';
+
+  @override
+  String get georesearchAerial => 'Aerial / satellite view';
+
+  @override
+  String get georesearchAerialLandCover => 'Land cover';
+
+  @override
+  String get georesearchAerialFeatures => 'Visible features';
+
+  @override
+  String get georesearchAerialUnavailable =>
+      'Set a location to see an aerial view of the site.';
+
+  @override
+  String get georesearchAerialNotice =>
+      'Las imágenes aéreas son solo contexto y no están fechadas; no son un levantamiento aéreo actual.';
+
+  @override
+  String get georesearchSite => 'Site location';
+
+  @override
+  String get georesearchSiteAddress => 'Address';
+
+  @override
+  String get georesearchSiteElevation => 'Elevation';
+
+  @override
+  String get georesearchSiteArea => 'Approximate area';
+
+  @override
+  String get georesearchSiteBoundary => 'Boundaries / extent';
+
+  @override
+  String get georesearchSiteAccess => 'Access';
+
+  @override
+  String get georesearchSiteTerrain => 'Setting';
+
+  @override
+  String get georesearchTopography => 'Topographic survey';
+
+  @override
+  String get georesearchTopoElevationRange => 'Elevation range';
+
+  @override
+  String get georesearchTopoSlope => 'Slope';
+
+  @override
+  String get georesearchTopoAspect => 'Aspect';
+
+  @override
+  String get georesearchTopoLandform => 'Landform';
+
+  @override
+  String get georesearchTopoRelief => 'Relief';
+
+  @override
+  String get georesearchTopoContours => 'Contours';
+
+  @override
+  String get georesearchTopoDrainage => 'Drainage pattern';
+
+  @override
+  String get georesearchTopoRunoff => 'Runoff';
+
+  @override
+  String get georesearchTopoFloodRisk => 'Flood risk';
+
+  @override
+  String get georesearchTopoErosionRisk => 'Erosion risk';
+
+  @override
+  String get georesearchTopoGrading => 'Grading / earthworks';
+
+  @override
+  String get georesearchTopoNotice =>
+      'Estimación de gabinete. Las curvas de nivel para diseño requieren un levantamiento topográfico autorizado con instrumentos o dron.';
+
+  @override
+  String get georesearchGroundwater => 'Groundwater';
+
+  @override
+  String get georesearchGwWaterTable => 'Water table depth';
+
+  @override
+  String get georesearchGwAquifer => 'Aquifer type';
+
+  @override
+  String get georesearchGwYield => 'Yield potential';
+
+  @override
+  String get georesearchGwQuality => 'Water quality';
+
+  @override
+  String get georesearchGwSalinityRisk => 'Salinity risk';
+
+  @override
+  String get georesearchGwSeasonal => 'Seasonal variation';
+
+  @override
+  String get georesearchGwRecharge => 'Recharge';
+
+  @override
+  String get georesearchGwWellFeasibility => 'Well feasibility';
+
+  @override
+  String get georesearchGwDrillingDepth => 'Estimated drilling depth';
+
+  @override
+  String get georesearchGwContamination => 'Contamination risk';
+
+  @override
+  String get georesearchGwNotice =>
+      'Estimación regional. Se requiere un estudio hidrogeológico y un permiso de perforación antes de perforar.';
+
+  @override
+  String get georesearchBuilding => 'Building suitability';
+
+  @override
+  String get georesearchBuildRating => 'Screening rating';
+
+  @override
+  String get georesearchBuildBearing => 'Bearing capacity';
+
+  @override
+  String get georesearchBuildBedrock => 'Depth to bedrock';
+
+  @override
+  String get georesearchBuildFoundation => 'Possible foundation approach';
+
+  @override
+  String get georesearchBuildSettlement => 'Settlement risk';
+
+  @override
+  String get georesearchBuildExpansive => 'Expansive soil risk';
+
+  @override
+  String get georesearchBuildSeismic => 'Seismic context';
+
+  @override
+  String get georesearchBuildExcavation => 'Excavation';
+
+  @override
+  String get georesearchBuildDrainage => 'Site drainage';
+
+  @override
+  String get georesearchBuildConstraints => 'Constraints';
+
+  @override
+  String get georesearchBuildRequiredStudies => 'Required professional studies';
+
+  @override
+  String get georesearchBuildNotice =>
+      'Solo es una evaluación preliminar. NO es un informe geotécnico y no debe usarse para el diseño de cimentaciones. Encargue un estudio geotécnico autorizado antes de construir.';
+
+  @override
+  String get georesearchDataSources => 'Data sources';
 
   @override
   String get concernLow => 'Low concern';

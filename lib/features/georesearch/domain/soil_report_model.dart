@@ -1,19 +1,14 @@
 import 'dart:convert';
 
 import '../../diagnosis/domain/diagnosis_model.dart' show Confidence, confidenceFrom, ImageQuality, imageQualityFrom;
+import 'site_survey_model.dart';
+import 'soil_level.dart';
 
 export '../../diagnosis/domain/diagnosis_model.dart' show Confidence, ImageQuality;
-
-/// A qualitative low/medium/high level used for salinity, sodium, nutrients and
-/// substance concern. Kept separate from [Confidence]/[ImageQuality] but shares
-/// the same `xFrom(String?)` parsing convention as the diagnosis enums.
-enum SoilLevel { low, medium, high }
-
-SoilLevel soilLevelFrom(String? s) => switch (s?.toLowerCase()) {
-  'high' => SoilLevel.high,
-  'medium' => SoilLevel.medium,
-  _ => SoilLevel.low,
-};
+// Re-exported so existing `import '.../soil_report_model.dart'` call sites keep
+// resolving SoilLevel and the survey models without extra imports.
+export 'site_survey_model.dart';
+export 'soil_level.dart';
 
 /// A qualitative reading with a level and an optional explanatory note. Used for
 /// salinity and sodium, both of which are ESTIMATES only — exact figures need a
@@ -103,6 +98,15 @@ class SoilReport {
     required this.nutrients,
     required this.substances,
     this.geometry,
+    this.siteLocation,
+    this.topography,
+    this.groundwater,
+    this.buildingSuitability,
+    this.landRecord,
+    this.aerialImagery,
+    this.purpose = SurveyPurpose.general,
+    this.userRequirements,
+    this.dataSources = const <String>[],
     required this.suitablePlants,
     required this.recommendations,
     required this.safetyNotes,
@@ -151,6 +155,34 @@ class SoilReport {
   /// Soil geometry / structure / aggregation, e.g. "granular", "blocky",
   /// "compacted" — most meaningful when derived from an image.
   final String? geometry;
+
+  /// Where the site is and how it is laid out.
+  final SiteLocation? siteLocation;
+
+  /// Estimated topographic survey (elevation, slope, drainage, flood/erosion).
+  final TopographySurvey? topography;
+
+  /// Estimated groundwater / water-table assessment.
+  final GroundwaterAssessment? groundwater;
+
+  /// Preliminary construction-suitability screening.
+  final BuildingSuitability? buildingSuitability;
+
+  /// Official Land Department record, when the user supplied one.
+  final LandRecordInfo? landRecord;
+
+  /// Aerial/satellite view reference plus its AI interpretation.
+  final AerialImageryInfo? aerialImagery;
+
+  /// What the user wants the site for — drives which sections matter.
+  final SurveyPurpose purpose;
+
+  /// The user's own stated requirements, echoed back for the record.
+  final String? userRequirements;
+
+  /// Which inputs the findings were derived from (official record, coordinates,
+  /// photo, regional data), so the user can judge reliability.
+  final List<String> dataSources;
 
   final List<String> suitablePlants;
   final List<String> recommendations;
@@ -208,6 +240,14 @@ class SoilReport {
     throw const FormatException('Unbalanced JSON');
   }
 
+  /// Parses a nested sub-object with [build], returning null when the value is
+  /// absent or not a JSON object. Keeps [fromJson] tolerant of partial output.
+  static T? _sub<T>(Object? v, T Function(Map<String, dynamic>) build) {
+    if (v is Map<String, dynamic>) return build(v);
+    if (v is Map) return build(Map<String, dynamic>.from(v));
+    return null;
+  }
+
   factory SoilReport.fromJson(Map<String, dynamic> j) {
     List<String> strList(Object? v) => (v is List)
         ? v
@@ -250,6 +290,18 @@ class SoilReport {
                 .toList()
           : <SoilSubstance>[],
       geometry: str(j['geometry']),
+      siteLocation: _sub(j['siteLocation'], SiteLocation.fromMap),
+      topography: _sub(j['topography'], TopographySurvey.fromMap),
+      groundwater: _sub(j['groundwater'], GroundwaterAssessment.fromMap),
+      buildingSuitability: _sub(
+        j['buildingSuitability'],
+        BuildingSuitability.fromMap,
+      ),
+      landRecord: _sub(j['landRecord'], LandRecordInfo.fromMap),
+      aerialImagery: _sub(j['aerialImagery'], AerialImageryInfo.fromMap),
+      purpose: surveyPurposeFrom(j['purpose'] as String?),
+      userRequirements: str(j['userRequirements']),
+      dataSources: strList(j['dataSources']),
       suitablePlants: strList(j['suitablePlants']),
       recommendations: strList(j['recommendations']),
       safetyNotes: strList(j['safetyNotes']),
@@ -257,6 +309,57 @@ class SoilReport {
       needsMoreInformation: (j['needsMoreInformation'] as bool?) ?? false,
       followUpQuestions: strList(j['followUpQuestions']),
       disclaimer: (j['disclaimer'] as String?)?.trim() ?? '',
+    );
+  }
+
+  /// Overwrites the fields the APP owns rather than the model.
+  ///
+  /// These four are trust-sensitive: the official land record and the aerial
+  /// tile are supplied by the user/app and must never be sourced from model
+  /// output (a paraphrased parcel number must not appear behind an "Official
+  /// record" badge), and the purpose/requirements are echoes of what the user
+  /// actually entered. Assignment is unconditional — passing null CLEARS any
+  /// value the model volunteered.
+  SoilReport withUserInputs({
+    required LandRecordInfo? landRecord,
+    required AerialImageryInfo? aerialImagery,
+    required SurveyPurpose purpose,
+    required String? userRequirements,
+  }) {
+    return SoilReport(
+      isSoilRelated: isSoilRelated,
+      imageQuality: imageQuality,
+      locationSummary: locationSummary,
+      soilType: soilType,
+      soilDepth: soilDepth,
+      salinity: salinity,
+      sodium: sodium,
+      phLevel: phLevel,
+      organicMatter: organicMatter,
+      nutrients: nutrients,
+      substances: substances,
+      geometry: geometry,
+      siteLocation: siteLocation,
+      topography: topography,
+      groundwater: groundwater,
+      buildingSuitability: buildingSuitability,
+      landRecord: landRecord,
+      aerialImagery: aerialImagery,
+      purpose: purpose,
+      userRequirements: userRequirements,
+      dataSources: dataSources,
+      suitablePlants: suitablePlants,
+      recommendations: recommendations,
+      safetyNotes: safetyNotes,
+      confidence: confidence,
+      needsMoreInformation: needsMoreInformation,
+      followUpQuestions: followUpQuestions,
+      disclaimer: disclaimer,
+      id: id,
+      imageReference: imageReference,
+      localImagePath: localImagePath,
+      locationContext: locationContext,
+      createdAt: createdAt,
     );
   }
 
@@ -280,6 +383,15 @@ class SoilReport {
       nutrients: nutrients,
       substances: substances,
       geometry: geometry,
+      siteLocation: siteLocation,
+      topography: topography,
+      groundwater: groundwater,
+      buildingSuitability: buildingSuitability,
+      landRecord: landRecord,
+      aerialImagery: aerialImagery,
+      purpose: purpose,
+      userRequirements: userRequirements,
+      dataSources: dataSources,
       suitablePlants: suitablePlants,
       recommendations: recommendations,
       safetyNotes: safetyNotes,
@@ -308,6 +420,15 @@ class SoilReport {
     'nutrients': nutrients.map((e) => e.toMap()).toList(),
     'substances': substances.map((e) => e.toMap()).toList(),
     'geometry': geometry,
+    'siteLocation': siteLocation?.toMap(),
+    'topography': topography?.toMap(),
+    'groundwater': groundwater?.toMap(),
+    'buildingSuitability': buildingSuitability?.toMap(),
+    'landRecord': landRecord?.toMap(),
+    'aerialImagery': aerialImagery?.toMap(),
+    'purpose': purpose.name,
+    'userRequirements': userRequirements,
+    'dataSources': dataSources,
     'suitablePlants': suitablePlants,
     'recommendations': recommendations,
     'safetyNotes': safetyNotes,
@@ -354,6 +475,84 @@ class SoilReport {
       }
     }
     if (geometry != null) b.writeln('Structure: $geometry');
+
+    final TopographySurvey? topo = topography;
+    if (topo != null && !topo.isEmpty) {
+      b.writeln('\nTopography (estimate):');
+      if (topo.summary != null) b.writeln('- ${topo.summary}');
+      if (topo.elevationRange != null) {
+        b.writeln('- Elevation: ${topo.elevationRange}');
+      }
+      if (topo.slope != null) b.writeln('- Slope: ${topo.slope}');
+      if (topo.landform != null) b.writeln('- Landform: ${topo.landform}');
+      if (topo.drainagePattern != null) {
+        b.writeln('- Drainage: ${topo.drainagePattern}');
+      }
+      if (topo.floodRisk != null) {
+        b.writeln('- Flood risk: ${topo.floodRisk!.name}');
+      }
+      if (topo.erosionRisk != null) {
+        b.writeln('- Erosion risk: ${topo.erosionRisk!.name}');
+      }
+    }
+
+    final GroundwaterAssessment? gw = groundwater;
+    if (gw != null && !gw.isEmpty) {
+      b.writeln('\nGroundwater (estimate):');
+      if (gw.summary != null) b.writeln('- ${gw.summary}');
+      if (gw.waterTableDepth != null) {
+        b.writeln('- Water table: ${gw.waterTableDepth}');
+      }
+      if (gw.aquiferType != null) b.writeln('- Aquifer: ${gw.aquiferType}');
+      if (gw.yieldPotential != null) {
+        b.writeln('- Yield potential: ${gw.yieldPotential!.name}');
+      }
+      if (gw.waterQuality != null) {
+        b.writeln('- Water quality: ${gw.waterQuality}');
+      }
+      if (gw.wellFeasibility != null) {
+        b.writeln('- Well feasibility: ${gw.wellFeasibility}');
+      }
+    }
+
+    final BuildingSuitability? bs = buildingSuitability;
+    if (bs != null && !bs.isEmpty) {
+      b.writeln('\nBuilding suitability (screening only):');
+      if (bs.suitability != null) {
+        b.writeln('- Rating: ${bs.suitability!.name}');
+      }
+      if (bs.bearingCapacity != null) {
+        b.writeln('- Bearing capacity: ${bs.bearingCapacity}');
+      }
+      if (bs.bedrockDepth != null) {
+        b.writeln('- Bedrock depth: ${bs.bedrockDepth}');
+      }
+      if (bs.foundationSuggestion != null) {
+        b.writeln('- Foundation: ${bs.foundationSuggestion}');
+      }
+      for (final String s in bs.requiredStudies) {
+        b.writeln('- Required study: $s');
+      }
+    }
+
+    final LandRecordInfo? lr = landRecord;
+    if (lr != null && lr.hasData) {
+      b.writeln('\nLand Department record (official):');
+      if (lr.source != null) b.writeln('- Source: ${lr.source}');
+      if (lr.parcelId != null) b.writeln('- Parcel: ${lr.parcelId}');
+      if (lr.registeredArea != null) {
+        b.writeln('- Registered area: ${lr.registeredArea}');
+      }
+      if (lr.zoning != null) b.writeln('- Zoning: ${lr.zoning}');
+      if (lr.classification != null) {
+        b.writeln('- Classification: ${lr.classification}');
+      }
+    }
+
+    if (dataSources.isNotEmpty) {
+      b.writeln('\nData sources: ${dataSources.join(', ')}');
+    }
+
     if (suitablePlants.isNotEmpty) {
       b.writeln('Suitable plants: ${suitablePlants.join(', ')}');
     }

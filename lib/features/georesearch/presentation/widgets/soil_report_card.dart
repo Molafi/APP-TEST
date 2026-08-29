@@ -152,6 +152,50 @@ class SoilReportCard extends StatelessWidget {
                 body: Text(report.geometry!),
               ),
 
+            // ---- Official land record (authoritative when present) ----------
+            if (report.landRecord != null && report.landRecord!.hasData)
+              _Section(
+                emoji: '📜',
+                title: l10n.georesearchLandRecordSection,
+                body: _LandRecordBody(record: report.landRecord!, l10n: l10n),
+              ),
+
+            // ---- Site location ---------------------------------------------
+            if (report.siteLocation != null && !report.siteLocation!.isEmpty)
+              _Section(
+                emoji: '📍',
+                title: l10n.georesearchSite,
+                body: _SiteLocationBody(site: report.siteLocation!, l10n: l10n),
+              ),
+
+            // ---- Topographic survey ----------------------------------------
+            if (report.topography != null && !report.topography!.isEmpty)
+              _Section(
+                emoji: '⛰️',
+                title: l10n.georesearchTopography,
+                body: _TopographyBody(topo: report.topography!, l10n: l10n),
+              ),
+
+            // ---- Groundwater ------------------------------------------------
+            if (report.groundwater != null && !report.groundwater!.isEmpty)
+              _Section(
+                emoji: '💧',
+                title: l10n.georesearchGroundwater,
+                body: _GroundwaterBody(gw: report.groundwater!, l10n: l10n),
+              ),
+
+            // ---- Building suitability ---------------------------------------
+            if (report.buildingSuitability != null &&
+                !report.buildingSuitability!.isEmpty)
+              _Section(
+                emoji: '🏗️',
+                title: l10n.georesearchBuilding,
+                body: _BuildingBody(
+                  info: report.buildingSuitability!,
+                  l10n: l10n,
+                ),
+              ),
+
             if (report.suitablePlants.isNotEmpty)
               _Section(
                 emoji: '🪴',
@@ -181,6 +225,14 @@ class SoilReportCard extends StatelessWidget {
                 emoji: '🛡️',
                 title: l10n.georesearchSafety,
                 body: _BulletList(items: report.safetyNotes),
+              ),
+
+            // Where the findings came from, so reliability is judgeable.
+            if (report.dataSources.isNotEmpty)
+              _Section(
+                emoji: '🗂️',
+                title: l10n.georesearchDataSources,
+                body: _BulletList(items: report.dataSources),
               ),
 
             const Divider(height: AppSpacing.xl),
@@ -243,6 +295,444 @@ class SoilReportCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Official land-registry values. Badged as an official record so the user can
+/// tell them apart from the AI's estimates.
+class _LandRecordBody extends StatelessWidget {
+  const _LandRecordBody({required this.record, required this.l10n});
+  final LandRecordInfo record;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 2,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.confidenceHigh.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.verified_outlined,
+                size: 14,
+                color: AppColors.confidenceHigh,
+              ),
+              const SizedBox(width: 2),
+              Text(
+                l10n.georesearchLandRecordOfficial,
+                style: const TextStyle(
+                  color: AppColors.confidenceHigh,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        if (record.source != null)
+          _LabelValue(
+            label: l10n.georesearchLandRecordSource,
+            value: record.source!,
+          ),
+        if (record.parcelId != null)
+          _LabelValue(
+            label: l10n.georesearchLandParcelId,
+            value: record.parcelId!,
+          ),
+        if (record.registeredArea != null)
+          _LabelValue(
+            label: l10n.georesearchLandRegisteredArea,
+            value: record.registeredArea!,
+          ),
+        if (record.zoning != null)
+          _LabelValue(label: l10n.georesearchLandZoning, value: record.zoning!),
+        if (record.classification != null)
+          _LabelValue(
+            label: l10n.georesearchLandClassification,
+            value: record.classification!,
+          ),
+        if (record.ownershipType != null)
+          _LabelValue(
+            label: l10n.georesearchLandOwnershipType,
+            value: record.ownershipType!,
+          ),
+        if (record.officialNotes != null)
+          _LabelValue(
+            label: l10n.georesearchLandOfficialNotes,
+            value: record.officialNotes!,
+          ),
+      ],
+    );
+  }
+}
+
+class _SiteLocationBody extends StatelessWidget {
+  const _SiteLocationBody({required this.site, required this.l10n});
+  final SiteLocation site;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (site.address != null)
+          _LabelValue(label: l10n.georesearchSiteAddress, value: site.address!),
+        if (site.latitude != null && site.longitude != null)
+          _LabelValue(
+            label: l10n.georesearchLocation,
+            value:
+                '${site.latitude!.toStringAsFixed(4)}, ${site.longitude!.toStringAsFixed(4)}',
+          ),
+        if (site.elevation != null)
+          _LabelValue(
+            label: l10n.georesearchSiteElevation,
+            value: site.elevation!,
+          ),
+        if (site.areaEstimate != null)
+          _LabelValue(
+            label: l10n.georesearchSiteArea,
+            value: site.areaEstimate!,
+          ),
+        if (site.boundaryDescription != null)
+          _LabelValue(
+            label: l10n.georesearchSiteBoundary,
+            value: site.boundaryDescription!,
+          ),
+        if (site.terrainSetting != null)
+          _LabelValue(
+            label: l10n.georesearchSiteTerrain,
+            value: site.terrainSetting!,
+          ),
+        if (site.accessNotes != null)
+          _LabelValue(
+            label: l10n.georesearchSiteAccess,
+            value: site.accessNotes!,
+          ),
+      ],
+    );
+  }
+}
+
+class _TopographyBody extends StatelessWidget {
+  const _TopographyBody({required this.topo, required this.l10n});
+  final TopographySurvey topo;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (topo.summary != null) Text(topo.summary!),
+        if (topo.elevationRange != null)
+          _LabelValue(
+            label: l10n.georesearchTopoElevationRange,
+            value: topo.elevationRange!,
+          ),
+        if (topo.slope != null)
+          _LabelValue(
+            label: l10n.georesearchTopoSlope,
+            value: topo.slopePercent != null
+                ? '${topo.slope!} (~${topo.slopePercent!.toStringAsFixed(1)}%)'
+                : topo.slope!,
+          ),
+        if (topo.aspect != null)
+          _LabelValue(label: l10n.georesearchTopoAspect, value: topo.aspect!),
+        if (topo.landform != null)
+          _LabelValue(
+            label: l10n.georesearchTopoLandform,
+            value: topo.landform!,
+          ),
+        if (topo.relief != null)
+          _LabelValue(label: l10n.georesearchTopoRelief, value: topo.relief!),
+        if (topo.contourSummary != null)
+          _LabelValue(
+            label: l10n.georesearchTopoContours,
+            value: topo.contourSummary!,
+          ),
+        if (topo.drainagePattern != null)
+          _LabelValue(
+            label: l10n.georesearchTopoDrainage,
+            value: topo.drainagePattern!,
+          ),
+        if (topo.runoffNotes != null)
+          _LabelValue(
+            label: l10n.georesearchTopoRunoff,
+            value: topo.runoffNotes!,
+          ),
+        if (topo.gradingNotes != null)
+          _LabelValue(
+            label: l10n.georesearchTopoGrading,
+            value: topo.gradingNotes!,
+          ),
+        if (topo.floodRisk != null || topo.erosionRisk != null) ...[
+          const SizedBox(height: AppSpacing.xs),
+          if (topo.floodRisk != null)
+            _RiskRow(
+              label: l10n.georesearchTopoFloodRisk,
+              level: topo.floodRisk!,
+              l10n: l10n,
+            ),
+          if (topo.erosionRisk != null)
+            _RiskRow(
+              label: l10n.georesearchTopoErosionRisk,
+              level: topo.erosionRisk!,
+              l10n: l10n,
+            ),
+        ],
+        if (topo.notes.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          _BulletList(items: topo.notes),
+        ],
+        _MiniNotice(text: l10n.georesearchTopoNotice),
+      ],
+    );
+  }
+}
+
+class _GroundwaterBody extends StatelessWidget {
+  const _GroundwaterBody({required this.gw, required this.l10n});
+  final GroundwaterAssessment gw;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (gw.summary != null) Text(gw.summary!),
+        if (gw.waterTableDepth != null)
+          _LabelValue(
+            label: l10n.georesearchGwWaterTable,
+            value: gw.waterTableDepth!,
+          ),
+        if (gw.aquiferType != null)
+          _LabelValue(
+            label: l10n.georesearchGwAquifer,
+            value: gw.aquiferType!,
+          ),
+        if (gw.waterQuality != null)
+          _LabelValue(
+            label: l10n.georesearchGwQuality,
+            value: gw.waterQuality!,
+          ),
+        if (gw.seasonalVariation != null)
+          _LabelValue(
+            label: l10n.georesearchGwSeasonal,
+            value: gw.seasonalVariation!,
+          ),
+        if (gw.rechargeNotes != null)
+          _LabelValue(
+            label: l10n.georesearchGwRecharge,
+            value: gw.rechargeNotes!,
+          ),
+        if (gw.wellFeasibility != null)
+          _LabelValue(
+            label: l10n.georesearchGwWellFeasibility,
+            value: gw.wellFeasibility!,
+          ),
+        if (gw.drillingDepthEstimate != null)
+          _LabelValue(
+            label: l10n.georesearchGwDrillingDepth,
+            value: gw.drillingDepthEstimate!,
+          ),
+        const SizedBox(height: AppSpacing.xs),
+        if (gw.yieldPotential != null)
+          _RiskRow(
+            label: l10n.georesearchGwYield,
+            level: gw.yieldPotential!,
+            l10n: l10n,
+            // High yield is a good outcome, so use the positive palette.
+            concern: false,
+          ),
+        if (gw.salinityRisk != null)
+          _RiskRow(
+            label: l10n.georesearchGwSalinityRisk,
+            level: gw.salinityRisk!,
+            l10n: l10n,
+          ),
+        if (gw.contaminationRisk != null)
+          _RiskRow(
+            label: l10n.georesearchGwContamination,
+            level: gw.contaminationRisk!,
+            l10n: l10n,
+          ),
+        if (gw.notes.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          _BulletList(items: gw.notes),
+        ],
+        _MiniNotice(text: l10n.georesearchGwNotice),
+      ],
+    );
+  }
+}
+
+class _BuildingBody extends StatelessWidget {
+  const _BuildingBody({required this.info, required this.l10n});
+  final BuildingSuitability info;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (info.summary != null) Text(info.summary!),
+        if (info.suitability != null)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: _RiskRow(
+              label: l10n.georesearchBuildRating,
+              level: info.suitability!,
+              l10n: l10n,
+              // High suitability is favourable.
+              concern: false,
+            ),
+          ),
+        if (info.bearingCapacity != null)
+          _LabelValue(
+            label: l10n.georesearchBuildBearing,
+            value: info.bearingCapacity!,
+          ),
+        if (info.bedrockDepth != null)
+          _LabelValue(
+            label: l10n.georesearchBuildBedrock,
+            value: info.bedrockDepth!,
+          ),
+        if (info.foundationSuggestion != null)
+          _LabelValue(
+            label: l10n.georesearchBuildFoundation,
+            value: info.foundationSuggestion!,
+          ),
+        if (info.seismicNotes != null)
+          _LabelValue(
+            label: l10n.georesearchBuildSeismic,
+            value: info.seismicNotes!,
+          ),
+        if (info.excavationNotes != null)
+          _LabelValue(
+            label: l10n.georesearchBuildExcavation,
+            value: info.excavationNotes!,
+          ),
+        if (info.drainageRequirements != null)
+          _LabelValue(
+            label: l10n.georesearchBuildDrainage,
+            value: info.drainageRequirements!,
+          ),
+        if (info.settlementRisk != null)
+          _RiskRow(
+            label: l10n.georesearchBuildSettlement,
+            level: info.settlementRisk!,
+            l10n: l10n,
+          ),
+        if (info.expansiveSoilRisk != null)
+          _RiskRow(
+            label: l10n.georesearchBuildExpansive,
+            level: info.expansiveSoilRisk!,
+            l10n: l10n,
+          ),
+        if (info.constraints.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.georesearchBuildConstraints,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.constraints),
+        ],
+        if (info.requiredStudies.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.georesearchBuildRequiredStudies,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.requiredStudies),
+        ],
+        _MiniNotice(text: l10n.georesearchBuildNotice, warning: true),
+      ],
+    );
+  }
+}
+
+/// A labelled qualitative level (risk, yield or suitability) rendered with the
+/// shared chip so colour is always paired with a text label.
+class _RiskRow extends StatelessWidget {
+  const _RiskRow({
+    required this.label,
+    required this.level,
+    required this.l10n,
+    this.concern = true,
+  });
+  final String label;
+  final SoilLevel level;
+  final AppLocalizations l10n;
+  final bool concern;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+      child: Row(
+        children: [
+          _LevelChip(level: level, l10n: l10n, concern: concern),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small per-section caveat naming the professional study that section cannot
+/// replace. [warning] raises the emphasis for the construction disclaimer.
+class _MiniNotice extends StatelessWidget {
+  const _MiniNotice({required this.text, this.warning = false});
+  final String text;
+  final bool warning;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color = warning ? AppColors.confidenceLow : AppColors.mossGray;
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            warning ? Icons.warning_amber_outlined : Icons.info_outline,
+            size: 14,
+            color: color,
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+                fontStyle: warning ? FontStyle.normal : FontStyle.italic,
+                fontWeight: warning ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
