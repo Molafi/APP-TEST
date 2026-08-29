@@ -1,7 +1,14 @@
 {
   "task_id": "task-georesearch-and-fixes",
   "task_description": "Fix concrete documented defects in the PlantSense AI Flutter app and add a new GeoResearch soil-analysis feature (soil depth, sodium/salinity, nutrients N/P/K, pH, organic matter, notable substances/contaminants, and soil geometry/texture from an optional image), location-aware and demo-mode usable, following the app's existing feature-first + AI-gateway + structured-JSON patterns. Keep flutter analyze clean and flutter test green throughout.",
-  "status": "in_progress",
+  "status": "completed",
   "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
-  "blocked_reason": null
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "flutter pub get + flutter analyze ('No issues found!') + flutter test (all 71 pass, up from 52 baseline) verified from a clean state with Flutter 3.47.2. No Dockerfile / device-based builds possible in sandbox (no Android SDK/Xcode) so apk/ios and integration_test were skipped per env constraints. Test quality reviewed: soil_research_service_test asserts the real AiRequest (jsonMode, soil marker, enriched lat/lon) and parsed SoilReport plus demo-gateway branching; reminder_provider_test proves a throwing NotificationService leaves the reminder disabled and persists that (would fail if the swallow-failure bug returned); firestore_batch_test proves >500 items chunk into <=500-op batches with no loss/duplication. All exercise the new/changed code paths."
+  }
 }
