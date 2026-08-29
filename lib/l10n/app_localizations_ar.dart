@@ -652,6 +652,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reminderResume => 'استئناف';
 
   @override
+  String get reminderBodyWatering => 'حان وقت سقي نبتتك.';
+
+  @override
+  String get reminderBodyFertilizing => 'حان وقت تسميد نبتتك.';
+
+  @override
+  String get reminderBodyRepotting => 'حان وقت إعادة زراعة نبتتك.';
+
+  @override
+  String get reminderBodyInspection => 'حان وقت فحص نبتتك.';
+
+  @override
+  String get reminderBodyFollowUp => 'تابع تشخيص نبتتك.';
+
+  @override
   String get remindersEmpty => 'لا توجد تذكيرات بعد';
 
   @override

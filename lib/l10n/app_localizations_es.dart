@@ -657,6 +657,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reminderResume => 'Resume';
 
   @override
+  String get reminderBodyWatering => 'Time to water your plant.';
+
+  @override
+  String get reminderBodyFertilizing => 'Time to fertilize your plant.';
+
+  @override
+  String get reminderBodyRepotting => 'Time to repot your plant.';
+
+  @override
+  String get reminderBodyInspection => 'Time to inspect your plant.';
+
+  @override
+  String get reminderBodyFollowUp => 'Follow up on your plant diagnosis.';
+
+  @override
   String get remindersEmpty => 'No reminders yet';
 
   @override

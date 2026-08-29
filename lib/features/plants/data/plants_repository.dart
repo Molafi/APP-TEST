@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/services/local_cache_service.dart';
+import '../../../core/utils/firestore_batch.dart';
 import '../domain/plant_model.dart';
 
 /// Persistence for the "My Plants" journal.
@@ -77,10 +78,9 @@ class FirestorePlantsRepository implements PlantsRepository {
   @override
   Future<void> deleteAll() async {
     final snap = await _col.get();
-    final WriteBatch batch = _db.batch();
-    for (final d in snap.docs) {
-      batch.delete(d.reference);
-    }
-    await batch.commit();
+    await FirestoreBatch.deleteAll(
+      _db,
+      snap.docs.map((d) => d.reference).toList(),
+    );
   }
 }

@@ -1320,6 +1320,36 @@ abstract class AppLocalizations {
   /// **'Resume'**
   String get reminderResume;
 
+  /// Default notification body for a watering reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to water your plant.'**
+  String get reminderBodyWatering;
+
+  /// Default notification body for a fertilizing reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to fertilize your plant.'**
+  String get reminderBodyFertilizing;
+
+  /// Default notification body for a repotting reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to repot your plant.'**
+  String get reminderBodyRepotting;
+
+  /// Default notification body for an inspection reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to inspect your plant.'**
+  String get reminderBodyInspection;
+
+  /// Default notification body for a diagnosis follow-up reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow up on your plant diagnosis.'**
+  String get reminderBodyFollowUp;
+
   /// No description provided for @remindersEmpty.
   ///
   /// In en, this message translates to:

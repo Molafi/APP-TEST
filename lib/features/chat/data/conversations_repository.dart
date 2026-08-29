@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../core/services/local_cache_service.dart';
+import '../../../core/utils/firestore_batch.dart';
 import '../domain/chat_model.dart';
 
 /// Stores conversation metadata (title, preview, timestamps). Messages
@@ -107,11 +108,12 @@ class FirestoreConversationsRepository implements ConversationsRepository {
   @override
   Future<void> delete(String id) async {
     final msgs = await _col.doc(id).collection('messages').get();
-    final WriteBatch batch = _db.batch();
-    for (final d in msgs.docs) {
-      batch.delete(d.reference);
-    }
-    batch.delete(_col.doc(id));
-    await batch.commit();
+    // Delete every message plus the conversation document itself, chunked to
+    // stay within Firestore's 500-op WriteBatch limit for large threads.
+    final List<DocumentReference<Object?>> refs = [
+      ...msgs.docs.map((d) => d.reference),
+      _col.doc(id),
+    ];
+    await FirestoreBatch.deleteAll(_db, refs);
   }
 }

@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/services/local_cache_service.dart';
+import '../../../core/utils/firestore_batch.dart';
 import '../domain/diagnosis_model.dart';
 
 /// Persistence for saved diagnoses plus optional image retention. Images are
@@ -165,10 +166,9 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
   @override
   Future<void> deleteAll() async {
     final snap = await _col.get();
-    final WriteBatch batch = _db.batch();
-    for (final doc in snap.docs) {
-      batch.delete(doc.reference);
-    }
-    await batch.commit();
+    await FirestoreBatch.deleteAll(
+      _db,
+      snap.docs.map((doc) => doc.reference).toList(),
+    );
   }
 }

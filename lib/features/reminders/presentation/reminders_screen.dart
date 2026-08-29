@@ -9,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../profile/application/settings_provider.dart';
 import '../application/reminder_provider.dart';
 import '../domain/reminder_model.dart';
+import 'reminder_body_text.dart';
 
 class RemindersScreen extends ConsumerWidget {
   const RemindersScreen({super.key});
@@ -61,7 +62,10 @@ class RemindersScreen extends ConsumerWidget {
                         ),
                         onPressed: () => ref
                             .read(reminderControllerProvider.notifier)
-                            .toggle(r),
+                            .update(
+                              r.copyWith(enabled: !r.enabled),
+                              localizedBody: reminderDefaultBody(l10n, r.type),
+                            ),
                       ),
                       IconButton(
                         tooltip: l10n.delete,
@@ -196,6 +200,7 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
         note: _note.text.trim().isEmpty ? null : _note.text.trim(),
         scheduledAt: _when,
         recurrence: _recurrence,
+        localizedBody: reminderDefaultBody(l10n, _type),
       );
     } else {
       await controller.update(
@@ -206,6 +211,7 @@ class _ReminderEditorState extends ConsumerState<_ReminderEditor> {
           scheduledAt: _when,
           recurrence: _recurrence,
         ),
+        localizedBody: reminderDefaultBody(l10n, _type),
       );
     }
     if (mounted) await Navigator.of(context).maybePop();

@@ -222,6 +222,26 @@
   "reminderPaused": "Paused",
   "reminderPause": "Pause",
   "reminderResume": "Resume",
+  "reminderBodyWatering": "Time to water your plant.",
+  "@reminderBodyWatering": {
+    "description": "Default notification body for a watering reminder."
+  },
+  "reminderBodyFertilizing": "Time to fertilize your plant.",
+  "@reminderBodyFertilizing": {
+    "description": "Default notification body for a fertilizing reminder."
+  },
+  "reminderBodyRepotting": "Time to repot your plant.",
+  "@reminderBodyRepotting": {
+    "description": "Default notification body for a repotting reminder."
+  },
+  "reminderBodyInspection": "Time to inspect your plant.",
+  "@reminderBodyInspection": {
+    "description": "Default notification body for an inspection reminder."
+  },
+  "reminderBodyFollowUp": "Follow up on your plant diagnosis.",
+  "@reminderBodyFollowUp": {
+    "description": "Default notification body for a diagnosis follow-up reminder."
+  },
   "remindersEmpty": "No reminders yet",
   "remindersEmptyBody": "Add a reminder to stay on top of plant care.",
   "notificationsPermissionBody": "Allow notifications so we can remind you about plant care.",
