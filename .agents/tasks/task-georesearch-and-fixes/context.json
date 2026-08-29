@@ -1,0 +1,33 @@
+{
+  "project_type": "Flutter/Dart mobile app 'plantsense_ai' — an AI plant & soil assistant (chat, image diagnosis, weather-aware care). Firebase (auth/firestore/storage), Riverpod state, TypeScript Cloud Functions AI proxy.",
+  "language": "Dart (Flutter). Cloud Functions in TypeScript.",
+  "build_system": "Flutter pub. No android/ios committed (run tool/setup_platforms.sh for device builds). Host validation uses flutter analyze + flutter test only.",
+  "test_framework": "flutter_test + mocktail. Tests under test/ (unit/, providers/, widgets/) and integration_test/. Fakes/mocks in test/mocks/mocks.dart and test/widgets/test_app.dart. No network in tests.",
+  "build_command": "flutter pub get (also runs gen-l10n because pubspec has generate: true)",
+  "test_command": "flutter test",
+  "verification_instructions": "1) export PATH=/opt/flutter-sdk/bin:$PATH  2) cd APP-TEST  3) flutter pub get  4) flutter analyze (must report 'No issues found!')  5) flutter test (all tests must pass). Flutter must be run as root here; ignore the 'trying to run flutter as root' warning (harmless).",
+  "snapshot_or_generated_files": "lib/l10n/app_localizations*.dart are generated from lib/l10n/app_*.arb by `flutter gen-l10n` (auto-run during `flutter pub get`). NEVER hand-edit the generated Dart; edit the .arb files (app_en.arb is the template; app_ar.arb, app_fr.arb, app_es.arb are translations, fr/es fall back to English). After editing .arb run `flutter pub get` or `flutter gen-l10n`.",
+  "setup_instructions": "Flutter is NOT preinstalled in the sandbox. It has been installed at /opt/flutter-sdk (Flutter 3.47.2 / Dart 3.13.2, stable). Use it via: export PATH=\"/opt/flutter-sdk/bin:$PATH\". `flutter pub get` already run once and resolved 174 deps successfully. git safe.directory is set to '*'.",
+  "environment_constraints": "Network is OPEN (public registries reachable; Flutter SDK + pub packages downloaded successfully). Flutter 3.47.2 is NEWER than the project's documented 3.35.1 baseline but satisfies pubspec `flutter: >=3.35.0` and analyze+test are green on it. No Android SDK / Xcode / device — cannot run `flutter build apk/ios` or integration_test (needs a device). Do NOT create android/ or ios/ dirs. /tmp is volatile across shells; /opt and /projects persist.",
+  "contribution_requirements": "No CONTRIBUTING.md. README is authoritative: feature-first architecture (each feature = application/ data/ domain/ presentation/). No secrets in client. AI results must carry a disclaimer (not a substitute for professionals). Localize all user-facing strings via .arb + AppLocalizations. Analyze must stay clean; tests must stay green. flutter_lints ^4.0.0 rules apply.",
+  "key_patterns": "AI flow: a feature 'data' service builds an AiRequest (systemPrompt from AiPrompts, userText, context map, optional AiImage, jsonMode:true for structured JSON) and calls ref.watch(aiGatewayProvider).generate(); the transport is swappable (BackendAiGateway proxy / OpenAiCompatibleGateway direct / DemoAiGateway canned). Structured results are parsed by a domain model's static `parse(raw)` that tolerates ```json fences + surrounding prose and extracts the first balanced {...} (see Diagnosis.parse/_extractJson). Models expose fromJson/toMap/fromStored/withMeta and degrade gracefully on malformed data. State via StateNotifier + a *State copyWith class and a *ControllerProvider; a stage enum drives multi-step UI. Persistence via an abstract Repository with a Local(SharedPreferences via LocalCacheService) impl and a Firestore(+Storage) impl selected by Environment.isDemo/currentUser (see diagnosis_repository.dart). Location/weather context comes from aiContextProvider (values map + displayStrip). Home is a 4-tab IndexedStack in home_screen.dart with a NavigationBar; titles from _titleFor + l10n. DemoAiGateway must return sensible canned output for any new jsonMode request so demo mode stays fully usable.",
+  "relevant_files": [
+    "lib/features/diagnosis/domain/diagnosis_model.dart (PATTERN: domain model + parse/_extractJson/fromJson/toMap/fromStored/withMeta/toShareText)",
+    "lib/features/diagnosis/data/ai_diagnosis_service.dart (PATTERN: AI service building AiRequest jsonMode)",
+    "lib/features/diagnosis/data/diagnosis_repository.dart (PATTERN: abstract repo + Local + Firestore impls)",
+    "lib/features/diagnosis/application/diagnosis_provider.dart (PATTERN: StateNotifier controller, stage enum, aiContext usage)",
+    "lib/features/diagnosis/presentation/diagnosis_screen.dart + widgets/diagnosis_result_card.dart (PATTERN: multi-stage screen + result card UI)",
+    "lib/core/services/ai_prompts.dart (extend with georesearch system/instruction prompts)",
+    "lib/core/services/ai_gateway.dart (AiGateway/AiRequest/AiImage — do not need to change)",
+    "lib/core/services/demo_ai_gateway.dart (add canned soil-report JSON for the new jsonMode request)",
+    "lib/features/weather/application/ai_context_provider.dart (aiContextProvider: location+weather context)",
+    "lib/features/location/domain/location_model.dart + application/location_provider.dart (selectedLocationProvider — lat/lon/city for geo context)",
+    "lib/features/home/presentation/home_screen.dart (add a georesearch tab to the IndexedStack + NavigationBar) and application/home_provider.dart (HomeTab indices)",
+    "lib/core/services/notification_service.dart (scheduleReminder swallows failures — FIX)",
+    "lib/features/reminders/application/reminder_provider.dart (hardcoded English _defaultBody — FIX/localize)",
+    "lib/l10n/app_en.arb (+ app_ar.arb, app_fr.arb, app_es.arb) (add new strings)",
+    "test/unit/diagnosis_parse_test.dart + test/mocks/mocks.dart + test/widgets/test_app.dart (PATTERN for new tests)",
+    "functions/src/index.ts + groq.ts (generic proxy — passes system/text/context/image through; NO backend change needed for georesearch)"
+  ],
+  "directory_structure": "lib/core/{config,constants,errors,networking,routing,services,theme,utils,widgets}; lib/features/{onboarding,splash,auth,home,chat,diagnosis,weather,location,reminders,plants,profile}/{application,data,domain,presentation}; lib/l10n/ (arb + generated); test/{unit,providers,widgets,mocks}; integration_test/; functions/src/ (TS proxy)."
+}

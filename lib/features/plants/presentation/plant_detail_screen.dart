@@ -9,6 +9,7 @@ import '../../home/application/home_provider.dart';
 import '../../profile/application/settings_provider.dart';
 import '../../reminders/application/reminder_provider.dart';
 import '../../reminders/domain/reminder_model.dart';
+import '../../reminders/presentation/reminder_body_text.dart';
 import '../../weather/application/weather_provider.dart';
 import '../application/plants_provider.dart';
 import '../domain/plant_model.dart';
@@ -155,6 +156,7 @@ class PlantDetailScreen extends ConsumerWidget {
           scheduledAt: when,
           recurrence: Recurrence.none,
           note: null,
+          localizedBody: reminderDefaultBody(l10n, ReminderType.watering),
         );
     if (context.mounted) {
       ScaffoldMessenger.of(context)

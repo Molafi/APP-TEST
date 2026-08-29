@@ -1,0 +1,23 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Establish and confirm a green baseline with the sandbox Flutter toolchain before making changes. Flutter is installed at /opt/flutter-sdk (3.47.2 / Dart 3.13.2). This verifies pub get, gen-l10n, analyze, and test all pass so later features start from a known-good state.",
+  "status": "completed",
+  "steps": [
+    "Run `export PATH=\"/opt/flutter-sdk/bin:$PATH\"` in each shell (Flutter is not on the default PATH). The 'trying to run flutter as root' warning is harmless in this sandbox.",
+    "From the APP-TEST repo root run `flutter pub get` and confirm it resolves dependencies and regenerates lib/l10n/app_localizations*.dart (generate: true). Expect messages about untranslated fr/es strings — that is pre-existing and fine.",
+    "Run `flutter analyze` and confirm it prints 'No issues found!'.",
+    "Run `flutter test` and confirm all tests pass (baseline is 52 tests).",
+    "Do NOT run `flutter build apk/ios` or `flutter test integration_test` — there is no Android SDK/Xcode/device in this sandbox; those are out of scope."
+  ],
+  "acceptance_criteria": [
+    "`flutter pub get` completes without error",
+    "`flutter analyze` reports 'No issues found!'",
+    "`flutter test` reports all tests passing with 0 failures"
+  ],
+  "verification": [
+    "export PATH=\"/opt/flutter-sdk/bin:$PATH\" && flutter pub get && flutter analyze && flutter test"
+  ],
+  "blocked_reason": null,
+  "findings": "Baseline verified GREEN with sandbox Flutter 3.47.2 / Dart 3.13.2 at /opt/flutter-sdk. `flutter pub get` resolved dependencies successfully (reports '53 packages have newer versions incompatible with dependency constraints' — informational only) and regenerated l10n with no meaningful git diff. `flutter analyze` -> 'No issues found! (ran in 13.1s)' with zero warnings. `flutter test` -> 'All tests passed!' (52 tests, 0 failures). The 'trying to run flutter as root' warning appears and is harmless. NOTE: analysis_options.yaml had a pre-existing (not authored by this feature) working-tree change adding '- build/**' to analyzer.exclude; it was present at session start, keeps analyze clean when build/ artifacts exist, and is committed with this baseline. No source code changed. Integration tests / apk/ios builds skipped per env constraints (no Android SDK/Xcode/device)."
+}

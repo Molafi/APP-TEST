@@ -16,6 +16,8 @@
   "navDiagnose": "Diagnóstico",
   "navWeather": "Clima",
   "navProfile": "Perfil",
+  "navGeoResearch": "Suelo",
+  "georesearchTitle": "GeoInvestigación",
   "login": "Iniciar sesión",
   "register": "Crear cuenta",
   "email": "Correo electrónico",

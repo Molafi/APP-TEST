@@ -23,6 +23,7 @@ class ReminderController extends StateNotifier<List<Reminder>> {
     String? note,
     required DateTime scheduledAt,
     Recurrence recurrence = Recurrence.none,
+    String? localizedBody,
   }) async {
     final Reminder reminder = Reminder(
       id: _uuid.v4(),
@@ -36,15 +37,17 @@ class ReminderController extends StateNotifier<List<Reminder>> {
     state = [...state, reminder]
       ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     await _persist();
-    await _schedule(reminder);
+    await _schedule(reminder, localizedBody: localizedBody);
   }
 
-  Future<void> update(Reminder reminder) async {
+  Future<void> update(Reminder reminder, {String? localizedBody}) async {
     state = [for (final r in state) r.id == reminder.id ? reminder : r]
       ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     await _persist();
     await _notifications.cancel(reminder.notificationId);
-    if (reminder.enabled) await _schedule(reminder);
+    if (reminder.enabled) {
+      await _schedule(reminder, localizedBody: localizedBody);
+    }
   }
 
   Future<void> toggle(Reminder reminder) async =>
@@ -60,18 +63,32 @@ class ReminderController extends StateNotifier<List<Reminder>> {
   /// globally) without deleting the reminder data.
   Future<void> cancelAllNotifications() => _notifications.cancelAll();
 
-  Future<void> _schedule(Reminder r) async {
+  Future<void> _schedule(Reminder r, {String? localizedBody}) async {
     if (!r.enabled) return;
-    await _notifications.scheduleReminder(
-      id: r.notificationId,
-      title: r.plantName,
-      body: r.note ?? _defaultBody(r.type),
-      scheduledAt: r.scheduledAt,
-      repeatsDaily: r.recurrence == Recurrence.daily,
-      repeatsWeekly: r.recurrence == Recurrence.weekly,
-    );
+    try {
+      await _notifications.scheduleReminder(
+        id: r.notificationId,
+        title: r.plantName,
+        body: r.note ?? localizedBody ?? _defaultBody(r.type),
+        scheduledAt: r.scheduledAt,
+        repeatsDaily: r.recurrence == Recurrence.daily,
+        repeatsWeekly: r.recurrence == Recurrence.weekly,
+      );
+    } catch (_) {
+      // Scheduling was rejected (e.g. permission revoked or an OS limit). Do
+      // not leave the reminder presenting as enabled when nothing is actually
+      // scheduled: revert the toggle and persist so the UI matches reality.
+      state = [
+        for (final existing in state)
+          existing.id == r.id ? existing.copyWith(enabled: false) : existing,
+      ];
+      await _persist();
+    }
   }
 
+  /// English fallback bodies. User-facing reminders are localized at the call
+  /// site (see [add]/[update] `localizedBody`); this is only used when no
+  /// localized string was threaded in.
   String _defaultBody(ReminderType type) => switch (type) {
     ReminderType.watering => 'Time to water your plant.',
     ReminderType.fertilizing => 'Time to fertilize your plant.',

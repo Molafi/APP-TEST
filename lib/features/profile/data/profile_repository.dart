@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/utils/firestore_batch.dart';
 import '../../../models/user_profile.dart';
 
 /// Reads/writes the user profile document and performs server-side data
@@ -51,14 +52,14 @@ class FirestoreProfileRepository implements ProfileRepository {
 
   @override
   Future<void> deleteUserDocument(String uid) async {
-    // Delete known subcollections in batches, then the profile document.
+    // Delete known subcollections in batches, then the profile document. Each
+    // subcollection is chunked to stay within Firestore's 500-op batch limit.
     for (final String sub in const ['reminders']) {
       final snap = await _doc(uid).collection(sub).get();
-      final WriteBatch batch = _db.batch();
-      for (final d in snap.docs) {
-        batch.delete(d.reference);
-      }
-      await batch.commit();
+      await FirestoreBatch.deleteAll(
+        _db,
+        snap.docs.map((d) => d.reference).toList(),
+      );
     }
     await _doc(uid).delete();
   }

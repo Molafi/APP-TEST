@@ -410,6 +410,127 @@ class AppLocalizationsAr extends AppLocalizations {
       'يقدّم بلانت سينس اقتراحات وليست ضمانات. للحالات الخطيرة المتعلقة بأمراض النبات أو المبيدات أو المحاصيل الغذائية أو السميّة أو الزراعة، استشر مختصًا مؤهلًا في علم النبات أو الهندسة الزراعية أو البستنة أو الطب البيطري أو مركز مكافحة السموم أو الجهة الزراعية المحلية.';
 
   @override
+  String get georesearchTitle => 'بحث جيولوجي';
+
+  @override
+  String get navGeoResearch => 'التربة';
+
+  @override
+  String get georesearchIntro =>
+      'احصل على ملف تقديري للتربة في موقعك. يمكنك إضافة صورة للموقع لتقدير بنية التربة.';
+
+  @override
+  String get georesearchAddPhoto => 'أضف صورة للتربة/الموقع';
+
+  @override
+  String get georesearchChangePhoto => 'تغيير الصورة';
+
+  @override
+  String get georesearchRemovePhoto => 'إزالة الصورة';
+
+  @override
+  String get georesearchTakePhoto => 'التقاط صورة';
+
+  @override
+  String get georesearchChoosePhoto => 'اختر من المعرض';
+
+  @override
+  String get georesearchNoLocation =>
+      'حدّد موقعك للحصول على تقدير للتربة مبني على الموقع.';
+
+  @override
+  String get georesearchAnalyze => 'تحليل التربة';
+
+  @override
+  String get georesearchAnalyzing => 'جارٍ بحث تربتك…';
+
+  @override
+  String get georesearchLocation => 'الموقع ونوع التربة';
+
+  @override
+  String get georesearchSoilType => 'نوع/قوام التربة';
+
+  @override
+  String get georesearchDepth => 'عمق/مقطع التربة';
+
+  @override
+  String get georesearchSalinitySodium => 'الملوحة والصوديوم';
+
+  @override
+  String get georesearchSalinity => 'الملوحة';
+
+  @override
+  String get georesearchSodium => 'الصوديوم';
+
+  @override
+  String get georesearchPhOrganic => 'الحموضة والمادة العضوية';
+
+  @override
+  String get georesearchPh => 'الحموضة';
+
+  @override
+  String get georesearchOrganicMatter => 'المادة العضوية';
+
+  @override
+  String get georesearchNutrients => 'العناصر الغذائية (N-P-K)';
+
+  @override
+  String get georesearchSubstances => 'مواد ملحوظة';
+
+  @override
+  String get georesearchGeometry => 'بنية/هندسة التربة';
+
+  @override
+  String get georesearchSuitablePlants => 'نباتات مناسبة';
+
+  @override
+  String get georesearchRecommendations => 'التوصيات';
+
+  @override
+  String get georesearchSafety => 'ملاحظات السلامة';
+
+  @override
+  String get georesearchNotSoilRelated =>
+      'لا تبدو هذه الصورة متعلقة بالتربة أو الموقع. جرّب صورة للتربة أو الأرض.';
+
+  @override
+  String get georesearchEstimateNotice =>
+      'هذه تقديرات مبنية على موقعك وصورتك. القيم الدقيقة للصوديوم والملوحة والعناصر الغذائية تتطلب فحصًا مخبريًا احترافيًا للتربة.';
+
+  @override
+  String get georesearchSave => 'حفظ التقرير';
+
+  @override
+  String get georesearchSaved => 'تم حفظ التقرير';
+
+  @override
+  String get georesearchHistory => 'تقارير التربة';
+
+  @override
+  String get georesearchHistoryEmpty => 'لا توجد تقارير تربة محفوظة بعد';
+
+  @override
+  String get georesearchHistoryEmptyBody => 'حلّل تربتك لبناء سجلّك.';
+
+  @override
+  String get concernLow => 'خطورة منخفضة';
+
+  @override
+  String get concernMedium => 'خطورة متوسطة';
+
+  @override
+  String get concernHigh => 'خطورة عالية';
+
+  @override
+  String get levelLow => 'منخفض';
+
+  @override
+  String get levelMedium => 'متوسط';
+
+  @override
+  String get levelHigh => 'مرتفع';
+
+  @override
   String get weatherTitle => 'الطقس';
 
   @override
@@ -650,6 +771,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reminderResume => 'استئناف';
+
+  @override
+  String get reminderBodyWatering => 'حان وقت سقي نبتتك.';
+
+  @override
+  String get reminderBodyFertilizing => 'حان وقت تسميد نبتتك.';
+
+  @override
+  String get reminderBodyRepotting => 'حان وقت إعادة زراعة نبتتك.';
+
+  @override
+  String get reminderBodyInspection => 'حان وقت فحص نبتتك.';
+
+  @override
+  String get reminderBodyFollowUp => 'تابع تشخيص نبتتك.';
 
   @override
   String get remindersEmpty => 'لا توجد تذكيرات بعد';

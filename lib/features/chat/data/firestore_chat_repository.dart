@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../../core/utils/firestore_batch.dart';
 import '../domain/message_model.dart';
 import 'chat_repository.dart';
 
@@ -55,10 +56,9 @@ class FirestoreChatRepository implements ChatRepository {
   @override
   Future<void> deleteAll() async {
     final snap = await _messages.get();
-    final WriteBatch batch = _db.batch();
-    for (final doc in snap.docs) {
-      batch.delete(doc.reference);
-    }
-    await batch.commit();
+    await FirestoreBatch.deleteAll(
+      _db,
+      snap.docs.map((doc) => doc.reference).toList(),
+    );
   }
 }

@@ -870,6 +870,240 @@ abstract class AppLocalizations {
   /// **'PlantSense AI provides suggestions, not guarantees. For serious plant disease, pesticide, edible-crop, toxicity or agricultural concerns, consult a qualified botanist, agronomist, horticulturist, veterinarian, poison-control service or local agricultural authority.'**
   String get aiDisclaimerLong;
 
+  /// No description provided for @georesearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GeoResearch'**
+  String get georesearchTitle;
+
+  /// No description provided for @navGeoResearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil'**
+  String get navGeoResearch;
+
+  /// No description provided for @georesearchIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Get an estimated soil profile for your location. Optionally add a site photo to estimate soil structure.'**
+  String get georesearchIntro;
+
+  /// No description provided for @georesearchAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a soil/site photo'**
+  String get georesearchAddPhoto;
+
+  /// No description provided for @georesearchChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get georesearchChangePhoto;
+
+  /// No description provided for @georesearchRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get georesearchRemovePhoto;
+
+  /// No description provided for @georesearchTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get georesearchTakePhoto;
+
+  /// No description provided for @georesearchChoosePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get georesearchChoosePhoto;
+
+  /// No description provided for @georesearchNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your location to get a location-aware soil estimate.'**
+  String get georesearchNoLocation;
+
+  /// No description provided for @georesearchAnalyze.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze soil'**
+  String get georesearchAnalyze;
+
+  /// No description provided for @georesearchAnalyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Researching your soil…'**
+  String get georesearchAnalyzing;
+
+  /// No description provided for @georesearchLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location & soil type'**
+  String get georesearchLocation;
+
+  /// No description provided for @georesearchSoilType.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil type / texture'**
+  String get georesearchSoilType;
+
+  /// No description provided for @georesearchDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil depth / profile'**
+  String get georesearchDepth;
+
+  /// No description provided for @georesearchSalinitySodium.
+  ///
+  /// In en, this message translates to:
+  /// **'Salinity & sodium'**
+  String get georesearchSalinitySodium;
+
+  /// No description provided for @georesearchSalinity.
+  ///
+  /// In en, this message translates to:
+  /// **'Salinity (salt)'**
+  String get georesearchSalinity;
+
+  /// No description provided for @georesearchSodium.
+  ///
+  /// In en, this message translates to:
+  /// **'Sodium'**
+  String get georesearchSodium;
+
+  /// No description provided for @georesearchPhOrganic.
+  ///
+  /// In en, this message translates to:
+  /// **'pH & organic matter'**
+  String get georesearchPhOrganic;
+
+  /// No description provided for @georesearchPh.
+  ///
+  /// In en, this message translates to:
+  /// **'pH'**
+  String get georesearchPh;
+
+  /// No description provided for @georesearchOrganicMatter.
+  ///
+  /// In en, this message translates to:
+  /// **'Organic matter'**
+  String get georesearchOrganicMatter;
+
+  /// No description provided for @georesearchNutrients.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrients (N-P-K)'**
+  String get georesearchNutrients;
+
+  /// No description provided for @georesearchSubstances.
+  ///
+  /// In en, this message translates to:
+  /// **'Notable substances'**
+  String get georesearchSubstances;
+
+  /// No description provided for @georesearchGeometry.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil structure / geometry'**
+  String get georesearchGeometry;
+
+  /// No description provided for @georesearchSuitablePlants.
+  ///
+  /// In en, this message translates to:
+  /// **'Suitable plants'**
+  String get georesearchSuitablePlants;
+
+  /// No description provided for @georesearchRecommendations.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get georesearchRecommendations;
+
+  /// No description provided for @georesearchSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety notes'**
+  String get georesearchSafety;
+
+  /// No description provided for @georesearchNotSoilRelated.
+  ///
+  /// In en, this message translates to:
+  /// **'This doesn\'t look soil or site related. Try a photo of soil or the ground/site.'**
+  String get georesearchNotSoilRelated;
+
+  /// No description provided for @georesearchEstimateNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'These are estimates based on your location and photo. Exact sodium, salinity and nutrient values require a professional soil-lab test.'**
+  String get georesearchEstimateNotice;
+
+  /// No description provided for @georesearchSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save report'**
+  String get georesearchSave;
+
+  /// No description provided for @georesearchSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Report saved'**
+  String get georesearchSaved;
+
+  /// No description provided for @georesearchHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil reports'**
+  String get georesearchHistory;
+
+  /// No description provided for @georesearchHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved soil reports yet'**
+  String get georesearchHistoryEmpty;
+
+  /// No description provided for @georesearchHistoryEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze your soil to build your history.'**
+  String get georesearchHistoryEmptyBody;
+
+  /// No description provided for @concernLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low concern'**
+  String get concernLow;
+
+  /// No description provided for @concernMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium concern'**
+  String get concernMedium;
+
+  /// No description provided for @concernHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High concern'**
+  String get concernHigh;
+
+  /// No description provided for @levelLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get levelLow;
+
+  /// No description provided for @levelMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get levelMedium;
+
+  /// No description provided for @levelHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get levelHigh;
+
   /// No description provided for @weatherTitle.
   ///
   /// In en, this message translates to:
@@ -1319,6 +1553,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resume'**
   String get reminderResume;
+
+  /// Default notification body for a watering reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to water your plant.'**
+  String get reminderBodyWatering;
+
+  /// Default notification body for a fertilizing reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to fertilize your plant.'**
+  String get reminderBodyFertilizing;
+
+  /// Default notification body for a repotting reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to repot your plant.'**
+  String get reminderBodyRepotting;
+
+  /// Default notification body for an inspection reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to inspect your plant.'**
+  String get reminderBodyInspection;
+
+  /// Default notification body for a diagnosis follow-up reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow up on your plant diagnosis.'**
+  String get reminderBodyFollowUp;
 
   /// No description provided for @remindersEmpty.
   ///

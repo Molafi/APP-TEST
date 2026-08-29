@@ -1,12 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Bottom-navigation tab indices.
+/// Bottom-navigation tab indices. The order here must match the IndexedStack
+/// children and NavigationBar destinations in home_screen.dart.
 class HomeTab {
   const HomeTab._();
   static const int chat = 0;
   static const int diagnose = 1;
-  static const int weather = 2;
-  static const int profile = 3;
+  static const int georesearch = 2;
+  static const int weather = 3;
+  static const int profile = 4;
 }
 
 /// Currently selected bottom-nav tab. Kept in state so tapping the weather chip

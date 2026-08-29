@@ -7,18 +7,18 @@ import 'package:uuid/uuid.dart';
 
 import '../../../core/services/local_cache_service.dart';
 import '../../../core/utils/firestore_batch.dart';
-import '../domain/diagnosis_model.dart';
+import '../domain/soil_report_model.dart';
 
-/// Persistence for saved diagnoses plus optional image retention. Images are
+/// Persistence for saved soil reports plus optional image retention. Images are
 /// only uploaded when the user has enabled retention; otherwise no image bytes
 /// leave the analysis flow.
-abstract class DiagnosisRepository {
-  Future<List<Diagnosis>> load();
+abstract class SoilReportRepository {
+  Future<List<SoilReport>> load();
 
-  /// Saves a diagnosis. When [imageBytes] is provided AND retention is enabled,
+  /// Saves a report. When [imageBytes] is provided AND retention is enabled,
   /// the compressed image is stored and referenced; otherwise it is discarded.
-  Future<Diagnosis> save(
-    Diagnosis diagnosis, {
+  Future<SoilReport> save(
+    SoilReport report, {
     Uint8List? imageBytes,
     required bool retainImage,
   });
@@ -30,15 +30,15 @@ abstract class DiagnosisRepository {
 /// Local (SharedPreferences) store used in demo/offline. Never stores raw image
 /// bytes — only the structured result — honouring the "no base64 in storage"
 /// rule.
-class LocalDiagnosisRepository implements DiagnosisRepository {
-  LocalDiagnosisRepository(this._cache);
+class LocalSoilReportRepository implements SoilReportRepository {
+  LocalSoilReportRepository(this._cache);
 
-  static const String _key = 'diagnoses_local';
+  static const String _key = 'soil_reports_local';
   final LocalCacheService _cache;
   final Uuid _uuid = const Uuid();
 
   @override
-  Future<List<Diagnosis>> load() async {
+  Future<List<SoilReport>> load() async {
     final String? raw = _cache.getString(_key);
     if (raw == null || raw.isEmpty) return [];
     try {
@@ -46,7 +46,7 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
       if (decoded is List) {
         return decoded
             .whereType<Map<String, dynamic>>()
-            .map((m) => Diagnosis.fromStored(m['id'] as String? ?? '', m))
+            .map((m) => SoilReport.fromStored(m['id'] as String? ?? '', m))
             .toList();
       }
     } catch (_) {}
@@ -54,17 +54,17 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
   }
 
   @override
-  Future<Diagnosis> save(
-    Diagnosis diagnosis, {
+  Future<SoilReport> save(
+    SoilReport report, {
     Uint8List? imageBytes,
     required bool retainImage,
   }) async {
-    final String id = diagnosis.id ?? _uuid.v4();
-    final Diagnosis stored = diagnosis.withMeta(
+    final String id = report.id ?? _uuid.v4();
+    final SoilReport stored = report.withMeta(
       id: id,
       createdAt: DateTime.now(),
     );
-    final List<Diagnosis> all = await load();
+    final List<SoilReport> all = await load();
     all.insert(0, stored);
     await _persist(all);
     return stored;
@@ -72,7 +72,7 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
 
   @override
   Future<void> delete(String id) async {
-    final List<Diagnosis> all = await load();
+    final List<SoilReport> all = await load();
     all.removeWhere((d) => d.id == id);
     await _persist(all);
   }
@@ -80,7 +80,7 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
   @override
   Future<void> deleteAll() => _cache.remove(_key);
 
-  Future<void> _persist(List<Diagnosis> all) async {
+  Future<void> _persist(List<SoilReport> all) async {
     final List<Map<String, dynamic>> list = all
         .map(
           (d) => {
@@ -94,10 +94,10 @@ class LocalDiagnosisRepository implements DiagnosisRepository {
   }
 }
 
-/// Firestore + Storage store: users/{uid}/diagnoses/{id}. Compressed images go
-/// to Storage under the same user path, only when retention is enabled.
-class FirestoreDiagnosisRepository implements DiagnosisRepository {
-  FirestoreDiagnosisRepository({
+/// Firestore + Storage store: users/{uid}/soilReports/{id}. Compressed images
+/// go to Storage under the same user path, only when retention is enabled.
+class FirestoreSoilReportRepository implements SoilReportRepository {
+  FirestoreSoilReportRepository({
     required this.uid,
     FirebaseFirestore? firestore,
     FirebaseStorage? storage,
@@ -110,29 +110,29 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
   final Uuid _uuid = const Uuid();
 
   CollectionReference<Map<String, dynamic>> get _col =>
-      _db.collection('users').doc(uid).collection('diagnoses');
+      _db.collection('users').doc(uid).collection('soilReports');
 
   @override
-  Future<List<Diagnosis>> load() async {
+  Future<List<SoilReport>> load() async {
     final snap = await _col
         .orderBy('createdAt', descending: true)
         .limit(50)
         .get();
-    return snap.docs.map((d) => Diagnosis.fromStored(d.id, d.data())).toList();
+    return snap.docs.map((d) => SoilReport.fromStored(d.id, d.data())).toList();
   }
 
   @override
-  Future<Diagnosis> save(
-    Diagnosis diagnosis, {
+  Future<SoilReport> save(
+    SoilReport report, {
     Uint8List? imageBytes,
     required bool retainImage,
   }) async {
-    final String id = diagnosis.id ?? _uuid.v4();
+    final String id = report.id ?? _uuid.v4();
     String? imageRef;
 
     if (retainImage && imageBytes != null) {
       final Reference ref = _storage.ref().child(
-        'users/$uid/diagnoses/$id.jpg',
+        'users/$uid/soilReports/$id.jpg',
       );
       await ref.putData(
         imageBytes,
@@ -141,14 +141,11 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
       imageRef = ref.fullPath;
     }
 
-    final Diagnosis stored = diagnosis.withMeta(
-      id: id,
-      imageReference: imageRef,
-    );
+    final SoilReport stored = report.withMeta(id: id, imageReference: imageRef);
     await _col.doc(id).set({
-      'diagnosis': diagnosis.toMap(),
+      'report': report.toMap(),
       'imageReference': imageRef,
-      'locationContext': diagnosis.locationContext,
+      'locationContext': report.locationContext,
       'createdAt': FieldValue.serverTimestamp(),
     });
     return stored;
@@ -158,7 +155,7 @@ class FirestoreDiagnosisRepository implements DiagnosisRepository {
   Future<void> delete(String id) async {
     // Best-effort image cleanup, then the document.
     try {
-      await _storage.ref().child('users/$uid/diagnoses/$id.jpg').delete();
+      await _storage.ref().child('users/$uid/soilReports/$id.jpg').delete();
     } catch (_) {}
     await _col.doc(id).delete();
   }

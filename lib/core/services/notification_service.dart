@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -69,35 +68,34 @@ class NotificationService {
   }) async {
     await init();
     final tz.TZDateTime when = tz.TZDateTime.from(scheduledAt, tz.local);
-    try {
-      await _plugin.zonedSchedule(
-        id,
-        title,
-        body,
-        when,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            _channel.id,
-            _channel.name,
-            channelDescription: _channel.description,
-          ),
-          iOS: const DarwinNotificationDetails(),
+    // Genuine scheduling failures (e.g. the OS rejecting the request or a
+    // revoked permission) must propagate so the caller can revert the
+    // reminder's enabled state instead of presenting a schedule that was never
+    // actually accepted. Callers are responsible for logging/degrading.
+    await _plugin.zonedSchedule(
+      id,
+      title,
+      body,
+      when,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channel.id,
+          _channel.name,
+          channelDescription: _channel.description,
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        // `time` repeats every day at the same clock time;
-        // `dayOfWeekAndTime` repeats on the same weekday each week.
-        matchDateTimeComponents: repeatsWeekly
-            ? DateTimeComponents.dayOfWeekAndTime
-            : repeatsDaily
-            ? DateTimeComponents.time
-            : null,
-      );
-    } catch (e) {
-      // Scheduling failures must never crash the app.
-      debugPrint('Reminder scheduling failed for id=$id');
-    }
+        iOS: const DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      // `time` repeats every day at the same clock time;
+      // `dayOfWeekAndTime` repeats on the same weekday each week.
+      matchDateTimeComponents: repeatsWeekly
+          ? DateTimeComponents.dayOfWeekAndTime
+          : repeatsDaily
+          ? DateTimeComponents.time
+          : null,
+    );
   }
 
   Future<void> cancel(int id) => _plugin.cancel(id);
