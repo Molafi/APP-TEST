@@ -19,6 +19,21 @@ and plant-care advice — in **English or Arabic (full RTL)**.
   (plant, what I see, issues + likelihood, treatment, prevention, safety notes,
   conservative confidence), guard rails for non-plant / blurry images, save to
   history, and one-tap "Ask a follow-up" into chat.
+- **GeoResearch — site & soil survey** — a location-aware ESTIMATED survey
+  covering soil (depth/profile, salinity & sodium, N-P-K nutrients, pH, organic
+  matter, substances/contaminants, structure), a **topographic desk study**
+  (elevation range, slope & aspect, landform, relief, contours, drainage,
+  runoff, flood & erosion risk, grading), **groundwater** (water-table depth,
+  aquifer type, yield, quality, seasonal variation, well feasibility, drilling
+  depth), **site location** (address, elevation, area, boundaries, access), an
+  **aerial/satellite view** of the coordinates, and a preliminary
+  **building-suitability screening** (bearing capacity, bedrock depth, candidate
+  foundation approach, settlement & expansive-soil risk, seismic context,
+  excavation, constraints, required studies). Driven by the user's stated
+  **purpose and requirements**, and able to use **official Land Department data
+  as authoritative** when the user supplies it. Every section names the
+  professional study it cannot replace — see
+  [GeoResearch scope & limits](#-georesearch-scope--limits).
 - **Weather** — Open-Meteo current, 24h hourly and 7-day forecasts with
   metric/imperial units, cached fallback + "last updated"/live-vs-cached badges.
 - **Weather-aware plant-care tips** — deterministic rules first (always work
@@ -201,6 +216,50 @@ bytes, and never returns the key.
   descriptive `User-Agent` (`AppConfig.nominatimUserAgent` — **change the contact
   address** before production), rate-limit to ≥1 req/sec, debounce search, and
   cache results for 7 days, per the OSM usage policy.
+- **Esri World Imagery** — aerial/satellite tiles for the GeoResearch view. No
+  API key. Tile URLs are computed locally from the coordinates with standard Web
+  Mercator maths in `AerialImageryService` (note Esri's `{z}/{y}/{x}` ordering);
+  the AI never supplies an image URL. The attribution string returned by the
+  service **must stay visible** in the UI. Review Esri's terms before commercial
+  use and consider a licensed basemap for production.
+
+---
+
+## 🧭 GeoResearch scope & limits
+
+GeoResearch is a **screening and education tool**, not a survey deliverable.
+Understand these boundaries before relying on it:
+
+- **Everything is an estimate** unless the user supplied official data. Values
+  are qualitative (low/medium/high) or ranges; the prompt forbids inventing
+  precise measured figures (ppm, exact pH, kPa bearing values).
+- **It cannot replace professional studies.** Each section states its
+  counterpart explicitly: a soil-lab test for nutrients/sodium/salinity, a
+  **licensed instrument or drone survey** for design-grade topography and
+  contours, a **hydrogeological study plus a drilling permit** for groundwater,
+  and a **geotechnical investigation** for anything load-bearing.
+- **Building suitability is NOT a geotechnical report** and must never be used
+  for foundation design. This is enforced in the prompt and surfaced as a
+  high-emphasis warning in the UI.
+- **Official Land Department data takes precedence.** When the user enables the
+  optional land-record form, those values are passed as separate `land*` context
+  keys and the prompt treats them as authoritative — the model may not
+  contradict or re-estimate them. When no record is supplied the model is
+  instructed **not to invent** parcel numbers, areas, zoning or ownership, and
+  the report's `dataSources` says findings are location-based estimates only.
+- **Provenance is enforced in code, not just in the prompt.** The fields the app
+  owns are assigned by `SoilReport.withUserInputs` and overwrite anything the
+  model volunteers: the official land record comes only from what the user
+  entered (so a paraphrased parcel number can never appear behind the "Official
+  record" badge), the aerial tile URL/attribution is always built locally by
+  `AerialImageryService`, and `purpose`/`userRequirements` echo the user's own
+  input. Free-text values are sanitised (newlines/commas neutralised, length
+  capped) before being flattened into the context line, and requirements are sent
+  as context only — never in instruction position.
+- **Risk levels fail safe.** Unrecognised risk values parse to `null` and the
+  field is hidden, rather than degrading to a reassuring green "Low".
+- **Aerial imagery is undated context**, not a current georeferenced aerial
+  survey, and plot boundaries shown are not cadastral.
 
 ---
 

@@ -1068,6 +1068,420 @@ abstract class AppLocalizations {
   /// **'Analyze your soil to build your history.'**
   String get georesearchHistoryEmptyBody;
 
+  /// No description provided for @georesearchPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'What do you need this survey for?'**
+  String get georesearchPurpose;
+
+  /// No description provided for @georesearchPurposeGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get georesearchPurposeGeneral;
+
+  /// No description provided for @georesearchPurposeAgriculture.
+  ///
+  /// In en, this message translates to:
+  /// **'Farming'**
+  String get georesearchPurposeAgriculture;
+
+  /// No description provided for @georesearchPurposeBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get georesearchPurposeBuilding;
+
+  /// No description provided for @georesearchPurposeWellDrilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Water well'**
+  String get georesearchPurposeWellDrilling;
+
+  /// No description provided for @georesearchRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Your requirements'**
+  String get georesearchRequirements;
+
+  /// No description provided for @georesearchRequirementsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what you plan to do with this land, e.g. build a two-storey house, plant olive trees, drill a well.'**
+  String get georesearchRequirementsHint;
+
+  /// No description provided for @georesearchLandRecordSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Land Department data (optional)'**
+  String get georesearchLandRecordSection;
+
+  /// No description provided for @georesearchLandRecordToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'I have official Land Department data'**
+  String get georesearchLandRecordToggle;
+
+  /// No description provided for @georesearchLandRecordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'If official records are available, enter them and the survey will use them as authoritative instead of estimating.'**
+  String get georesearchLandRecordHelp;
+
+  /// No description provided for @georesearchLandRecordSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Issuing authority / registry'**
+  String get georesearchLandRecordSource;
+
+  /// No description provided for @georesearchLandParcelId.
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel / plot / deed number'**
+  String get georesearchLandParcelId;
+
+  /// No description provided for @georesearchLandRegisteredArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered area'**
+  String get georesearchLandRegisteredArea;
+
+  /// No description provided for @georesearchLandZoning.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoning / permitted use'**
+  String get georesearchLandZoning;
+
+  /// No description provided for @georesearchLandClassification.
+  ///
+  /// In en, this message translates to:
+  /// **'Land classification'**
+  String get georesearchLandClassification;
+
+  /// No description provided for @georesearchLandOwnershipType.
+  ///
+  /// In en, this message translates to:
+  /// **'Ownership type'**
+  String get georesearchLandOwnershipType;
+
+  /// No description provided for @georesearchLandOfficialNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Other official notes'**
+  String get georesearchLandOfficialNotes;
+
+  /// No description provided for @georesearchLandRecordOfficial.
+  ///
+  /// In en, this message translates to:
+  /// **'Official record'**
+  String get georesearchLandRecordOfficial;
+
+  /// No description provided for @georesearchAerial.
+  ///
+  /// In en, this message translates to:
+  /// **'Aerial / satellite view'**
+  String get georesearchAerial;
+
+  /// No description provided for @georesearchAerialLandCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Land cover'**
+  String get georesearchAerialLandCover;
+
+  /// No description provided for @georesearchAerialFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible features'**
+  String get georesearchAerialFeatures;
+
+  /// No description provided for @georesearchAerialUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a location to see an aerial view of the site.'**
+  String get georesearchAerialUnavailable;
+
+  /// No description provided for @georesearchAerialNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Aerial imagery is undated context only, not a current aerial survey.'**
+  String get georesearchAerialNotice;
+
+  /// No description provided for @georesearchSite.
+  ///
+  /// In en, this message translates to:
+  /// **'Site location'**
+  String get georesearchSite;
+
+  /// No description provided for @georesearchSiteAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get georesearchSiteAddress;
+
+  /// No description provided for @georesearchSiteElevation.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation'**
+  String get georesearchSiteElevation;
+
+  /// No description provided for @georesearchSiteArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate area'**
+  String get georesearchSiteArea;
+
+  /// No description provided for @georesearchSiteBoundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Boundaries / extent'**
+  String get georesearchSiteBoundary;
+
+  /// No description provided for @georesearchSiteAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get georesearchSiteAccess;
+
+  /// No description provided for @georesearchSiteTerrain.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting'**
+  String get georesearchSiteTerrain;
+
+  /// No description provided for @georesearchTopography.
+  ///
+  /// In en, this message translates to:
+  /// **'Topographic survey'**
+  String get georesearchTopography;
+
+  /// No description provided for @georesearchTopoElevationRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Elevation range'**
+  String get georesearchTopoElevationRange;
+
+  /// No description provided for @georesearchTopoSlope.
+  ///
+  /// In en, this message translates to:
+  /// **'Slope'**
+  String get georesearchTopoSlope;
+
+  /// No description provided for @georesearchTopoAspect.
+  ///
+  /// In en, this message translates to:
+  /// **'Aspect'**
+  String get georesearchTopoAspect;
+
+  /// No description provided for @georesearchTopoLandform.
+  ///
+  /// In en, this message translates to:
+  /// **'Landform'**
+  String get georesearchTopoLandform;
+
+  /// No description provided for @georesearchTopoRelief.
+  ///
+  /// In en, this message translates to:
+  /// **'Relief'**
+  String get georesearchTopoRelief;
+
+  /// No description provided for @georesearchTopoContours.
+  ///
+  /// In en, this message translates to:
+  /// **'Contours'**
+  String get georesearchTopoContours;
+
+  /// No description provided for @georesearchTopoDrainage.
+  ///
+  /// In en, this message translates to:
+  /// **'Drainage pattern'**
+  String get georesearchTopoDrainage;
+
+  /// No description provided for @georesearchTopoRunoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Runoff'**
+  String get georesearchTopoRunoff;
+
+  /// No description provided for @georesearchTopoFloodRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Flood risk'**
+  String get georesearchTopoFloodRisk;
+
+  /// No description provided for @georesearchTopoErosionRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Erosion risk'**
+  String get georesearchTopoErosionRisk;
+
+  /// No description provided for @georesearchTopoGrading.
+  ///
+  /// In en, this message translates to:
+  /// **'Grading / earthworks'**
+  String get georesearchTopoGrading;
+
+  /// No description provided for @georesearchTopoNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Desk-study estimate. Design-grade contours require a licensed instrument or drone survey.'**
+  String get georesearchTopoNotice;
+
+  /// No description provided for @georesearchGroundwater.
+  ///
+  /// In en, this message translates to:
+  /// **'Groundwater'**
+  String get georesearchGroundwater;
+
+  /// No description provided for @georesearchGwWaterTable.
+  ///
+  /// In en, this message translates to:
+  /// **'Water table depth'**
+  String get georesearchGwWaterTable;
+
+  /// No description provided for @georesearchGwAquifer.
+  ///
+  /// In en, this message translates to:
+  /// **'Aquifer type'**
+  String get georesearchGwAquifer;
+
+  /// No description provided for @georesearchGwYield.
+  ///
+  /// In en, this message translates to:
+  /// **'Yield potential'**
+  String get georesearchGwYield;
+
+  /// No description provided for @georesearchGwQuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Water quality'**
+  String get georesearchGwQuality;
+
+  /// No description provided for @georesearchGwSalinityRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Salinity risk'**
+  String get georesearchGwSalinityRisk;
+
+  /// No description provided for @georesearchGwSeasonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasonal variation'**
+  String get georesearchGwSeasonal;
+
+  /// No description provided for @georesearchGwRecharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Recharge'**
+  String get georesearchGwRecharge;
+
+  /// No description provided for @georesearchGwWellFeasibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Well feasibility'**
+  String get georesearchGwWellFeasibility;
+
+  /// No description provided for @georesearchGwDrillingDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated drilling depth'**
+  String get georesearchGwDrillingDepth;
+
+  /// No description provided for @georesearchGwContamination.
+  ///
+  /// In en, this message translates to:
+  /// **'Contamination risk'**
+  String get georesearchGwContamination;
+
+  /// No description provided for @georesearchGwNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional estimate. A hydrogeological study and a drilling permit are required before drilling.'**
+  String get georesearchGwNotice;
+
+  /// No description provided for @georesearchBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Building suitability'**
+  String get georesearchBuilding;
+
+  /// No description provided for @georesearchBuildRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Screening rating'**
+  String get georesearchBuildRating;
+
+  /// No description provided for @georesearchBuildBearing.
+  ///
+  /// In en, this message translates to:
+  /// **'Bearing capacity'**
+  String get georesearchBuildBearing;
+
+  /// No description provided for @georesearchBuildBedrock.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth to bedrock'**
+  String get georesearchBuildBedrock;
+
+  /// No description provided for @georesearchBuildFoundation.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible foundation approach'**
+  String get georesearchBuildFoundation;
+
+  /// No description provided for @georesearchBuildSettlement.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement risk'**
+  String get georesearchBuildSettlement;
+
+  /// No description provided for @georesearchBuildExpansive.
+  ///
+  /// In en, this message translates to:
+  /// **'Expansive soil risk'**
+  String get georesearchBuildExpansive;
+
+  /// No description provided for @georesearchBuildSeismic.
+  ///
+  /// In en, this message translates to:
+  /// **'Seismic context'**
+  String get georesearchBuildSeismic;
+
+  /// No description provided for @georesearchBuildExcavation.
+  ///
+  /// In en, this message translates to:
+  /// **'Excavation'**
+  String get georesearchBuildExcavation;
+
+  /// No description provided for @georesearchBuildDrainage.
+  ///
+  /// In en, this message translates to:
+  /// **'Site drainage'**
+  String get georesearchBuildDrainage;
+
+  /// No description provided for @georesearchBuildConstraints.
+  ///
+  /// In en, this message translates to:
+  /// **'Constraints'**
+  String get georesearchBuildConstraints;
+
+  /// No description provided for @georesearchBuildRequiredStudies.
+  ///
+  /// In en, this message translates to:
+  /// **'Required professional studies'**
+  String get georesearchBuildRequiredStudies;
+
+  /// No description provided for @georesearchBuildNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary screening only. This is NOT a geotechnical report and must not be used for foundation design. Commission a licensed geotechnical investigation before building.'**
+  String get georesearchBuildNotice;
+
+  /// No description provided for @georesearchDataSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Data sources'**
+  String get georesearchDataSources;
+
   /// No description provided for @concernLow.
   ///
   /// In en, this message translates to:

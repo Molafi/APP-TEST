@@ -513,6 +513,220 @@ class AppLocalizationsAr extends AppLocalizations {
   String get georesearchHistoryEmptyBody => 'حلّل تربتك لبناء سجلّك.';
 
   @override
+  String get georesearchPurpose => 'ما الغرض من هذا المسح؟';
+
+  @override
+  String get georesearchPurposeGeneral => 'عام';
+
+  @override
+  String get georesearchPurposeAgriculture => 'زراعة';
+
+  @override
+  String get georesearchPurposeBuilding => 'بناء';
+
+  @override
+  String get georesearchPurposeWellDrilling => 'بئر ماء';
+
+  @override
+  String get georesearchRequirements => 'متطلباتك';
+
+  @override
+  String get georesearchRequirementsHint =>
+      'اشرح ما تخطط لفعله بهذه الأرض، مثل بناء منزل من طابقين، أو زراعة أشجار زيتون، أو حفر بئر.';
+
+  @override
+  String get georesearchLandRecordSection => 'بيانات دائرة الأراضي (اختياري)';
+
+  @override
+  String get georesearchLandRecordToggle => 'لدي بيانات رسمية من دائرة الأراضي';
+
+  @override
+  String get georesearchLandRecordHelp =>
+      'إذا كانت السجلات الرسمية متوفرة، أدخلها وسيعتمدها المسح كمصدر موثوق بدلاً من التقدير.';
+
+  @override
+  String get georesearchLandRecordSource => 'الجهة المُصدِرة / السجل';
+
+  @override
+  String get georesearchLandParcelId => 'رقم القطعة / الحوض / سند الملكية';
+
+  @override
+  String get georesearchLandRegisteredArea => 'المساحة المسجلة';
+
+  @override
+  String get georesearchLandZoning => 'التنظيم / الاستخدام المسموح';
+
+  @override
+  String get georesearchLandClassification => 'تصنيف الأرض';
+
+  @override
+  String get georesearchLandOwnershipType => 'نوع الملكية';
+
+  @override
+  String get georesearchLandOfficialNotes => 'ملاحظات رسمية أخرى';
+
+  @override
+  String get georesearchLandRecordOfficial => 'سجل رسمي';
+
+  @override
+  String get georesearchAerial => 'صورة جوية / فضائية';
+
+  @override
+  String get georesearchAerialLandCover => 'الغطاء الأرضي';
+
+  @override
+  String get georesearchAerialFeatures => 'معالم ظاهرة';
+
+  @override
+  String get georesearchAerialUnavailable =>
+      'حدّد موقعك لعرض صورة جوية للموقع.';
+
+  @override
+  String get georesearchAerialNotice =>
+      'الصور الجوية للسياق فقط وغير مؤرخة، وليست مسحاً جوياً حديثاً.';
+
+  @override
+  String get georesearchSite => 'موقع الأرض';
+
+  @override
+  String get georesearchSiteAddress => 'العنوان';
+
+  @override
+  String get georesearchSiteElevation => 'الارتفاع';
+
+  @override
+  String get georesearchSiteArea => 'المساحة التقديرية';
+
+  @override
+  String get georesearchSiteBoundary => 'الحدود / الامتداد';
+
+  @override
+  String get georesearchSiteAccess => 'الوصول';
+
+  @override
+  String get georesearchSiteTerrain => 'طبيعة المحيط';
+
+  @override
+  String get georesearchTopography => 'المسح الطبوغرافي';
+
+  @override
+  String get georesearchTopoElevationRange => 'نطاق الارتفاع';
+
+  @override
+  String get georesearchTopoSlope => 'الانحدار';
+
+  @override
+  String get georesearchTopoAspect => 'اتجاه المنحدر';
+
+  @override
+  String get georesearchTopoLandform => 'شكل الأرض';
+
+  @override
+  String get georesearchTopoRelief => 'التضاريس';
+
+  @override
+  String get georesearchTopoContours => 'خطوط الكنتور';
+
+  @override
+  String get georesearchTopoDrainage => 'نمط التصريف';
+
+  @override
+  String get georesearchTopoRunoff => 'المياه السطحية';
+
+  @override
+  String get georesearchTopoFloodRisk => 'خطر الفيضان';
+
+  @override
+  String get georesearchTopoErosionRisk => 'خطر الانجراف';
+
+  @override
+  String get georesearchTopoGrading => 'التسوية / الأعمال الترابية';
+
+  @override
+  String get georesearchTopoNotice =>
+      'تقدير مكتبي. تتطلب خطوط الكنتور الهندسية مسحاً معتمداً بالأجهزة أو بالطائرة المسيّرة.';
+
+  @override
+  String get georesearchGroundwater => 'المياه الجوفية';
+
+  @override
+  String get georesearchGwWaterTable => 'عمق منسوب المياه';
+
+  @override
+  String get georesearchGwAquifer => 'نوع الخزان الجوفي';
+
+  @override
+  String get georesearchGwYield => 'الغزارة المتوقعة';
+
+  @override
+  String get georesearchGwQuality => 'جودة المياه';
+
+  @override
+  String get georesearchGwSalinityRisk => 'خطر الملوحة';
+
+  @override
+  String get georesearchGwSeasonal => 'التغير الموسمي';
+
+  @override
+  String get georesearchGwRecharge => 'التغذية الجوفية';
+
+  @override
+  String get georesearchGwWellFeasibility => 'جدوى حفر بئر';
+
+  @override
+  String get georesearchGwDrillingDepth => 'عمق الحفر التقديري';
+
+  @override
+  String get georesearchGwContamination => 'خطر التلوث';
+
+  @override
+  String get georesearchGwNotice =>
+      'تقدير إقليمي. يلزم إجراء دراسة هيدروجيولوجية والحصول على ترخيص حفر قبل البدء.';
+
+  @override
+  String get georesearchBuilding => 'ملاءمة البناء';
+
+  @override
+  String get georesearchBuildRating => 'تقييم أولي';
+
+  @override
+  String get georesearchBuildBearing => 'قدرة التحمل';
+
+  @override
+  String get georesearchBuildBedrock => 'عمق الصخر الأساسي';
+
+  @override
+  String get georesearchBuildFoundation => 'نظام الأساسات المحتمل';
+
+  @override
+  String get georesearchBuildSettlement => 'خطر الهبوط';
+
+  @override
+  String get georesearchBuildExpansive => 'خطر التربة الانتفاخية';
+
+  @override
+  String get georesearchBuildSeismic => 'السياق الزلزالي';
+
+  @override
+  String get georesearchBuildExcavation => 'الحفر';
+
+  @override
+  String get georesearchBuildDrainage => 'تصريف الموقع';
+
+  @override
+  String get georesearchBuildConstraints => 'القيود';
+
+  @override
+  String get georesearchBuildRequiredStudies => 'الدراسات المهنية المطلوبة';
+
+  @override
+  String get georesearchBuildNotice =>
+      'تقييم أولي فقط. هذا ليس تقريراً جيوتقنياً ولا يجوز استخدامه لتصميم الأساسات. اطلب فحصاً جيوتقنياً معتمداً قبل البناء.';
+
+  @override
+  String get georesearchDataSources => 'مصادر البيانات';
+
+  @override
   String get concernLow => 'خطورة منخفضة';
 
   @override

@@ -24,13 +24,30 @@ class SoilResearchService {
     String? userNote,
     double? latitude,
     double? longitude,
+    SurveyPurpose purpose = SurveyPurpose.general,
+    String? requirements,
+    LandRecordInfo? landRecord,
   }) async {
     // Enrich the context with coordinates when available so the model can
-    // reason about likely regional soil characteristics.
+    // reason about likely regional soil characteristics, plus the user's stated
+    // requirements and any official Land Department record they supplied.
+    //
+    // Official land-record values are passed as separate `land*` context keys
+    // (never concatenated into the instruction text) so the prompt can treat
+    // them as authoritative data rather than as instructions.
     final Map<String, String> enriched = {
       ...context,
       if (latitude != null) 'latitude': latitude.toStringAsFixed(4),
       if (longitude != null) 'longitude': longitude.toStringAsFixed(4),
+      'surveyPurpose': purpose.name,
+      if (_cleanRequirements(requirements) != null)
+        'userRequirements': _cleanRequirements(requirements)!,
+      if (landRecord != null && landRecord.available) ...landRecord.toContext(),
+      // Derived from whether official values were actually supplied, not from
+      // the switch alone, so "available with nothing filled in" reads as false.
+      'landRecordAvailable':
+          (landRecord != null && landRecord.available && landRecord.hasData)
+              .toString(),
     };
 
     final String raw = await _gateway.generate(
@@ -50,6 +67,19 @@ class SoilResearchService {
     } on FormatException {
       throw const AppException(AppErrorKind.malformedResponse);
     }
+  }
+
+  /// Normalises the user's free-text requirements for the flattened context
+  /// line: newlines and commas are neutralised so the text cannot forge extra
+  /// context keys, and length is capped.
+  static String? _cleanRequirements(String? raw) {
+    if (raw == null) return null;
+    final String s = raw
+        .replaceAll(RegExp(r'[\r\n]+'), ' ')
+        .replaceAll(',', ';')
+        .trim();
+    if (s.isEmpty) return null;
+    return s.length > 500 ? '${s.substring(0, 500)}…' : s;
   }
 }
 
