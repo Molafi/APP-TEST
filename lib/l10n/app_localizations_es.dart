@@ -413,6 +413,128 @@ class AppLocalizationsEs extends AppLocalizations {
       'PlantSense AI provides suggestions, not guarantees. For serious plant disease, pesticide, edible-crop, toxicity or agricultural concerns, consult a qualified botanist, agronomist, horticulturist, veterinarian, poison-control service or local agricultural authority.';
 
   @override
+  String get georesearchTitle => 'GeoInvestigación';
+
+  @override
+  String get navGeoResearch => 'Suelo';
+
+  @override
+  String get georesearchIntro =>
+      'Get an estimated soil profile for your location. Optionally add a site photo to estimate soil structure.';
+
+  @override
+  String get georesearchAddPhoto => 'Add a soil/site photo';
+
+  @override
+  String get georesearchChangePhoto => 'Change photo';
+
+  @override
+  String get georesearchRemovePhoto => 'Remove photo';
+
+  @override
+  String get georesearchTakePhoto => 'Take photo';
+
+  @override
+  String get georesearchChoosePhoto => 'Choose from gallery';
+
+  @override
+  String get georesearchNoLocation =>
+      'Set your location to get a location-aware soil estimate.';
+
+  @override
+  String get georesearchAnalyze => 'Analyze soil';
+
+  @override
+  String get georesearchAnalyzing => 'Researching your soil…';
+
+  @override
+  String get georesearchLocation => 'Location & soil type';
+
+  @override
+  String get georesearchSoilType => 'Soil type / texture';
+
+  @override
+  String get georesearchDepth => 'Soil depth / profile';
+
+  @override
+  String get georesearchSalinitySodium => 'Salinity & sodium';
+
+  @override
+  String get georesearchSalinity => 'Salinity (salt)';
+
+  @override
+  String get georesearchSodium => 'Sodium';
+
+  @override
+  String get georesearchPhOrganic => 'pH & organic matter';
+
+  @override
+  String get georesearchPh => 'pH';
+
+  @override
+  String get georesearchOrganicMatter => 'Organic matter';
+
+  @override
+  String get georesearchNutrients => 'Nutrients (N-P-K)';
+
+  @override
+  String get georesearchSubstances => 'Notable substances';
+
+  @override
+  String get georesearchGeometry => 'Soil structure / geometry';
+
+  @override
+  String get georesearchSuitablePlants => 'Suitable plants';
+
+  @override
+  String get georesearchRecommendations => 'Recommendations';
+
+  @override
+  String get georesearchSafety => 'Safety notes';
+
+  @override
+  String get georesearchNotSoilRelated =>
+      'This doesn\'t look soil or site related. Try a photo of soil or the ground/site.';
+
+  @override
+  String get georesearchEstimateNotice =>
+      'These are estimates based on your location and photo. Exact sodium, salinity and nutrient values require a professional soil-lab test.';
+
+  @override
+  String get georesearchSave => 'Save report';
+
+  @override
+  String get georesearchSaved => 'Report saved';
+
+  @override
+  String get georesearchHistory => 'Soil reports';
+
+  @override
+  String get georesearchHistoryEmpty => 'No saved soil reports yet';
+
+  @override
+  String get georesearchHistoryEmptyBody =>
+      'Analyze your soil to build your history.';
+
+  @override
+  String get concernLow => 'Low concern';
+
+  @override
+  String get concernMedium => 'Medium concern';
+
+  @override
+  String get concernHigh => 'High concern';
+
+  @override
+  String get levelLow => 'Low';
+
+  @override
+  String get levelMedium => 'Medium';
+
+  @override
+  String get levelHigh => 'High';
+
+  @override
   String get weatherTitle => 'Clima';
 
   @override
