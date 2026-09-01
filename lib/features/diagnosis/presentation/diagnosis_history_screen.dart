@@ -22,7 +22,7 @@ class DiagnosisHistoryScreen extends ConsumerWidget {
     final AsyncValue<List<Diagnosis>> history = ref.watch(
       diagnosisHistoryProvider,
     );
-    final String locale = ref.watch(appLocaleCodeProvider);
+    final String locale = ref.watch(localeProvider)?.languageCode ?? 'en';
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.diagnosisHistory)),

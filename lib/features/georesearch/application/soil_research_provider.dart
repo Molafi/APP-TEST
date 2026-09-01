@@ -15,7 +15,6 @@ import '../../location/domain/location_model.dart';
 import '../../profile/application/settings_provider.dart';
 import '../../weather/application/ai_context_provider.dart';
 import '../data/aerial_imagery_service.dart';
-import '../data/rjgc_map_service.dart';
 import '../data/soil_report_repository.dart';
 import '../data/soil_research_service.dart';
 import '../domain/soil_report_model.dart';
@@ -171,7 +170,7 @@ class SoilResearchController extends StateNotifier<SoilResearchState> {
 
       final AiContext ctx = _ref.read(aiContextProvider);
       final PlantLocation? location = _ref.read(selectedLocationProvider);
-      final String locale = _ref.read(appLocaleCodeProvider);
+      final String locale = _ref.read(localeProvider)?.languageCode ?? 'en';
 
       final SoilReport result = await _ref
           .read(soilResearchServiceProvider)
@@ -206,16 +205,6 @@ class SoilResearchController extends StateNotifier<SoilResearchState> {
         visibleFeatures: result.aerialImagery?.visibleFeatures,
       );
 
-      // National mapping-authority reference (RJGC / JTM grid). Computed
-      // locally from the coordinates for the same reason as the aerial tile:
-      // an official-looking grid reference must never originate in model
-      // output. Null without coordinates, or outside Jordan's coverage.
-      final OfficialMapReference? officialMap = const RjgcMapService()
-          .forLocation(
-            latitude: location?.latitude,
-            longitude: location?.longitude,
-          );
-
       // The official land record shown in the report is the one the USER
       // entered — never the model's echo of it.
       final LandRecordInfo? officialRecord =
@@ -229,7 +218,6 @@ class SoilResearchController extends StateNotifier<SoilResearchState> {
             .withUserInputs(
               landRecord: officialRecord,
               aerialImagery: merged,
-              officialMap: officialMap,
               purpose: state.purpose,
               userRequirements: state.requirements,
             )

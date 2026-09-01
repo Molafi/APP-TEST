@@ -68,7 +68,7 @@ class LocationController extends StateNotifier<LocationState> {
 
   LocalCacheService get _cache => _ref.read(localCacheServiceProvider);
   NominatimService get _geocoder => _ref.read(nominatimServiceProvider);
-  String get _locale => _ref.read(appLocaleCodeProvider);
+  String get _locale => _ref.read(localeProvider)?.languageCode ?? 'en';
 
   void _restore() {
     final String? raw = _cache.getString(AppConstants.prefSelectedLocation);

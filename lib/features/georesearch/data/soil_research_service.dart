@@ -54,13 +54,11 @@ class SoilResearchService {
       AiRequest(
         systemPrompt: AiPrompts.system(locale: locale),
         userText: (userNote?.trim().isNotEmpty ?? false)
-            ? '${userNote!.trim()}\n\n'
-                  '${AiPrompts.soilResearchInstruction(locale: locale)}'
-            : AiPrompts.soilResearchInstruction(locale: locale),
+            ? '${userNote!.trim()}\n\n${AiPrompts.soilResearchInstruction()}'
+            : AiPrompts.soilResearchInstruction(),
         context: enriched,
         image: image,
         jsonMode: true,
-        locale: locale,
       ),
     );
 

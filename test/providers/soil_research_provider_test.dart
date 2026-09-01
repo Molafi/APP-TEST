@@ -38,32 +38,6 @@ const String _overreachingReply = '''
   }
 }''';
 
-/// A reply that fabricates an `officialMap` object. The prompt forbids it, but
-/// a model can always ignore the prompt — the controller must overwrite it with
-/// the app's own conversion rather than badge invented numbers as authority data.
-const String _fabricatedOfficialMapReply = '''
-{
-  "isSoilRelated": true,
-  "imageQuality": "good",
-  "nutrients": [],
-  "substances": [],
-  "suitablePlants": [],
-  "recommendations": [],
-  "safetyNotes": [],
-  "confidence": "low",
-  "needsMoreInformation": false,
-  "followUpQuestions": [],
-  "disclaimer": "d",
-  "officialMap": {
-    "authority": "Totally Official Authority",
-    "gridName": "Invented Grid",
-    "easting": 111111.0,
-    "northing": 222222.0,
-    "portalUrl": "https://evil.example/fake-portal",
-    "datumShiftApplied": true
-  }
-}''';
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -181,95 +155,6 @@ void main() {
       // Narrative fields still come from the model.
       expect(info.landCover, 'Cropland');
       expect(info.visibleFeatures, ['Tracks']);
-    });
-  });
-
-  group('official map / national grid provenance', () {
-    test('a Jordanian location gets a JTM grid reference', () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _overreachingReply),
-        location: const PlantLocation(
-          latitude: 31.9539,
-          longitude: 35.9106,
-          city: 'Amman',
-        ),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
-
-      await controller.analyze();
-
-      final map =
-          container.read(soilResearchControllerProvider).result!.officialMap!;
-      expect(map.authority, contains('RJGC'));
-      expect(map.gridCode, 'EPSG:3066');
-      expect(map.easting, closeTo(397021.1, 0.5));
-      expect(map.northing, closeTo(536604.5, 0.5));
-      // No official datum parameters are configured, so the caveat flag is set.
-      expect(map.datumShiftApplied, isFalse);
-    });
-
-    test('a location outside Jordan gets no national grid', () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _overreachingReply),
-        location: const PlantLocation(
-          latitude: 24.7136,
-          longitude: 46.6753,
-          city: 'Riyadh',
-        ),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
-
-      await controller.analyze();
-
-      // Quoting a Jordanian grid reference for Riyadh would be misleading.
-      expect(
-        container.read(soilResearchControllerProvider).result!.officialMap,
-        isNull,
-      );
-    });
-
-    test('a model-invented official map is discarded', () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _fabricatedOfficialMapReply),
-        location: const PlantLocation(
-          latitude: 31.9539,
-          longitude: 35.9106,
-          city: 'Amman',
-        ),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
-
-      await controller.analyze();
-
-      final map =
-          container.read(soilResearchControllerProvider).result!.officialMap!;
-      // The app's own conversion must win: an authority-badged grid reference
-      // can never originate in model output.
-      expect(map.easting, isNot(111111.0));
-      expect(map.easting, closeTo(397021.1, 0.5));
-      expect(map.portalUrl, isNot('https://evil.example/fake-portal'));
-    });
-
-    test('no coordinates means no official map at all', () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _fabricatedOfficialMapReply),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
-
-      await controller.analyze();
-
-      expect(
-        container.read(soilResearchControllerProvider).result!.officialMap,
-        isNull,
-      );
     });
   });
 

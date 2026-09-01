@@ -105,14 +105,11 @@ void main() {
 
   group('prompt contract', () {
     test('instruction documents the new survey sections', () {
-      final String instruction = AiPrompts.soilResearchInstruction(
-        locale: 'en',
-      );
+      final String instruction = AiPrompts.soilResearchInstruction();
       for (final String key in const [
         'topography',
         'groundwater',
         'buildingSuitability',
-        'slopeStability',
         'siteLocation',
         'aerialImagery',
         'dataSources',
@@ -125,93 +122,8 @@ void main() {
       expect(instruction, contains('AUTHORITATIVE'));
       expect(instruction, contains('Do NOT output any image URL'));
       expect(instruction, contains('Do NOT output a landRecord object'));
-      // The grid reference is app-computed for the same reason as the tile URL.
-      expect(instruction, contains('Do NOT output an officialMap object'));
       // The schema itself must not invite a landRecord echo.
       expect(instruction.contains('"landRecord":'), isFalse);
-      expect(instruction.contains('"officialMap":'), isFalse);
-    });
-
-    test('slope-stability schema carries every field the UI renders', () {
-      final String instruction = AiPrompts.soilResearchInstruction(
-        locale: 'en',
-      );
-      for (final String key in const [
-        'hazardLevel',
-        'activityState',
-        'movementDirection',
-        'movementAzimuth',
-        'slipSurfaceDepth',
-        'slipSurfaceType',
-        'movementRate',
-        'movementRateClass',
-        'failureMechanism',
-        'indicators',
-        'triggers',
-        'atRiskStructures',
-        'buildableAfterTreatment',
-        'requiredTreatments',
-        'stabilisationOptions',
-        'monitoringPlan',
-      ]) {
-        expect(
-          instruction,
-          contains(key),
-          reason: 'missing $key in the slopeStability schema',
-        );
-      }
-    });
-
-    test('slope-stability guidance keeps its safety rails', () {
-      final String instruction = AiPrompts.soilResearchInstruction(
-        locale: 'en',
-      );
-      // Screening framing, not an engineering deliverable.
-      expect(instruction, contains('NEVER a slope-stability analysis'));
-      // The three unmeasurable answers must stay qualified and instrumented.
-      expect(instruction, contains('CANNOT be determined without'));
-      expect(instruction, contains('inclinometers'));
-      expect(instruction, contains('piezometers'));
-      // No verdicts about individual buildings, and no cleared zones.
-      expect(instruction, contains('Never declare a specific building safe'));
-      expect(instruction, contains('CONDITIONAL'));
-      expect(instruction, contains('Never present a zone as already safe'));
-    });
-
-    test('the language rule is present and protects the enum tokens', () {
-      final String arabic = AiPrompts.soilResearchInstruction(locale: 'ar');
-      expect(arabic, contains('Arabic'));
-      expect(arabic, contains('LANGUAGE — HIGHEST PRIORITY'));
-      // Parsers match the literal English tokens, so they must not be
-      // translated even when everything else is.
-      expect(arabic, contains('Keep in English, exactly as written'));
-      expect(arabic, contains('"low", "medium", "high"'));
-
-      final String french = AiPrompts.soilResearchInstruction(locale: 'fr');
-      expect(french, contains('French'));
-
-      // Region suffixes resolve to the base language.
-      expect(AiPrompts.languageName('ar_JO'), contains('Arabic'));
-      expect(AiPrompts.languageName('ar-SA'), contains('Arabic'));
-      expect(AiPrompts.languageName('zz'), 'English');
-    });
-
-    test('the diagnosis instruction carries the same language rule', () {
-      final String arabic = AiPrompts.diagnosisInstruction(locale: 'ar');
-      expect(arabic, contains('Arabic'));
-      expect(arabic, contains('LANGUAGE — HIGHEST PRIORITY'));
-      // The Latin binomial is the one thing that must not be translated.
-      expect(arabic, contains('Latin binomial'));
-    });
-
-    test('the system prompt names the language first and last', () {
-      final String system = AiPrompts.system(locale: 'ar');
-      final int first = system.indexOf('Arabic');
-      final int last = system.lastIndexOf('Arabic');
-      expect(first, greaterThan(-1));
-      // Repeated, so the trailing English schema cannot out-weigh it.
-      expect(last, greaterThan(first));
-      expect(system.trim(), endsWith('Arabic (العربية).'));
     });
   });
 
@@ -236,52 +148,6 @@ void main() {
       expect(report.aerialImagery?.landCover, isNotNull);
       expect(report.purpose, SurveyPurpose.building);
       expect(report.userRequirements, 'Build a house');
-    });
-
-    test('returns a slope-stability section answering the five questions',
-        () async {
-      final service = SoilResearchService(DemoAiGateway());
-
-      final report = await service.analyze(
-        locale: 'en',
-        purpose: SurveyPurpose.slopeStability,
-      );
-
-      final slope = report.slopeStability;
-      expect(slope, isNotNull);
-      expect(slope!.isEmpty, isFalse);
-      // 1. direction, 2. slip-surface depth, 3. rate of movement.
-      expect(slope.movementDirection, isNotNull);
-      expect(slope.slipSurfaceDepth, isNotNull);
-      expect(slope.movementRate, isNotNull);
-      // 4. which structures are exposed, 5. which areas could be built on.
-      expect(slope.atRiskStructures, isNotEmpty);
-      expect(slope.zones, isNotEmpty);
-      // Every unmeasurable answer names the instrument that measures it.
-      expect(slope.slipSurfaceDepth, contains('inclinometer'));
-      expect(slope.monitoringPlan, isNotEmpty);
-      expect(slope.requiredStudies, isNotEmpty);
-      // The purpose the user picked is echoed back.
-      expect(report.purpose, SurveyPurpose.slopeStability);
-    });
-
-    test('the slope section never clears a zone as already buildable',
-        () async {
-      final service = SoilResearchService(DemoAiGateway());
-
-      final report = await service.analyze(locale: 'en');
-      final zones = report.slopeStability!.zones;
-
-      // At least one zone is off-limits on current evidence, and any zone that
-      // is "buildable after treatment" must actually list the treatments.
-      expect(zones.any((z) => !z.buildableAfterTreatment), isTrue);
-      for (final zone in zones.where((z) => z.buildableAfterTreatment)) {
-        expect(
-          zone.requiredTreatments,
-          isNotEmpty,
-          reason: '"${zone.name}" is conditionally buildable with no conditions',
-        );
-      }
     });
 
     test('does not fabricate a land record when none was supplied', () async {

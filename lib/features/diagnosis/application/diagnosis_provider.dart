@@ -99,7 +99,7 @@ class DiagnosisController extends StateNotifier<DiagnosisState> {
     try {
       final PreparedImage prepared = await _compressor.prepare(bytes);
       final AiContext ctx = _ref.read(aiContextProvider);
-      final String locale = _ref.read(appLocaleCodeProvider);
+      final String locale = _ref.read(localeProvider)?.languageCode ?? 'en';
 
       final Diagnosis result = await _ref
           .read(aiDiagnosisServiceProvider)

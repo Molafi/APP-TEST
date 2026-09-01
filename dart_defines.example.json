@@ -5,12 +5,5 @@
   "ALLOW_DIRECT_GROQ": true,
   "GROQ_API_KEY": "PASTE_YOUR_GROQ_KEY_HERE",
   "GROQ_TEXT_MODEL": "llama-3.3-70b-versatile",
-  "GROQ_VISION_MODEL": "meta-llama/llama-4-scout-17b-16e-instruct",
-
-  "_rjgc_comment": "Royal Jordanian Geographic Centre (RJGC). All optional: the JTM grid reference and the public geoportal/order links work with none of these set. RJGC_TILE_URL is an XYZ template using {z}/{x}/{y} and is only needed to show the Centre's own basemap, which requires an agreement with them. JTM_DATUM_SHIFT takes the official 'dx,dy,dz' metres for WGS84 -> Jordan datum; leave empty until RJGC supplies them, and the app will label the conversion as unofficial.",
-  "RJGC_TILE_URL": "",
-  "RJGC_TILE_ATTRIBUTION": "",
-  "RJGC_PORTAL_URL": "https://rjgc.gov.jo/",
-  "RJGC_ORDER_URL": "https://rjgc.gov.jo/eservices/",
-  "JTM_DATUM_SHIFT": ""
+  "GROQ_VISION_MODEL": "meta-llama/llama-4-scout-17b-16e-instruct"
 }

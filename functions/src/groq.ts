@@ -14,39 +14,6 @@ export interface ProxyRequest {
   history?: { role: "user" | "model"; text: string }[];
   image?: { mimeType: string; data: string };
   jsonMode?: boolean;
-  /** Language code the answer must be written in (`en`, `ar`, `fr`, `es`). */
-  locale?: string;
-}
-
-const LANGUAGE_NAMES: Record<string, string> = {
-  ar: "Arabic (العربية)",
-  fr: "French (Français)",
-  es: "Spanish (Español)",
-  en: "English",
-};
-
-function languageName(locale?: string): string {
-  const base = (locale ?? "en").trim().toLowerCase().split(/[-_]/)[0];
-  return LANGUAGE_NAMES[base] ?? "English";
-}
-
-/**
- * Server-side language directive, appended as a second system message.
- *
- * The client prompt already carries one, but the client is not the only thing
- * that can be stale: an older app build, or a caller replaying a cached
- * `system` string, would otherwise silently produce English answers for an
- * Arabic user. Enum tokens are excluded because the client parsers match the
- * literal English values.
- */
-function languageDirective(locale?: string): string {
-  const name = languageName(locale);
-  return (
-    `Write every human-readable string in ${name}. ` +
-    "If the reply is JSON, translate only the string values: keep all JSON " +
-    'keys and the fixed enum tokens ("low", "medium", "high", "good", ' +
-    '"poor", "unusable") in English, and use ASCII digits for numbers.'
-  );
 }
 
 export class GroqError extends Error {
@@ -101,10 +68,7 @@ async function callGroqModel(
   timeoutMs: number
 ): Promise<string> {
 
-  const messages: unknown[] = [
-    { role: "system", content: req.system },
-    { role: "system", content: languageDirective(req.locale) },
-  ];
+  const messages: unknown[] = [{ role: "system", content: req.system }];
   for (const turn of req.history ?? []) {
     messages.push({
       role: turn.role === "model" ? "assistant" : "user",

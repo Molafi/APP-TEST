@@ -13,7 +13,6 @@ import '../../weather/application/ai_context_provider.dart';
 import '../application/soil_research_provider.dart';
 import '../domain/soil_report_model.dart';
 import 'widgets/aerial_view_card.dart';
-import 'widgets/official_map_card.dart';
 import 'widgets/soil_report_card.dart';
 import 'widgets/survey_inputs_section.dart';
 
@@ -238,17 +237,6 @@ class _ResultView extends ConsumerWidget {
                   ),
                 ),
         ),
-        // National mapping-authority reference (RJGC grid + official map
-        // links). Absent without coordinates, or outside Jordan's coverage.
-        if (report.officialMap != null)
-          Padding(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.lg,
-              right: AppSpacing.lg,
-              top: AppSpacing.md,
-            ),
-            child: OfficialMapCard(info: report.officialMap!),
-          ),
         SoilReportCard(report: report),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),

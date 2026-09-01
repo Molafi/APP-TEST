@@ -4,7 +4,6 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/soil_research_provider.dart';
 import '../../domain/site_survey_model.dart';
-import 'purpose_label.dart';
 
 /// Collects the inputs that DRIVE the survey: what the user needs the site for,
 /// their own requirements in free text, and — optionally — official Land
@@ -32,34 +31,40 @@ class SurveyInputsSection extends StatelessWidget {
           l10n.georesearchPurpose,
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        const SizedBox(height: 2),
-        // Spells out what the choice actually changes. Without it the chips read
-        // as a filter rather than the setting that drives the whole survey.
-        Text(
-          l10n.georesearchPurposeHelp,
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.xs),
         Wrap(
           spacing: AppSpacing.xs,
           runSpacing: AppSpacing.xs,
           children: [
-            // Labels come from the shared `purposeLabel` so the chip the user
-            // taps and the purpose echoed back in the report always agree.
-            for (final (SurveyPurpose p, IconData icon) in <
-              (SurveyPurpose, IconData)
+            for (final (SurveyPurpose p, String label, IconData icon) in <
+              (SurveyPurpose, String, IconData)
             >[
-              (SurveyPurpose.general, Icons.explore_outlined),
-              (SurveyPurpose.agriculture, Icons.agriculture_outlined),
-              (SurveyPurpose.building, Icons.foundation_outlined),
-              (SurveyPurpose.wellDrilling, Icons.water_drop_outlined),
-              (SurveyPurpose.slopeStability, Icons.terrain_outlined),
+              (
+                SurveyPurpose.general,
+                l10n.georesearchPurposeGeneral,
+                Icons.explore_outlined,
+              ),
+              (
+                SurveyPurpose.agriculture,
+                l10n.georesearchPurposeAgriculture,
+                Icons.agriculture_outlined,
+              ),
+              (
+                SurveyPurpose.building,
+                l10n.georesearchPurposeBuilding,
+                Icons.foundation_outlined,
+              ),
+              (
+                SurveyPurpose.wellDrilling,
+                l10n.georesearchPurposeWellDrilling,
+                Icons.water_drop_outlined,
+              ),
             ])
               ChoiceChip(
                 selected: state.purpose == p,
                 onSelected: (_) => controller.setPurpose(p),
                 avatar: Icon(icon, size: 18),
-                label: Text(purposeLabel(p, l10n)),
+                label: Text(label),
               ),
           ],
         ),

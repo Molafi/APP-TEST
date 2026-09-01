@@ -211,7 +211,7 @@ class _ResultView extends ConsumerWidget {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final Diagnosis d = state.result!;
     final controller = ref.read(diagnosisControllerProvider.notifier);
-    final String locale = ref.watch(appLocaleCodeProvider);
+    final String locale = ref.watch(localeProvider)?.languageCode ?? 'en';
 
     return ListView(
       padding: const EdgeInsets.only(bottom: AppSpacing.xl),

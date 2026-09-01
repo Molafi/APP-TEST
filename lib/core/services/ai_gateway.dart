@@ -37,7 +37,6 @@ class AiRequest {
     this.history = const [],
     this.image,
     this.jsonMode = false,
-    this.locale = 'en',
   });
 
   final String systemPrompt;
@@ -46,12 +45,6 @@ class AiRequest {
   final List<AiTurn> history;
   final AiImage? image;
   final bool jsonMode;
-
-  /// Language code the answer must be written in. The prompts already carry a
-  /// language directive, but transports that do not use a language model (the
-  /// demo gateway) need the code itself to pick localized canned content, and
-  /// the backend proxy can enforce it server-side.
-  final String locale;
 
   /// Composes the user text with any available (untrusted) context, clearly
   /// delimited from the instruction.
@@ -75,7 +68,6 @@ class AiRequest {
     if (image != null)
       'image': {'mimeType': image!.mimeType, 'data': image!.base64},
     'jsonMode': jsonMode,
-    'locale': locale,
   };
 }
 

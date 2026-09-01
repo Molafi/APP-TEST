@@ -18,9 +18,7 @@ class PlantSenseApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final Locale? locale = ref.watch(localeProvider);
     final ThemeMode themeMode = ref.watch(themeModeProvider);
-    // Resolved (not raw) so a user on an Arabic device who never opened
-    // Settings still gets the Arabic font, matching the locale Flutter picks.
-    final bool isArabic = ref.watch(appLocaleCodeProvider) == 'ar';
+    final bool isArabic = (locale?.languageCode ?? 'en') == 'ar';
 
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
