@@ -39,6 +39,17 @@ bool _bool(Object? v, {bool orElse = false}) {
   return orElse;
 }
 
+/// Parses a JSON list of objects with [build], skipping anything that is not a
+/// map. Accepts `Map<dynamic, dynamic>` too, which is what a decoded Firestore
+/// document can contain.
+List<T> _mapList<T>(Object? v, T Function(Map<String, dynamic>) build) {
+  if (v is! List) return <T>[];
+  return v
+      .whereType<Map>()
+      .map((e) => build(Map<String, dynamic>.from(e)))
+      .toList();
+}
+
 /// ---------------------------------------------------------------------------
 /// User requirements
 /// ---------------------------------------------------------------------------
@@ -46,13 +57,23 @@ bool _bool(Object? v, {bool orElse = false}) {
 /// What the user intends to do with the site. The survey is driven by this:
 /// the prompt tailors which findings matter (e.g. bearing capacity and
 /// foundation notes for [building], irrigation and nutrients for [agriculture],
-/// aquifer yield for [wellDrilling]).
-enum SurveyPurpose { general, agriculture, building, wellDrilling }
+/// aquifer yield for [wellDrilling], land-movement screening for
+/// [slopeStability]).
+enum SurveyPurpose {
+  general,
+  agriculture,
+  building,
+  wellDrilling,
+  slopeStability,
+}
 
 SurveyPurpose surveyPurposeFrom(String? s) => switch (s?.toLowerCase()) {
   'agriculture' => SurveyPurpose.agriculture,
   'building' => SurveyPurpose.building,
   'welldrilling' || 'well_drilling' => SurveyPurpose.wellDrilling,
+  'slopestability' ||
+  'slope_stability' ||
+  'landslide' => SurveyPurpose.slopeStability,
   _ => SurveyPurpose.general,
 };
 
@@ -587,6 +608,376 @@ class BuildingSuitability {
         drainageRequirements: _str(m['drainageRequirements']),
         constraints: _strList(m['constraints']),
         requiredStudies: _strList(m['requiredStudies']),
+      );
+}
+
+/// ---------------------------------------------------------------------------
+/// Slope stability / land movement
+/// ---------------------------------------------------------------------------
+
+/// A structure exposed to land movement.
+///
+/// [risk] uses the STRICT parser so an unrecognised value renders as "no level
+/// shown" rather than a reassuring "Low" chip — understating exposure for a
+/// building is the worst failure mode this feature has.
+///
+/// Structures are described generically by position and type (e.g. "houses on
+/// the upper crown of the slope") unless the user named them, and every entry
+/// carries the verification step that would actually establish its condition.
+/// Nothing here supports an occupancy or evacuation decision.
+class StructureRisk {
+  const StructureRisk({
+    required this.name,
+    this.risk,
+    this.reason,
+    this.recommendation,
+  });
+
+  /// What the structure is and where it sits relative to the slope.
+  final String name;
+
+  /// Exposure implied by position — never a verdict on the building itself.
+  final SoilLevel? risk;
+
+  /// Why that position is exposed.
+  final String? reason;
+
+  /// The check or action that would establish the real condition.
+  final String? recommendation;
+
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'risk': risk?.name,
+    'reason': reason,
+    'recommendation': recommendation,
+  };
+
+  factory StructureRisk.fromMap(Map<String, dynamic> m) => StructureRisk(
+    name: _str(m['name']) ?? '',
+    risk: soilLevelOrNull(_str(m['risk'])),
+    reason: _str(m['reason']),
+    recommendation: _str(m['recommendation']),
+  );
+}
+
+/// A described part of the plot and whether it could be built on.
+///
+/// [buildableAfterTreatment] is a CONDITIONAL hypothesis: true means "only if
+/// the listed [requiredTreatments] are carried out and a licensed geotechnical
+/// engineer designs and signs off the works". It never means the zone is
+/// currently safe. It defaults to false so a missing/mistyped value cannot read
+/// as permission to build.
+class PlotZone {
+  const PlotZone({
+    required this.name,
+    this.location,
+    this.buildability,
+    this.buildableAfterTreatment = false,
+    this.requiredTreatments = const <String>[],
+    this.note,
+  });
+
+  final String name;
+
+  /// Where the zone is within the plot.
+  final String? location;
+
+  /// Screening rating: high = most favourable. Strict parser, so an
+  /// unrecognised value hides the chip instead of inventing a rating.
+  final SoilLevel? buildability;
+
+  /// Conditional on [requiredTreatments] plus engineered sign-off.
+  final bool buildableAfterTreatment;
+
+  /// What must be done before any construction is considered.
+  final List<String> requiredTreatments;
+
+  final String? note;
+
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'location': location,
+    'buildability': buildability?.name,
+    'buildableAfterTreatment': buildableAfterTreatment,
+    'requiredTreatments': requiredTreatments,
+    'note': note,
+  };
+
+  factory PlotZone.fromMap(Map<String, dynamic> m) => PlotZone(
+    name: _str(m['name']) ?? '',
+    location: _str(m['location']),
+    buildability: soilLevelOrNull(_str(m['buildability'])),
+    buildableAfterTreatment: _bool(m['buildableAfterTreatment']),
+    requiredTreatments: _strList(m['requiredTreatments']),
+    note: _str(m['note']),
+  );
+}
+
+/// Preliminary screening of land movement (landslide / creep) potential.
+///
+/// Explicitly NOT a slope-stability analysis and it carries no factor of
+/// safety. The three questions users ask first — which way the ground is
+/// moving, how deep the slip surface is, and how fast it moves — cannot be
+/// answered without instrumentation, so those fields hold qualitative ranges
+/// paired with the instrument that measures them (inclinometers and piezometers
+/// in boreholes, repeated GNSS/InSAR observation).
+class SlopeStabilityAssessment {
+  const SlopeStabilityAssessment({
+    this.summary,
+    this.hazardLevel,
+    this.activityState,
+    this.movementDirection,
+    this.movementAzimuth,
+    this.slipSurfaceDepth,
+    this.slipSurfaceType,
+    this.movementRate,
+    this.movementRateClass,
+    this.failureMechanism,
+    this.indicators = const <String>[],
+    this.triggers = const <String>[],
+    this.atRiskStructures = const <StructureRisk>[],
+    this.zones = const <PlotZone>[],
+    this.stabilisationOptions = const <String>[],
+    this.monitoringPlan = const <String>[],
+    this.requiredStudies = const <String>[],
+    this.notes = const <String>[],
+  });
+
+  final String? summary;
+
+  /// Overall screening hazard rating. Strict parser — an unrecognised value
+  /// hides the chip rather than displaying "Low".
+  final SoilLevel? hazardLevel;
+
+  /// Whether movement appears active, dormant or absent — always unverified
+  /// without monitoring.
+  final String? activityState;
+
+  /// Direction of any movement in plain words, e.g. "downslope toward the
+  /// south-east, following the steepest gradient".
+  final String? movementDirection;
+
+  /// Approximate compass bearing of that direction in degrees, when the
+  /// terrain context supports one.
+  final double? movementAzimuth;
+
+  /// Plausible depth RANGE to the slip (failure) surface, always with the
+  /// measurement caveat. Never a single precise figure.
+  final String? slipSurfaceDepth;
+
+  /// Likely failure geometry, e.g. "shallow translational", "rotational".
+  final String? slipSurfaceType;
+
+  /// Movement rate as a qualitative range plus what would measure it.
+  final String? movementRate;
+
+  /// Coarse rate class for the chip. Strict parser.
+  final SoilLevel? movementRateClass;
+
+  /// The mechanism that would drive failure, e.g. rainfall-driven pore-water
+  /// pressure reducing shear strength.
+  final String? failureMechanism;
+
+  /// Field signs the user can look for themselves (cracks, tilt, seepage).
+  final List<String> indicators;
+
+  /// What could set movement off (rainfall, cutting the toe, leaking pipes).
+  final List<String> triggers;
+
+  /// Structures exposed by their position on or near the slope.
+  final List<StructureRisk> atRiskStructures;
+
+  /// Parts of the plot and what each would need before construction.
+  final List<PlotZone> zones;
+
+  /// Candidate engineering measures (drainage, regrading, retention).
+  final List<String> stabilisationOptions;
+
+  /// Instrumentation and observation programme that would answer the
+  /// unanswerable fields above.
+  final List<String> monitoringPlan;
+
+  /// Professional studies this screening cannot replace.
+  final List<String> requiredStudies;
+
+  final List<String> notes;
+
+  bool get isEmpty =>
+      summary == null &&
+      hazardLevel == null &&
+      activityState == null &&
+      movementDirection == null &&
+      movementAzimuth == null &&
+      slipSurfaceDepth == null &&
+      slipSurfaceType == null &&
+      movementRate == null &&
+      movementRateClass == null &&
+      failureMechanism == null &&
+      indicators.isEmpty &&
+      triggers.isEmpty &&
+      atRiskStructures.isEmpty &&
+      zones.isEmpty &&
+      stabilisationOptions.isEmpty &&
+      monitoringPlan.isEmpty &&
+      requiredStudies.isEmpty &&
+      notes.isEmpty;
+
+  Map<String, dynamic> toMap() => {
+    'summary': summary,
+    'hazardLevel': hazardLevel?.name,
+    'activityState': activityState,
+    'movementDirection': movementDirection,
+    'movementAzimuth': movementAzimuth,
+    'slipSurfaceDepth': slipSurfaceDepth,
+    'slipSurfaceType': slipSurfaceType,
+    'movementRate': movementRate,
+    'movementRateClass': movementRateClass?.name,
+    'failureMechanism': failureMechanism,
+    'indicators': indicators,
+    'triggers': triggers,
+    'atRiskStructures': atRiskStructures.map((e) => e.toMap()).toList(),
+    'zones': zones.map((e) => e.toMap()).toList(),
+    'stabilisationOptions': stabilisationOptions,
+    'monitoringPlan': monitoringPlan,
+    'requiredStudies': requiredStudies,
+    'notes': notes,
+  };
+
+  factory SlopeStabilityAssessment.fromMap(Map<String, dynamic> m) =>
+      SlopeStabilityAssessment(
+        summary: _str(m['summary']),
+        hazardLevel: soilLevelOrNull(_str(m['hazardLevel'])),
+        activityState: _str(m['activityState']),
+        movementDirection: _str(m['movementDirection']),
+        movementAzimuth: _num(m['movementAzimuth']),
+        slipSurfaceDepth: _str(m['slipSurfaceDepth']),
+        slipSurfaceType: _str(m['slipSurfaceType']),
+        movementRate: _str(m['movementRate']),
+        movementRateClass: soilLevelOrNull(_str(m['movementRateClass'])),
+        failureMechanism: _str(m['failureMechanism']),
+        indicators: _strList(m['indicators']),
+        triggers: _strList(m['triggers']),
+        // Nameless entries are dropped: an unlabelled risk row would show a
+        // level chip with nothing to attach it to.
+        atRiskStructures: _mapList(m['atRiskStructures'], StructureRisk.fromMap)
+            .where((e) => e.name.isNotEmpty)
+            .toList(),
+        zones: _mapList(m['zones'], PlotZone.fromMap)
+            .where((e) => e.name.isNotEmpty)
+            .toList(),
+        stabilisationOptions: _strList(m['stabilisationOptions']),
+        monitoringPlan: _strList(m['monitoringPlan']),
+        requiredStudies: _strList(m['requiredStudies']),
+        notes: _strList(m['notes']),
+      );
+}
+
+/// ---------------------------------------------------------------------------
+/// Official (national mapping authority) map reference
+/// ---------------------------------------------------------------------------
+
+/// A reference into the national mapping authority's products for this site —
+/// for Jordan, the Royal Jordanian Geographic Centre (RJGC).
+///
+/// Everything here is computed by the app from the coordinates (grid maths and
+/// configured service URLs); the AI never supplies any of it, exactly like the
+/// aerial tile URL. That keeps a model from inventing an official-looking grid
+/// reference.
+///
+/// The grid values are an unofficial CONVERSION for locating and ordering maps,
+/// not a surveyed position: a licensed cadastral survey is still required for
+/// any boundary or legal purpose.
+class OfficialMapReference {
+  const OfficialMapReference({
+    required this.authority,
+    required this.gridName,
+    this.gridCode,
+    this.easting,
+    this.northing,
+    this.latitude,
+    this.longitude,
+    this.tileUrl,
+    this.tileAttribution,
+    this.portalUrl,
+    this.orderUrl,
+    this.datumShiftApplied = false,
+  });
+
+  /// Mapping authority name, e.g. "Royal Jordanian Geographic Centre (RJGC)".
+  final String authority;
+
+  /// Projected grid the easting/northing belong to, e.g. "Jordan Transverse
+  /// Mercator (JTM)".
+  final String gridName;
+
+  /// CRS identifier, e.g. "EPSG:3066".
+  final String? gridCode;
+
+  /// Grid easting in metres.
+  final double? easting;
+
+  /// Grid northing in metres.
+  final double? northing;
+
+  /// The WGS84 coordinates the grid values were converted from.
+  final double? latitude;
+  final double? longitude;
+
+  /// Authority basemap tile URL, only when a service has been configured for
+  /// the build (official services usually require an agreement).
+  final String? tileUrl;
+  final String? tileAttribution;
+
+  /// The authority's geoportal / map viewer.
+  final String? portalUrl;
+
+  /// Where official maps, aerial photos and cadastral extracts are ordered.
+  final String? orderUrl;
+
+  /// Whether an official datum transformation was applied to the grid values.
+  ///
+  /// Stored as a flag rather than a sentence so the caveat can be rendered in
+  /// the user's language — the whole point of this change — instead of being
+  /// baked into an English string at conversion time.
+  final bool datumShiftApplied;
+
+  bool get hasGrid => easting != null && northing != null;
+
+  /// "Nothing worth showing the user". Deliberately ignores [authority] and
+  /// [gridName], which are always-present constants — including them would make
+  /// this permanently false and the card would render an empty shell.
+  bool get isEmpty =>
+      !hasGrid && tileUrl == null && portalUrl == null && orderUrl == null;
+
+  Map<String, dynamic> toMap() => {
+    'authority': authority,
+    'gridName': gridName,
+    'gridCode': gridCode,
+    'easting': easting,
+    'northing': northing,
+    'latitude': latitude,
+    'longitude': longitude,
+    'tileUrl': tileUrl,
+    'tileAttribution': tileAttribution,
+    'portalUrl': portalUrl,
+    'orderUrl': orderUrl,
+    'datumShiftApplied': datumShiftApplied,
+  };
+
+  factory OfficialMapReference.fromMap(Map<String, dynamic> m) =>
+      OfficialMapReference(
+        authority: _str(m['authority']) ?? '',
+        gridName: _str(m['gridName']) ?? '',
+        gridCode: _str(m['gridCode']),
+        easting: _num(m['easting']),
+        northing: _num(m['northing']),
+        latitude: _num(m['latitude']),
+        longitude: _num(m['longitude']),
+        tileUrl: _str(m['tileUrl']),
+        tileAttribution: _str(m['tileAttribution']),
+        portalUrl: _str(m['portalUrl']),
+        orderUrl: _str(m['orderUrl']),
+        datumShiftApplied: _bool(m['datumShiftApplied']),
       );
 }
 

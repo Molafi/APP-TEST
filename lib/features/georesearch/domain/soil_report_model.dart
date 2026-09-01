@@ -102,8 +102,10 @@ class SoilReport {
     this.topography,
     this.groundwater,
     this.buildingSuitability,
+    this.slopeStability,
     this.landRecord,
     this.aerialImagery,
+    this.officialMap,
     this.purpose = SurveyPurpose.general,
     this.userRequirements,
     this.dataSources = const <String>[],
@@ -168,11 +170,19 @@ class SoilReport {
   /// Preliminary construction-suitability screening.
   final BuildingSuitability? buildingSuitability;
 
+  /// Preliminary land-movement (landslide/creep) screening: direction, slip
+  /// surface, rate, exposed structures and zone-by-zone buildability.
+  final SlopeStabilityAssessment? slopeStability;
+
   /// Official Land Department record, when the user supplied one.
   final LandRecordInfo? landRecord;
 
   /// Aerial/satellite view reference plus its AI interpretation.
   final AerialImageryInfo? aerialImagery;
+
+  /// National mapping-authority reference (grid coordinates and official map
+  /// links) computed by the app from the coordinates.
+  final OfficialMapReference? officialMap;
 
   /// What the user wants the site for — drives which sections matter.
   final SurveyPurpose purpose;
@@ -297,8 +307,16 @@ class SoilReport {
         j['buildingSuitability'],
         BuildingSuitability.fromMap,
       ),
+      slopeStability: _sub(
+        j['slopeStability'],
+        SlopeStabilityAssessment.fromMap,
+      ),
       landRecord: _sub(j['landRecord'], LandRecordInfo.fromMap),
       aerialImagery: _sub(j['aerialImagery'], AerialImageryInfo.fromMap),
+      // Parsed so a SAVED report round-trips through fromStored. Fresh model
+      // output never carries it (the prompt forbids it) and withUserInputs
+      // overwrites it with the app's own computation anyway.
+      officialMap: _sub(j['officialMap'], OfficialMapReference.fromMap),
       purpose: surveyPurposeFrom(j['purpose'] as String?),
       userRequirements: str(j['userRequirements']),
       dataSources: strList(j['dataSources']),
@@ -314,15 +332,17 @@ class SoilReport {
 
   /// Overwrites the fields the APP owns rather than the model.
   ///
-  /// These four are trust-sensitive: the official land record and the aerial
-  /// tile are supplied by the user/app and must never be sourced from model
-  /// output (a paraphrased parcel number must not appear behind an "Official
-  /// record" badge), and the purpose/requirements are echoes of what the user
-  /// actually entered. Assignment is unconditional — passing null CLEARS any
-  /// value the model volunteered.
+  /// These five are trust-sensitive: the official land record, the aerial tile
+  /// and the national-grid map reference are supplied by the user/app and must
+  /// never be sourced from model output (a paraphrased parcel number must not
+  /// appear behind an "Official record" badge, and an invented grid reference
+  /// must not look like an authority product), and the purpose/requirements are
+  /// echoes of what the user actually entered. Assignment is unconditional —
+  /// passing null CLEARS any value the model volunteered.
   SoilReport withUserInputs({
     required LandRecordInfo? landRecord,
     required AerialImageryInfo? aerialImagery,
+    required OfficialMapReference? officialMap,
     required SurveyPurpose purpose,
     required String? userRequirements,
   }) {
@@ -343,8 +363,10 @@ class SoilReport {
       topography: topography,
       groundwater: groundwater,
       buildingSuitability: buildingSuitability,
+      slopeStability: slopeStability,
       landRecord: landRecord,
       aerialImagery: aerialImagery,
+      officialMap: officialMap,
       purpose: purpose,
       userRequirements: userRequirements,
       dataSources: dataSources,
@@ -387,8 +409,10 @@ class SoilReport {
       topography: topography,
       groundwater: groundwater,
       buildingSuitability: buildingSuitability,
+      slopeStability: slopeStability,
       landRecord: landRecord,
       aerialImagery: aerialImagery,
+      officialMap: officialMap,
       purpose: purpose,
       userRequirements: userRequirements,
       dataSources: dataSources,
@@ -424,8 +448,10 @@ class SoilReport {
     'topography': topography?.toMap(),
     'groundwater': groundwater?.toMap(),
     'buildingSuitability': buildingSuitability?.toMap(),
+    'slopeStability': slopeStability?.toMap(),
     'landRecord': landRecord?.toMap(),
     'aerialImagery': aerialImagery?.toMap(),
+    'officialMap': officialMap?.toMap(),
     'purpose': purpose.name,
     'userRequirements': userRequirements,
     'dataSources': dataSources,
@@ -533,6 +559,61 @@ class SoilReport {
       for (final String s in bs.requiredStudies) {
         b.writeln('- Required study: $s');
       }
+    }
+
+    final SlopeStabilityAssessment? ss = slopeStability;
+    if (ss != null && !ss.isEmpty) {
+      b.writeln('\nSlope stability / land movement (screening only):');
+      if (ss.summary != null) b.writeln('- ${ss.summary}');
+      if (ss.hazardLevel != null) {
+        b.writeln('- Hazard rating: ${ss.hazardLevel!.name}');
+      }
+      if (ss.activityState != null) b.writeln('- Activity: ${ss.activityState}');
+      if (ss.movementDirection != null) {
+        b.writeln('- Movement direction: ${ss.movementDirection}');
+      }
+      if (ss.slipSurfaceDepth != null) {
+        b.writeln('- Slip-surface depth: ${ss.slipSurfaceDepth}');
+      }
+      if (ss.movementRate != null) {
+        b.writeln('- Movement rate: ${ss.movementRate}');
+      }
+      for (final StructureRisk s in ss.atRiskStructures) {
+        b.writeln(
+          '- At risk: ${s.name}'
+          '${s.risk != null ? ' (${s.risk!.name})' : ''}',
+        );
+      }
+      for (final PlotZone z in ss.zones) {
+        b.writeln(
+          '- Zone ${z.name}: '
+          '${z.buildableAfterTreatment ? 'buildable ONLY after the required treatments and engineered sign-off' : 'not buildable on current evidence'}',
+        );
+      }
+      for (final String s in ss.requiredStudies) {
+        b.writeln('- Required study: $s');
+      }
+    }
+
+    final OfficialMapReference? om = officialMap;
+    if (om != null && !om.isEmpty) {
+      b.writeln('\nOfficial mapping reference:');
+      b.writeln('- Authority: ${om.authority}');
+      if (om.hasGrid) {
+        b.writeln(
+          '- ${om.gridName}${om.gridCode != null ? ' (${om.gridCode})' : ''}: '
+          'E ${om.easting!.toStringAsFixed(1)}, '
+          'N ${om.northing!.toStringAsFixed(1)}',
+        );
+      }
+      if (om.hasGrid && !om.datumShiftApplied) {
+        b.writeln(
+          '- Unofficial conversion: no datum transformation applied. '
+          'Confirm against an official RJGC survey before any legal use.',
+        );
+      }
+      if (om.portalUrl != null) b.writeln('- Geoportal: ${om.portalUrl}');
+      if (om.orderUrl != null) b.writeln('- Order maps: ${om.orderUrl}');
     }
 
     final LandRecordInfo? lr = landRecord;

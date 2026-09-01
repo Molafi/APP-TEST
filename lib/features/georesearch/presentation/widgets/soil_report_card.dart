@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/soil_report_model.dart';
+import 'purpose_label.dart';
 
 /// Structured soil-report card. Confidence and levels are always shown with an
 /// icon + text label (never colour alone) for accessibility. Values are clearly
@@ -38,6 +39,29 @@ class SoilReportCard extends StatelessWidget {
             // Prominent estimate / lab-test notice at the top.
             _EstimateBanner(text: l10n.georesearchEstimateNotice),
             const SizedBox(height: AppSpacing.md),
+
+            // What the survey was actually run for. The purpose and the user's
+            // requirements were being collected and sent to the model but never
+            // shown back, so there was no way to tell which choice produced the
+            // report you were reading.
+            _Section(
+              emoji: '🎯',
+              title: l10n.georesearchPurposeSection,
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _LabelValue(
+                    label: l10n.georesearchPurposeValue,
+                    value: purposeLabel(report.purpose, l10n),
+                  ),
+                  if (report.userRequirements != null)
+                    _LabelValue(
+                      label: l10n.georesearchRequirements,
+                      value: report.userRequirements!,
+                    ),
+                ],
+              ),
+            ),
 
             if (report.locationSummary != null ||
                 report.soilType != null ||
@@ -192,6 +216,18 @@ class SoilReportCard extends StatelessWidget {
                 title: l10n.georesearchBuilding,
                 body: _BuildingBody(
                   info: report.buildingSuitability!,
+                  l10n: l10n,
+                ),
+              ),
+
+            // ---- Slope stability / land movement ----------------------------
+            if (report.slopeStability != null &&
+                !report.slopeStability!.isEmpty)
+              _Section(
+                emoji: '🪨',
+                title: l10n.georesearchSlope,
+                body: _SlopeStabilityBody(
+                  info: report.slopeStability!,
                   l10n: l10n,
                 ),
               ),
@@ -663,6 +699,316 @@ class _BuildingBody extends StatelessWidget {
         ],
         _MiniNotice(text: l10n.georesearchBuildNotice, warning: true),
       ],
+    );
+  }
+}
+
+/// Land-movement screening.
+///
+/// The order is deliberate: the summary and hazard rating first, then the three
+/// questions people actually ask (which way, how deep, how fast) immediately
+/// followed by the notice explaining that none of them can be measured without
+/// instrumentation. The exposed-structures and buildable-zones lists each carry
+/// their own caveat because both are read as decisions, and neither is one.
+class _SlopeStabilityBody extends StatelessWidget {
+  const _SlopeStabilityBody({required this.info, required this.l10n});
+  final SlopeStabilityAssessment info;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (info.summary != null) Text(info.summary!),
+        if (info.hazardLevel != null)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: _RiskRow(
+              label: l10n.georesearchSlopeHazard,
+              level: info.hazardLevel!,
+              l10n: l10n,
+            ),
+          ),
+        if (info.activityState != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeActivity,
+            value: info.activityState!,
+          ),
+
+        // ---- The three measurement questions ---------------------------
+        if (info.movementDirection != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeDirection,
+            value: info.movementDirection!,
+          ),
+        if (info.movementAzimuth != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeAzimuth,
+            value: '${info.movementAzimuth!.toStringAsFixed(0)}°',
+          ),
+        if (info.slipSurfaceDepth != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeSlipDepth,
+            value: info.slipSurfaceDepth!,
+          ),
+        if (info.slipSurfaceType != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeSlipType,
+            value: info.slipSurfaceType!,
+          ),
+        if (info.movementRate != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeRate,
+            value: info.movementRate!,
+          ),
+        if (info.movementRateClass != null)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.xs),
+            child: _RiskRow(
+              label: l10n.georesearchSlopeRateClass,
+              level: info.movementRateClass!,
+              l10n: l10n,
+            ),
+          ),
+        if (info.failureMechanism != null)
+          _LabelValue(
+            label: l10n.georesearchSlopeMechanism,
+            value: info.failureMechanism!,
+          ),
+        if (info.movementDirection != null ||
+            info.slipSurfaceDepth != null ||
+            info.movementRate != null)
+          _MiniNotice(text: l10n.georesearchSlopeMeasureNotice, warning: true),
+
+        // ---- Field signs and triggers ----------------------------------
+        if (info.indicators.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.georesearchSlopeIndicators,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.indicators),
+        ],
+        if (info.triggers.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.georesearchSlopeTriggers,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.triggers),
+        ],
+
+        // ---- Structures exposed by their position ----------------------
+        if (info.atRiskStructures.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.georesearchSlopeAtRisk,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          for (final StructureRisk s in info.atRiskStructures)
+            _StructureRiskItem(structure: s, l10n: l10n),
+          _MiniNotice(text: l10n.georesearchSlopeAtRiskNotice, warning: true),
+        ],
+
+        // ---- Zones and what each would need ----------------------------
+        if (info.zones.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.georesearchSlopeZones,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          for (final PlotZone z in info.zones)
+            _PlotZoneItem(zone: z, l10n: l10n),
+          _MiniNotice(text: l10n.georesearchSlopeZonesNotice, warning: true),
+        ],
+
+        if (info.stabilisationOptions.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.georesearchSlopeStabilisation,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.stabilisationOptions),
+        ],
+        if (info.monitoringPlan.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.georesearchSlopeMonitoring,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.monitoringPlan),
+        ],
+        if (info.requiredStudies.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            l10n.georesearchSlopeRequiredStudies,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          _BulletList(items: info.requiredStudies),
+        ],
+        if (info.notes.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xs),
+          _BulletList(items: info.notes),
+        ],
+        _MiniNotice(text: l10n.georesearchSlopeNotice, warning: true),
+      ],
+    );
+  }
+}
+
+/// One exposed structure. The level chip is omitted entirely when the risk did
+/// not parse, rather than defaulting to "Low" — see `soilLevelOrNull`.
+class _StructureRiskItem extends StatelessWidget {
+  const _StructureRiskItem({required this.structure, required this.l10n});
+  final StructureRisk structure;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (structure.risk != null) ...[
+            _LevelChip(level: structure.risk!, l10n: l10n, concern: true),
+            const SizedBox(width: AppSpacing.sm),
+          ] else
+            const Text('•  '),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  structure.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                if (structure.reason != null)
+                  Text(
+                    structure.reason!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                if (structure.recommendation != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.arrow_forward, size: 13),
+                        const SizedBox(width: AppSpacing.xs),
+                        Expanded(
+                          child: Text(
+                            structure.recommendation!,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// One plot zone. `buildableAfterTreatment` is shown as an explicitly
+/// conditional badge — never a bare green "buildable".
+class _PlotZoneItem extends StatelessWidget {
+  const _PlotZoneItem({required this.zone, required this.l10n});
+  final PlotZone zone;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool conditional = zone.buildableAfterTreatment;
+    final Color color = conditional
+        ? AppColors.confidenceMedium
+        : AppColors.confidenceLow;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (zone.buildability != null) ...[
+                _LevelChip(
+                  level: zone.buildability!,
+                  l10n: l10n,
+                  // High buildability is a favourable reading, so use the
+                  // positive palette (same convention as groundwater yield).
+                  concern: false,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+              ] else
+                const Text('•  '),
+              Expanded(
+                child: Text(
+                  zone.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  conditional
+                      ? Icons.rule_outlined
+                      : Icons.do_not_disturb_on_outlined,
+                  size: 14,
+                  color: color,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Expanded(
+                  child: Text(
+                    conditional
+                        ? l10n.georesearchSlopeZoneAfterTreatment
+                        : l10n.georesearchSlopeZoneNotBuildable,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (zone.location != null)
+            Text(
+              zone.location!,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          if (zone.requiredTreatments.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.xs),
+              child: Text(
+                l10n.georesearchSlopeZoneTreatments,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            _BulletList(items: zone.requiredTreatments),
+          ],
+          if (zone.note != null)
+            Text(
+              zone.note!,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+        ],
+      ),
     );
   }
 }
