@@ -86,7 +86,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ChatState state = ref.watch(chatControllerProvider);
-    final String locale = ref.watch(localeProvider)?.languageCode ?? 'en';
+    final String locale = ref.watch(appLocaleCodeProvider);
     final ChatController controller = ref.read(chatControllerProvider.notifier);
 
     // Prefill an initial prompt from the constructor once.

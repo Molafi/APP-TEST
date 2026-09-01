@@ -24,11 +24,13 @@ class AiDiagnosisService {
       AiRequest(
         systemPrompt: AiPrompts.system(locale: locale),
         userText: (userNote?.trim().isNotEmpty ?? false)
-            ? '${userNote!.trim()}\n\n${AiPrompts.diagnosisInstruction()}'
-            : AiPrompts.diagnosisInstruction(),
+            ? '${userNote!.trim()}\n\n'
+                  '${AiPrompts.diagnosisInstruction(locale: locale)}'
+            : AiPrompts.diagnosisInstruction(locale: locale),
         context: context,
         image: image,
         jsonMode: true,
+        locale: locale,
       ),
     );
 

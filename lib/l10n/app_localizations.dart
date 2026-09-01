@@ -2297,6 +2297,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Demo mode — using sample data. Configure Firebase & Groq for full features.'**
   String get demoModeBanner;
+
+  /// No description provided for @georesearchPurposeSlopeStability.
+  ///
+  /// In en, this message translates to:
+  /// **'Land stability'**
+  String get georesearchPurposeSlopeStability;
+
+  /// No description provided for @georesearchPurposeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice decides what the survey focuses on: plants and soil nutrients, groundwater and wells, foundations and building, or land movement and slope stability.'**
+  String get georesearchPurposeHelp;
+
+  /// No description provided for @georesearchPurposeSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Survey purpose'**
+  String get georesearchPurposeSection;
+
+  /// No description provided for @georesearchPurposeValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested for'**
+  String get georesearchPurposeValue;
+
+  /// No description provided for @georesearchSlope.
+  ///
+  /// In en, this message translates to:
+  /// **'Slope stability & land movement'**
+  String get georesearchSlope;
+
+  /// No description provided for @georesearchSlopeHazard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hazard rating'**
+  String get georesearchSlopeHazard;
+
+  /// No description provided for @georesearchSlopeActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity state'**
+  String get georesearchSlopeActivity;
+
+  /// No description provided for @georesearchSlopeDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Direction of land movement'**
+  String get georesearchSlopeDirection;
+
+  /// No description provided for @georesearchSlopeAzimuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate bearing'**
+  String get georesearchSlopeAzimuth;
+
+  /// No description provided for @georesearchSlopeSlipDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth of the slip surface'**
+  String get georesearchSlopeSlipDepth;
+
+  /// No description provided for @georesearchSlopeSlipType.
+  ///
+  /// In en, this message translates to:
+  /// **'Failure geometry'**
+  String get georesearchSlopeSlipType;
+
+  /// No description provided for @georesearchSlopeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate of movement'**
+  String get georesearchSlopeRate;
+
+  /// No description provided for @georesearchSlopeRateClass.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement rate class'**
+  String get georesearchSlopeRateClass;
+
+  /// No description provided for @georesearchSlopeMechanism.
+  ///
+  /// In en, this message translates to:
+  /// **'Failure mechanism'**
+  String get georesearchSlopeMechanism;
+
+  /// No description provided for @georesearchSlopeIndicators.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning signs to look for on site'**
+  String get georesearchSlopeIndicators;
+
+  /// No description provided for @georesearchSlopeTriggers.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible triggers'**
+  String get georesearchSlopeTriggers;
+
+  /// No description provided for @georesearchSlopeAtRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'Structures exposed to movement'**
+  String get georesearchSlopeAtRisk;
+
+  /// No description provided for @georesearchSlopeAtRiskNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Exposure is inferred from position on the slope, not from the condition of any specific building. Nothing here supports an occupancy or evacuation decision — that needs a licensed geotechnical engineer and your local authority.'**
+  String get georesearchSlopeAtRiskNotice;
+
+  /// No description provided for @georesearchSlopeZones.
+  ///
+  /// In en, this message translates to:
+  /// **'Areas that could be built on after treatment'**
+  String get georesearchSlopeZones;
+
+  /// No description provided for @georesearchSlopeZoneAfterTreatment.
+  ///
+  /// In en, this message translates to:
+  /// **'Buildable ONLY after treatment'**
+  String get georesearchSlopeZoneAfterTreatment;
+
+  /// No description provided for @georesearchSlopeZoneNotBuildable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not buildable on current evidence'**
+  String get georesearchSlopeZoneNotBuildable;
+
+  /// No description provided for @georesearchSlopeZoneTreatments.
+  ///
+  /// In en, this message translates to:
+  /// **'Required treatments'**
+  String get georesearchSlopeZoneTreatments;
+
+  /// No description provided for @georesearchSlopeZonesNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'"Buildable after treatment" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.'**
+  String get georesearchSlopeZonesNotice;
+
+  /// No description provided for @georesearchSlopeStabilisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible stabilisation measures'**
+  String get georesearchSlopeStabilisation;
+
+  /// No description provided for @georesearchSlopeMonitoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitoring & instrumentation'**
+  String get georesearchSlopeMonitoring;
+
+  /// No description provided for @georesearchSlopeRequiredStudies.
+  ///
+  /// In en, this message translates to:
+  /// **'Required professional studies'**
+  String get georesearchSlopeRequiredStudies;
+
+  /// No description provided for @georesearchSlopeMeasureNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Direction, slip-surface depth and movement rate cannot be measured from a phone. The values above are screening ranges only: inclinometers and piezometers installed in boreholes, plus repeated GNSS or InSAR observation, are what actually measure them.'**
+  String get georesearchSlopeMeasureNotice;
+
+  /// No description provided for @georesearchSlopeNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Preliminary desk screening only. This is NOT a slope-stability analysis and carries no factor of safety. If you see fresh cracks, tilting walls or displaced pipes, contact a licensed geotechnical engineer and your local authority without delay.'**
+  String get georesearchSlopeNotice;
+
+  /// No description provided for @georesearchOfficialMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Official maps & national grid'**
+  String get georesearchOfficialMap;
+
+  /// No description provided for @georesearchOfficialMapAuthority.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapping authority'**
+  String get georesearchOfficialMapAuthority;
+
+  /// No description provided for @georesearchOfficialMapGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'National grid'**
+  String get georesearchOfficialMapGrid;
+
+  /// No description provided for @georesearchOfficialMapEasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Easting (E)'**
+  String get georesearchOfficialMapEasting;
+
+  /// No description provided for @georesearchOfficialMapNorthing.
+  ///
+  /// In en, this message translates to:
+  /// **'Northing (N)'**
+  String get georesearchOfficialMapNorthing;
+
+  /// No description provided for @georesearchOfficialMapWgs.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS coordinates (WGS84)'**
+  String get georesearchOfficialMapWgs;
+
+  /// No description provided for @georesearchOfficialMapPortal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the geoportal'**
+  String get georesearchOfficialMapPortal;
+
+  /// No description provided for @georesearchOfficialMapOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order official maps & aerial photos'**
+  String get georesearchOfficialMapOrder;
+
+  /// No description provided for @georesearchOfficialMapCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy grid reference'**
+  String get georesearchOfficialMapCopy;
+
+  /// No description provided for @georesearchOfficialMapCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid reference copied'**
+  String get georesearchOfficialMapCopied;
+
+  /// No description provided for @georesearchOfficialMapUnshifted.
+  ///
+  /// In en, this message translates to:
+  /// **'Unofficial conversion: no datum transformation was applied, so this can differ from a surveyed grid value by tens of metres. Ask the authority for the official transformation parameters before relying on it.'**
+  String get georesearchOfficialMapUnshifted;
+
+  /// No description provided for @georesearchOfficialMapShifted.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted using the datum parameters configured for this build. Still a locating reference, not a surveyed position.'**
+  String get georesearchOfficialMapShifted;
+
+  /// No description provided for @georesearchOfficialMapNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid values are provided for locating the site and for ordering official map sheets and aerial photographs. Boundary, ownership and design work requires a licensed cadastral survey.'**
+  String get georesearchOfficialMapNotice;
+
+  /// No description provided for @georesearchOfficialMapTileUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The authority\'s official basemap layer is not enabled for this build (it requires an agreement with the Centre). The grid reference and the links below still work.'**
+  String get georesearchOfficialMapTileUnavailable;
 }
 
 class _AppLocalizationsDelegate
