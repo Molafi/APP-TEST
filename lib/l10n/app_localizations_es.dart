@@ -1253,7 +1253,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get georesearchSlopeZonesNotice =>
-      '"Buildable after treatment" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.';
+      '\"Buildable after treatment\" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.';
 
   @override
   String get georesearchSlopeStabilisation => 'Possible stabilisation measures';

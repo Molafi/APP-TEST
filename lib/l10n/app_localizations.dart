@@ -2433,7 +2433,7 @@ abstract class AppLocalizations {
   /// No description provided for @georesearchSlopeZonesNotice.
   ///
   /// In en, this message translates to:
-  /// **'"Buildable after treatment" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.'**
+  /// **'\"Buildable after treatment\" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.'**
   String get georesearchSlopeZonesNotice;
 
   /// No description provided for @georesearchSlopeStabilisation.
