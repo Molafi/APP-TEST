@@ -1318,4 +1318,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get georesearchOfficialMapTileUnavailable =>
       'The authority\'s official basemap layer is not enabled for this build (it requires an agreement with the Centre). The grid reference and the links below still work.';
+
+  @override
+  String get demoModeBannerAiReady =>
+      'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.';
 }

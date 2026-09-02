@@ -1304,4 +1304,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get georesearchOfficialMapTileUnavailable =>
       'طبقة الخريطة الأساس الرسمية للجهة غير مفعّلة في هذه النسخة (تتطلب اتفاقية مع المركز). المرجع الشبكي والروابط أدناه تعمل كما هي.';
+
+  @override
+  String get demoModeBannerAiReady =>
+      'الوضع التجريبي — بياناتك محفوظة على هذا الجهاز. الذكاء الاصطناعي متصل ويجيب فعليًا؛ اضبط Firebase للمزامنة بين الأجهزة.';
 }

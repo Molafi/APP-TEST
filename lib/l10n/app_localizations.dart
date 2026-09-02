@@ -2549,6 +2549,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The authority\'s official basemap layer is not enabled for this build (it requires an agreement with the Centre). The grid reference and the links below still work.'**
   String get georesearchOfficialMapTileUnavailable;
+
+  /// No description provided for @demoModeBannerAiReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.'**
+  String get demoModeBannerAiReady;
 }
 
 class _AppLocalizationsDelegate
