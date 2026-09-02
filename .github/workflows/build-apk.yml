@@ -4,7 +4,13 @@ name: Build APK
 # asset, so the app can be installed on a phone without a local Flutter or
 # Android toolchain.
 #
-# Run it from the Actions tab -> "Build APK" -> "Run workflow".
+# Two triggers, because GitHub only offers the "Run workflow" button for
+# workflow_dispatch once the file exists on the DEFAULT branch. Until this is
+# merged there, push a tag to build from any branch:
+#
+#   git tag apk-v1 && git push origin apk-v1
+#
+# After merging, use the Actions tab -> "Build APK" -> "Run workflow".
 on:
   workflow_dispatch:
     inputs:
@@ -17,6 +23,8 @@ on:
         type: boolean
         required: false
         default: true
+  push:
+    tags: ["apk-v*"]
 
 # contents: write is only needed to publish the release asset. Without the
 # publish step this would be contents: read.
@@ -52,8 +60,10 @@ jobs:
 
       # android/ is not committed, so the runner project is generated here with
       # every native change the app needs (permissions, desugaring, minSdk).
+      # `inputs` is empty on a tag push, so the default has to be repeated here
+      # or the script would be handed an empty org and exit with its usage error.
       - name: Generate the Android project
-        run: tool/setup_platforms.sh "${{ inputs.org }}"
+        run: tool/setup_platforms.sh "${{ inputs.org || 'com.molafi' }}"
 
       - name: Analyze
         run: flutter analyze
@@ -105,8 +115,11 @@ jobs:
       # A release asset is a direct download link, which is what makes this
       # installable straight from the phone's browser. Workflow artifacts are
       # zipped and require a GitHub login, so they are awkward on mobile.
+      # Always publish for a tag push; honour the checkbox for a manual run.
+      # Without the event check a tag push would build the APKs and then attach
+      # them to nothing, because inputs.publish is empty rather than true.
       - name: Publish downloadable release
-        if: ${{ inputs.publish }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
