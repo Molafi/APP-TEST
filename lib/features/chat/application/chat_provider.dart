@@ -166,7 +166,7 @@ class ChatController extends StateNotifier<ChatState> {
   Future<void> _dispatch(ChatMessage userMsg, AiImage? image) async {
     final int seq = ++_requestSeq;
     final AiContext ctx = _ref.read(aiContextProvider);
-    final String locale = _ref.read(_localeCodeProvider);
+    final String locale = _ref.read(appLocaleCodeProvider);
 
     // History excludes the just-added, in-flight user message.
     final List<ChatMessage> history = state.messages
@@ -285,15 +285,6 @@ class ChatController extends StateNotifier<ChatState> {
     );
   }
 }
-
-/// Active language code for AI requests (so the model replies in the user's
-/// selected language). Falls back to English when following an unsupported
-/// system locale.
-final _localeCodeProvider = Provider<String>((ref) {
-  final locale = ref.watch(localeProvider);
-  final String code = locale?.languageCode ?? 'en';
-  return code == 'ar' ? 'ar' : 'en';
-});
 
 final chatControllerProvider = StateNotifierProvider<ChatController, ChatState>(
   (ref) {

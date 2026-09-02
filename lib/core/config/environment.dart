@@ -83,6 +83,54 @@ class Environment {
     ];
   }
 
+  // ---------------------------------------------------------------------------
+  // National mapping authority (Royal Jordanian Geographic Centre — RJGC)
+  //
+  // RJGC does not publish an open, keyless tile service: access to its official
+  // basemaps normally requires an agreement with the Centre. So the endpoint is
+  // a build-time define rather than a constant, and every RJGC feature degrades
+  // gracefully when it is absent — the grid-coordinate conversion and the
+  // public links still work, only the official basemap layer is unavailable.
+  // ---------------------------------------------------------------------------
+
+  /// XYZ/WMTS tile template for the authority basemap, using `{z}`, `{x}` and
+  /// `{y}` placeholders. Empty means "not licensed for this build".
+  static const String rjgcTileUrl = String.fromEnvironment(
+    'RJGC_TILE_URL',
+    defaultValue: '',
+  );
+
+  /// Attribution string the authority requires alongside its imagery.
+  static const String rjgcTileAttribution = String.fromEnvironment(
+    'RJGC_TILE_ATTRIBUTION',
+    defaultValue: '',
+  );
+
+  /// Public geoportal / map viewer.
+  static const String rjgcPortalUrl = String.fromEnvironment(
+    'RJGC_PORTAL_URL',
+    defaultValue: 'https://rjgc.gov.jo/',
+  );
+
+  /// Where official maps, aerial photographs and cadastral extracts are ordered.
+  static const String rjgcOrderUrl = String.fromEnvironment(
+    'RJGC_ORDER_URL',
+    defaultValue: 'https://rjgc.gov.jo/eservices/',
+  );
+
+  /// Optional geocentric datum shift from WGS84 to the Jordanian national datum
+  /// as `dx,dy,dz` in metres (a 3-parameter Molodensky translation).
+  ///
+  /// Left EMPTY on purpose: the official parameters must come from RJGC, and
+  /// inventing them would silently bias every converted coordinate. When empty
+  /// the conversion is performed without a datum shift and is labelled as such.
+  static const String jtmDatumShift = String.fromEnvironment(
+    'JTM_DATUM_SHIFT',
+    defaultValue: '',
+  );
+
+  static bool get rjgcTilesConfigured => rjgcTileUrl.isNotEmpty;
+
   /// True when neither a backend nor a valid dev key is configured, meaning we
   /// must fall back to canned demo AI responses.
   static bool get aiUnavailable {

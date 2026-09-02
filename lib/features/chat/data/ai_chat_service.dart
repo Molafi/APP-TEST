@@ -81,6 +81,7 @@ class AiChatService {
       context: context,
       history: history,
       image: image,
+      locale: locale,
     );
   }
 }
