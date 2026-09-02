@@ -38,7 +38,26 @@ functions/lib/
 # Generated localization (regenerate with flutter gen-l10n)
 lib/l10n/generated/
 
-# Android
+# -----------------------------------------------------------------------------
+# Generated platform projects.
+#
+# These are NOT committed by design: each developer regenerates them with their
+# own org/applicationId via tool/setup_platforms.sh (or .ps1), and the README's
+# "Platform configuration" section documents that.
+#
+# They are ignored rather than merely undocumented because the setup script
+# produces ~200 files, and without this a routine `git add -A` silently commits
+# the whole runner project along with one developer's applicationId. Use
+# `git add -f` if you ever genuinely need to track native changes.
+# -----------------------------------------------------------------------------
+/android/
+/ios/
+/web/
+/linux/
+/macos/
+/windows/
+
+# Android (kept for anyone who force-adds android/ above)
 android/.gradle/
 android/local.properties
 android/app/debug/
