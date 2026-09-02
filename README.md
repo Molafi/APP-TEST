@@ -269,8 +269,16 @@ The `android/` and `ios/` folders are not committed. Generate them and apply
 every native change below in one step:
 
 ```bash
-tool/setup_platforms.sh com.yourcompany
+tool/setup_platforms.sh com.yourcompany          # macOS / Linux / Git Bash
 ```
+
+```powershell
+.\tool\setup_platforms.ps1 com.yourcompany       # Windows PowerShell
+```
+
+Both scripts apply the same edits and are kept in sync; the PowerShell port
+exists because the bash version needs `python3`, which a stock Windows install
+does not have.
 
 This runs `flutter create --platforms=android,ios --org <org>` (scoped with
 `--platforms` so it can't clobber `lib/main.dart` or `test/widget_test.dart`),
