@@ -1,10 +1,12 @@
 import 'dart:convert';
 
-import '../../diagnosis/domain/diagnosis_model.dart' show Confidence, confidenceFrom, ImageQuality, imageQualityFrom;
+import '../../diagnosis/domain/diagnosis_model.dart'
+    show Confidence, confidenceFrom, ImageQuality, imageQualityFrom;
 import 'site_survey_model.dart';
 import 'soil_level.dart';
 
-export '../../diagnosis/domain/diagnosis_model.dart' show Confidence, ImageQuality;
+export '../../diagnosis/domain/diagnosis_model.dart'
+    show Confidence, ImageQuality;
 // Re-exported so existing `import '.../soil_report_model.dart'` call sites keep
 // resolving SoilLevel and the survey models without extra imports.
 export 'site_survey_model.dart';
@@ -568,7 +570,8 @@ class SoilReport {
       if (ss.hazardLevel != null) {
         b.writeln('- Hazard rating: ${ss.hazardLevel!.name}');
       }
-      if (ss.activityState != null) b.writeln('- Activity: ${ss.activityState}');
+      if (ss.activityState != null)
+        b.writeln('- Activity: ${ss.activityState}');
       if (ss.movementDirection != null) {
         b.writeln('- Movement direction: ${ss.movementDirection}');
       }

@@ -352,10 +352,7 @@ void main() {
       expect(surveyPurposeFrom('agriculture'), SurveyPurpose.agriculture);
       expect(surveyPurposeFrom('wellDrilling'), SurveyPurpose.wellDrilling);
       expect(surveyPurposeFrom('well_drilling'), SurveyPurpose.wellDrilling);
-      expect(
-        surveyPurposeFrom('slopeStability'),
-        SurveyPurpose.slopeStability,
-      );
+      expect(surveyPurposeFrom('slopeStability'), SurveyPurpose.slopeStability);
       expect(
         surveyPurposeFrom('slope_stability'),
         SurveyPurpose.slopeStability,
@@ -481,9 +478,10 @@ void main() {
       expect(zones.last.buildableAfterTreatment, isFalse);
     });
 
-    test('a missing or mistyped buildable flag is never read as permission',
-        () {
-      final report = SoilReport.parse('''
+    test(
+      'a missing or mistyped buildable flag is never read as permission',
+      () {
+        final report = SoilReport.parse('''
       {
         "isSoilRelated": true, "imageQuality": "good", "nutrients": [],
         "substances": [], "suitablePlants": [], "recommendations": [],
@@ -498,13 +496,14 @@ void main() {
         }
       }''');
 
-      final zones = report.slopeStability!.zones;
-      expect(zones[0].buildableAfterTreatment, isFalse);
-      // Unparseable means "no", not "yes".
-      expect(zones[1].buildableAfterTreatment, isFalse);
-      // A recognised affirmative still works.
-      expect(zones[2].buildableAfterTreatment, isTrue);
-    });
+        final zones = report.slopeStability!.zones;
+        expect(zones[0].buildableAfterTreatment, isFalse);
+        // Unparseable means "no", not "yes".
+        expect(zones[1].buildableAfterTreatment, isFalse);
+        // A recognised affirmative still works.
+        expect(zones[2].buildableAfterTreatment, isTrue);
+      },
+    );
 
     test('unrecognised risk levels are hidden, never shown as low', () {
       final report = SoilReport.parse('''
@@ -624,27 +623,30 @@ void main() {
     });
 
     test('is persisted with the report', () {
-      final report = SoilReport.parse('''
+      final report =
+          SoilReport.parse('''
       {
         "isSoilRelated": true, "imageQuality": "good", "nutrients": [],
         "substances": [], "suitablePlants": [], "recommendations": [],
         "safetyNotes": [], "confidence": "low", "needsMoreInformation": false,
         "followUpQuestions": [], "disclaimer": "d"
       }''').withUserInputs(
-        landRecord: null,
-        aerialImagery: null,
-        officialMap: const OfficialMapReference(
-          authority: 'RJGC',
-          gridName: 'JTM',
-          gridCode: 'EPSG:3066',
-          easting: 1.0,
-          northing: 2.0,
-        ),
-        purpose: SurveyPurpose.slopeStability,
-        userRequirements: null,
-      );
+            landRecord: null,
+            aerialImagery: null,
+            officialMap: const OfficialMapReference(
+              authority: 'RJGC',
+              gridName: 'JTM',
+              gridCode: 'EPSG:3066',
+              easting: 1.0,
+              northing: 2.0,
+            ),
+            purpose: SurveyPurpose.slopeStability,
+            userRequirements: null,
+          );
 
-      final restored = SoilReport.fromStored('id-3', {'report': report.toMap()});
+      final restored = SoilReport.fromStored('id-3', {
+        'report': report.toMap(),
+      });
       expect(restored.officialMap?.easting, 1.0);
       expect(restored.officialMap?.gridCode, 'EPSG:3066');
       expect(restored.purpose, SurveyPurpose.slopeStability);

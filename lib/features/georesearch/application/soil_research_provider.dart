@@ -196,10 +196,11 @@ class SoilResearchController extends StateNotifier<SoilResearchState> {
       // only supplies the narrative fields, which we merge onto it. When there
       // are no coordinates this stays null, which CLEARS any imagery stub the
       // model volunteered — we must not caption an image that was never fetched.
-      final AerialImageryInfo? aerial = const AerialImageryService().forLocation(
-        latitude: location?.latitude,
-        longitude: location?.longitude,
-      );
+      final AerialImageryInfo? aerial = const AerialImageryService()
+          .forLocation(
+            latitude: location?.latitude,
+            longitude: location?.longitude,
+          );
       final AerialImageryInfo? merged = aerial?.withNarrative(
         interpretation: result.aerialImagery?.interpretation,
         landCover: result.aerialImagery?.landCover,

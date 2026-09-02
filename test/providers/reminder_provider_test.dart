@@ -28,7 +28,9 @@ void main() {
     final notifications = FakeNotificationService();
     final container = await makeContainer(notifications);
 
-    await container.read(reminderControllerProvider.notifier).add(
+    await container
+        .read(reminderControllerProvider.notifier)
+        .add(
           plantName: 'Fern',
           type: ReminderType.watering,
           scheduledAt: DateTime.now().add(const Duration(hours: 1)),
@@ -45,7 +47,9 @@ void main() {
     final notifications = FakeNotificationService(throwOnSchedule: true);
     final container = await makeContainer(notifications);
 
-    await container.read(reminderControllerProvider.notifier).add(
+    await container
+        .read(reminderControllerProvider.notifier)
+        .add(
           plantName: 'Cactus',
           type: ReminderType.watering,
           scheduledAt: DateTime.now().add(const Duration(hours: 1)),
@@ -73,7 +77,9 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(reminderControllerProvider.notifier).add(
+    await container
+        .read(reminderControllerProvider.notifier)
+        .add(
           plantName: 'Basil',
           type: ReminderType.watering,
           scheduledAt: DateTime.now().add(const Duration(hours: 1)),

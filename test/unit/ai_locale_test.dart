@@ -31,7 +31,10 @@ void main() {
       // This is the bug: an Arabic device with no explicit choice used to send
       // `en` to the AI while the UI rendered Arabic.
       expect(
-        resolveAppLocale(null, deviceLocales: const [Locale('ar')]).languageCode,
+        resolveAppLocale(
+          null,
+          deviceLocales: const [Locale('ar')],
+        ).languageCode,
         'ar',
       );
       expect(
@@ -129,14 +132,16 @@ void main() {
       expect(report.groundwater!.yieldPotential, SoilLevel.medium);
     });
 
-    test('an unsupported demo language falls back to English, not a crash',
-        () async {
-      final report = await SoilResearchService(
-        DemoAiGateway(),
-      ).analyze(locale: 'fr');
+    test(
+      'an unsupported demo language falls back to English, not a crash',
+      () async {
+        final report = await SoilResearchService(
+          DemoAiGateway(),
+        ).analyze(locale: 'fr');
 
-      expect(report.soilType, contains('Sandy loam'));
-    });
+        expect(report.soilType, contains('Sandy loam'));
+      },
+    );
 
     test('the chat answer is Arabic and matches Arabic keywords', () async {
       final gateway = DemoAiGateway();
@@ -155,8 +160,7 @@ void main() {
       expect(reply, contains('الإفراط في الريّ'));
     });
 
-    test('the diagnosis document is Arabic but keeps its enum tokens',
-        () async {
+    test('the diagnosis document is Arabic but keeps its enum tokens', () async {
       final gateway = DemoAiGateway();
       final raw = await gateway.generate(
         const AiRequest(
@@ -170,8 +174,9 @@ void main() {
       expect(raw, contains('"imageQuality"'));
       // Tokens the parser matches.
       expect(
-        RegExp(r'"(imageQuality|confidence)": "(good|poor|unusable|low|medium|high)"')
-            .hasMatch(raw),
+        RegExp(
+          r'"(imageQuality|confidence)": "(good|poor|unusable|low|medium|high)"',
+        ).hasMatch(raw),
         isTrue,
       );
       // And at least one Arabic value.

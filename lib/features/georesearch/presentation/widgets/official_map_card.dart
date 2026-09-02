@@ -204,11 +204,7 @@ class OfficialMapCard extends StatelessWidget {
     return b.toString();
   }
 
-  Future<void> _copy(
-    BuildContext context,
-    String text,
-    String message,
-  ) async {
+  Future<void> _copy(BuildContext context, String text, String message) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (!context.mounted) return;
     ScaffoldMessenger.of(context)

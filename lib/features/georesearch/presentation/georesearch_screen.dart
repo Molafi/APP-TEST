@@ -44,7 +44,10 @@ class GeoResearchScreen extends ConsumerWidget {
     });
 
     return switch (state.stage) {
-      SoilResearchStage.input => _InputView(state: state, controller: controller),
+      SoilResearchStage.input => _InputView(
+        state: state,
+        controller: controller,
+      ),
       SoilResearchStage.analyzing => _AnalyzingView(
         onCancel: controller.cancelAnalysis,
       ),
@@ -66,7 +69,10 @@ class _InputView extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
-        Text(l10n.georesearchIntro, style: Theme.of(context).textTheme.bodyLarge),
+        Text(
+          l10n.georesearchIntro,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
         const SizedBox(height: AppSpacing.lg),
 
         // Purpose, free-text requirements and optional Land Department data.
@@ -288,7 +294,8 @@ class _ResultView extends ConsumerWidget {
   void _askFollowUp(BuildContext context, WidgetRef ref, SoilReport report) {
     // Hand the soil context to chat and switch to the chat tab so the user does
     // not have to repeat details.
-    final String subject = report.soilType ?? report.locationSummary ?? 'my soil';
+    final String subject =
+        report.soilType ?? report.locationSummary ?? 'my soil';
     final String summary = 'Follow-up about $subject soil analysis.';
     ref.read(chatFollowUpProvider.notifier).state = summary;
     ref.read(homeTabProvider.notifier).state = HomeTab.chat;

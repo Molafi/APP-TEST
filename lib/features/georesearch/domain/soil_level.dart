@@ -14,8 +14,7 @@ enum SoilLevel { low, medium, high }
 /// concern). For RISK fields prefer [soilLevelOrNull], which refuses to guess —
 /// silently rendering an unrecognised "severe" as a reassuring "Low" chip would
 /// understate a hazard.
-SoilLevel soilLevelFrom(String? s) =>
-    soilLevelOrNull(s) ?? SoilLevel.low;
+SoilLevel soilLevelFrom(String? s) => soilLevelOrNull(s) ?? SoilLevel.low;
 
 /// Strict parser: returns null for anything it does not recognise, so callers
 /// can hide the field rather than display a misleading level.

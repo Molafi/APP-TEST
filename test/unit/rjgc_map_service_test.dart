@@ -32,7 +32,9 @@ void main() {
         double f(double t) {
           final double e2 =
               2 / JtmProjection.inverseFlattening -
-              1 / (JtmProjection.inverseFlattening * JtmProjection.inverseFlattening);
+              1 /
+                  (JtmProjection.inverseFlattening *
+                      JtmProjection.inverseFlattening);
           return JtmProjection.semiMajorAxis *
               (1 - e2) /
               math.pow(1 - e2 * math.pow(math.sin(t), 2), 1.5);
@@ -121,8 +123,10 @@ void main() {
         RjgcMapService.coversLocation(latitude: 30.04, longitude: 31.23),
         isFalse,
       );
-      expect(RjgcMapService.coversLocation(latitude: null, longitude: 35.9),
-          isFalse);
+      expect(
+        RjgcMapService.coversLocation(latitude: null, longitude: 35.9),
+        isFalse,
+      );
       expect(RjgcMapService.coversLocation(), isFalse);
     });
 

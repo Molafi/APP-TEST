@@ -39,9 +39,8 @@ class AerialViewCard extends StatelessWidget {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 },
-                errorBuilder: (context, error, stack) => _Placeholder(
-                  text: l10n.georesearchAerialNotice,
-                ),
+                errorBuilder: (context, error, stack) =>
+                    _Placeholder(text: l10n.georesearchAerialNotice),
               ),
             ),
           Padding(
@@ -55,7 +54,11 @@ class AerialViewCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 if (info.landCover != null)
-                  _kv(context, l10n.georesearchAerialLandCover, info.landCover!),
+                  _kv(
+                    context,
+                    l10n.georesearchAerialLandCover,
+                    info.landCover!,
+                  ),
                 if (info.interpretation != null)
                   Padding(
                     padding: const EdgeInsets.only(top: AppSpacing.xs),

@@ -193,7 +193,8 @@ class JtmProjection {
     // Source (WGS84) → geocentric.
     final double fs = 1.0 / _wgs84InvF;
     final double e2s = 2 * fs - fs * fs;
-    final double nS = _wgs84A / math.sqrt(1 - e2s * math.sin(phi) * math.sin(phi));
+    final double nS =
+        _wgs84A / math.sqrt(1 - e2s * math.sin(phi) * math.sin(phi));
     final double x = nS * math.cos(phi) * math.cos(lam) + dx;
     final double y = nS * math.cos(phi) * math.sin(lam) + dy;
     final double z = nS * (1 - e2s) * math.sin(phi) + dz;
@@ -205,7 +206,8 @@ class JtmProjection {
     double latOut = math.atan2(z, p * (1 - e2t));
     for (int i = 0; i < 6; i++) {
       final double nT =
-          semiMajorAxis / math.sqrt(1 - e2t * math.sin(latOut) * math.sin(latOut));
+          semiMajorAxis /
+          math.sqrt(1 - e2t * math.sin(latOut) * math.sin(latOut));
       latOut = math.atan2(z + e2t * nT * math.sin(latOut), p);
     }
     final double lonOut = math.atan2(y, x);
@@ -276,9 +278,7 @@ class RjgcMapService {
 
     final int x = ((lon + 180.0) / 360.0 * n).floor().clamp(0, n - 1);
     final int y =
-        ((1.0 -
-                    math.log(math.tan(latRad) + 1 / math.cos(latRad)) /
-                        math.pi) /
+        ((1.0 - math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi) /
                 2.0 *
                 n)
             .floor()
@@ -323,7 +323,8 @@ class RjgcMapService {
       latitude: latitude,
       longitude: longitude,
       tileUrl: tile,
-      tileAttribution: tile != null && Environment.rjgcTileAttribution.isNotEmpty
+      tileAttribution:
+          tile != null && Environment.rjgcTileAttribution.isNotEmpty
           ? Environment.rjgcTileAttribution
           : null,
       portalUrl: inJordan && Environment.rjgcPortalUrl.isNotEmpty

@@ -557,10 +557,7 @@ class _GroundwaterBody extends StatelessWidget {
             value: gw.waterTableDepth!,
           ),
         if (gw.aquiferType != null)
-          _LabelValue(
-            label: l10n.georesearchGwAquifer,
-            value: gw.aquiferType!,
-          ),
+          _LabelValue(label: l10n.georesearchGwAquifer, value: gw.aquiferType!),
         if (gw.waterQuality != null)
           _LabelValue(
             label: l10n.georesearchGwQuality,
@@ -986,27 +983,21 @@ class _PlotZoneItem extends StatelessWidget {
             ),
           ),
           if (zone.location != null)
-            Text(
-              zone.location!,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(zone.location!, style: Theme.of(context).textTheme.bodySmall),
           if (zone.requiredTreatments.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.xs),
               child: Text(
                 l10n.georesearchSlopeZoneTreatments,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             _BulletList(items: zone.requiredTreatments),
           ],
           if (zone.note != null)
-            Text(
-              zone.note!,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            Text(zone.note!, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -1099,13 +1090,14 @@ class _EstimateBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.science_outlined, size: 20, color: AppColors.soilAmber),
+          const Icon(
+            Icons.science_outlined,
+            size: 20,
+            color: AppColors.soilAmber,
+          ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            child: Text(text, style: Theme.of(context).textTheme.bodySmall),
           ),
         ],
       ),
@@ -1235,10 +1227,7 @@ class _LevelItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
                 if (note.isNotEmpty)
                   Text(note, style: Theme.of(context).textTheme.bodySmall),
               ],

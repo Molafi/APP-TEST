@@ -24,8 +24,9 @@ void main() {
   }
 
   group('SoilReportCard slope-stability section', () {
-    testWidgets('renders the movement answers with their measurement caveat',
-        (tester) async {
+    testWidgets('renders the movement answers with their measurement caveat', (
+      tester,
+    ) async {
       final report = await demoReport(tester, 'en');
       await pumpApp(
         tester,
@@ -58,36 +59,40 @@ void main() {
       );
     });
 
-    testWidgets('every zone states whether it is buildable, and on what terms',
-        (tester) async {
-      final report = await demoReport(tester, 'en');
-      await pumpApp(
-        tester,
-        SingleChildScrollView(child: SoilReportCard(report: report)),
-      );
+    testWidgets(
+      'every zone states whether it is buildable, and on what terms',
+      (tester) async {
+        final report = await demoReport(tester, 'en');
+        await pumpApp(
+          tester,
+          SingleChildScrollView(child: SoilReportCard(report: report)),
+        );
 
-      final zones = report.slopeStability!.zones;
-      final int conditional =
-          zones.where((z) => z.buildableAfterTreatment).length;
-      final int blocked = zones.length - conditional;
-      expect(conditional, greaterThan(0));
-      expect(blocked, greaterThan(0));
+        final zones = report.slopeStability!.zones;
+        final int conditional = zones
+            .where((z) => z.buildableAfterTreatment)
+            .length;
+        final int blocked = zones.length - conditional;
+        expect(conditional, greaterThan(0));
+        expect(blocked, greaterThan(0));
 
-      expect(
-        find.text('Buildable ONLY after treatment'),
-        findsNWidgets(conditional),
-      );
-      expect(
-        find.text('Not buildable on current evidence'),
-        findsNWidgets(blocked),
-      );
-      // An unqualified "buildable" badge must never appear.
-      expect(find.text('Buildable'), findsNothing);
-      expect(find.textContaining('is conditional'), findsOneWidget);
-    });
+        expect(
+          find.text('Buildable ONLY after treatment'),
+          findsNWidgets(conditional),
+        );
+        expect(
+          find.text('Not buildable on current evidence'),
+          findsNWidgets(blocked),
+        );
+        // An unqualified "buildable" badge must never appear.
+        expect(find.text('Buildable'), findsNothing);
+        expect(find.textContaining('is conditional'), findsOneWidget);
+      },
+    );
 
-    testWidgets('exposed structures carry the no-verdict notice',
-        (tester) async {
+    testWidgets('exposed structures carry the no-verdict notice', (
+      tester,
+    ) async {
       final report = await demoReport(tester, 'en');
       await pumpApp(
         tester,
@@ -101,8 +106,9 @@ void main() {
       );
     });
 
-    testWidgets('the purpose the user picked is shown back to them',
-        (tester) async {
+    testWidgets('the purpose the user picked is shown back to them', (
+      tester,
+    ) async {
       final report = await demoReport(tester, 'en');
       await pumpApp(
         tester,
@@ -120,8 +126,9 @@ void main() {
       );
     });
 
-    testWidgets('under Arabic both the labels AND the values are Arabic',
-        (tester) async {
+    testWidgets('under Arabic both the labels AND the values are Arabic', (
+      tester,
+    ) async {
       // The reported bug in one assertion pair: Arabic labels, English values.
       final report = await demoReport(tester, 'ar');
       await pumpApp(
@@ -162,26 +169,31 @@ void main() {
       orderUrl: 'https://rjgc.gov.jo/eservices/',
     );
 
-    testWidgets('shows the grid reference and the unofficial-conversion caveat',
-        (tester) async {
-      await pumpApp(
-        tester,
-        const SingleChildScrollView(child: OfficialMapCard(info: reference)),
-      );
+    testWidgets(
+      'shows the grid reference and the unofficial-conversion caveat',
+      (tester) async {
+        await pumpApp(
+          tester,
+          const SingleChildScrollView(child: OfficialMapCard(info: reference)),
+        );
 
-      expect(find.textContaining('EPSG:3066'), findsOneWidget);
-      expect(find.text('397021.1 m'), findsOneWidget);
-      expect(find.text('536604.5 m'), findsOneWidget);
-      // No datum parameters are configured, so the caveat must be visible.
-      expect(
-        find.textContaining('no datum transformation was applied'),
-        findsOneWidget,
-      );
-      // The authority basemap is unlicensed by default: explain rather than
-      // render a broken image.
-      expect(find.textContaining('not enabled for this build'), findsOneWidget);
-      expect(find.byType(Image), findsNothing);
-    });
+        expect(find.textContaining('EPSG:3066'), findsOneWidget);
+        expect(find.text('397021.1 m'), findsOneWidget);
+        expect(find.text('536604.5 m'), findsOneWidget);
+        // No datum parameters are configured, so the caveat must be visible.
+        expect(
+          find.textContaining('no datum transformation was applied'),
+          findsOneWidget,
+        );
+        // The authority basemap is unlicensed by default: explain rather than
+        // render a broken image.
+        expect(
+          find.textContaining('not enabled for this build'),
+          findsOneWidget,
+        );
+        expect(find.byType(Image), findsNothing);
+      },
+    );
 
     testWidgets('the grid reference can be copied', (tester) async {
       await pumpApp(
@@ -195,8 +207,9 @@ void main() {
       expect(find.text('Grid reference copied'), findsOneWidget);
     });
 
-    testWidgets('renders in Arabic without mangling the LTR coordinates',
-        (tester) async {
+    testWidgets('renders in Arabic without mangling the LTR coordinates', (
+      tester,
+    ) async {
       await pumpApp(
         tester,
         const SingleChildScrollView(child: OfficialMapCard(info: reference)),
