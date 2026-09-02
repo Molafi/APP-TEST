@@ -410,6 +410,21 @@ flutter build apk --release
 flutter build ios --release --no-codesign   # on macOS
 ```
 
+### Building an APK without a local toolchain
+
+The **Build APK** workflow (`.github/workflows/build-apk.yml`) generates the
+Android project, runs analyze + test, builds the APKs and publishes them as the
+`apk-latest` prerelease — a direct download link, so the app can be installed
+straight from a phone's browser. Run it from the Actions tab.
+
+Configure the AI through repository secrets, not the workflow file:
+
+| Secret | Effect |
+| --- | --- |
+| `AI_BACKEND_URL` | Preferred. Calls go through the Cloud Function proxy and the Groq key never leaves the server. |
+| `GROQ_API_KEY` | Dev/test only. **Compiled into the APK and extractable from it** — never for a build you share. |
+| neither | Builds fine; the app uses its localized offline responses. |
+
 > **Minimum toolchain is Flutter 3.35.** `settings_screen.dart` uses the
 > `RadioGroup` widget, which shipped in 3.35 (`Radio.groupValue`/`onChanged`
 > were deprecated after 3.32). Earlier SDKs will not compile.
