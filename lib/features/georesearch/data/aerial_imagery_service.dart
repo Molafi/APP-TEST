@@ -58,9 +58,7 @@ class AerialImageryService {
     final double latRad = lat * math.pi / 180.0;
     final int x = ((lon + 180.0) / 360.0 * n).floor().clamp(0, n - 1);
     final int y =
-        ((1.0 -
-                    math.log(math.tan(latRad) + 1 / math.cos(latRad)) /
-                        math.pi) /
+        ((1.0 - math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi) /
                 2.0 *
                 n)
             .floor()

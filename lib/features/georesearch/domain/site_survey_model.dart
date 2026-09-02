@@ -859,12 +859,14 @@ class SlopeStabilityAssessment {
         triggers: _strList(m['triggers']),
         // Nameless entries are dropped: an unlabelled risk row would show a
         // level chip with nothing to attach it to.
-        atRiskStructures: _mapList(m['atRiskStructures'], StructureRisk.fromMap)
-            .where((e) => e.name.isNotEmpty)
-            .toList(),
-        zones: _mapList(m['zones'], PlotZone.fromMap)
-            .where((e) => e.name.isNotEmpty)
-            .toList(),
+        atRiskStructures: _mapList(
+          m['atRiskStructures'],
+          StructureRisk.fromMap,
+        ).where((e) => e.name.isNotEmpty).toList(),
+        zones: _mapList(
+          m['zones'],
+          PlotZone.fromMap,
+        ).where((e) => e.name.isNotEmpty).toList(),
         stabilisationOptions: _strList(m['stabilisationOptions']),
         monitoringPlan: _strList(m['monitoringPlan']),
         requiredStudies: _strList(m['requiredStudies']),
@@ -949,6 +951,33 @@ class OfficialMapReference {
   bool get isEmpty =>
       !hasGrid && tileUrl == null && portalUrl == null && orderUrl == null;
 
+  /// One-line grid reference in the form a surveyor or the mapping authority's
+  /// counter staff expects, or null when there is no grid to describe.
+  ///
+  /// The CRS is always included: a bare pair of numbers with no coordinate
+  /// system is ambiguous, and the two Jordanian grids in common use (JTM and the
+  /// older Palestine grid) give very different values for the same point.
+  ///
+  /// The unofficial-conversion caveat is part of the same string on purpose, so
+  /// the numbers cannot be copied or shared without it travelling along.
+  String? gridReferenceLine() {
+    if (!hasGrid) return null;
+    final StringBuffer b = StringBuffer(gridName);
+    if (gridCode != null) b.write(' $gridCode');
+    b.write(': E ${easting!.toStringAsFixed(1)} m');
+    b.write(', N ${northing!.toStringAsFixed(1)} m');
+    if (latitude != null && longitude != null) {
+      b.write(
+        ' (WGS84 ${latitude!.toStringAsFixed(5)}, '
+        '${longitude!.toStringAsFixed(5)})',
+      );
+    }
+    if (!datumShiftApplied) {
+      b.write(' — unofficial conversion, no datum transformation applied');
+    }
+    return b.toString();
+  }
+
   Map<String, dynamic> toMap() => {
     'authority': authority,
     'gridName': gridName,
@@ -1024,15 +1053,16 @@ class AerialImageryInfo {
     'visibleFeatures': visibleFeatures,
   };
 
-  factory AerialImageryInfo.fromMap(Map<String, dynamic> m) => AerialImageryInfo(
-    url: _str(m['url']) ?? '',
-    provider: _str(m['provider']) ?? '',
-    attribution: _str(m['attribution']) ?? '',
-    zoom: (_num(m['zoom']) ?? 0).round(),
-    interpretation: _str(m['interpretation']),
-    landCover: _str(m['landCover']),
-    visibleFeatures: _strList(m['visibleFeatures']),
-  );
+  factory AerialImageryInfo.fromMap(Map<String, dynamic> m) =>
+      AerialImageryInfo(
+        url: _str(m['url']) ?? '',
+        provider: _str(m['provider']) ?? '',
+        attribution: _str(m['attribution']) ?? '',
+        zoom: (_num(m['zoom']) ?? 0).round(),
+        interpretation: _str(m['interpretation']),
+        landCover: _str(m['landCover']),
+        visibleFeatures: _strList(m['visibleFeatures']),
+      );
 
   /// Merges AI-provided narrative fields onto a locally built image reference.
   AerialImageryInfo withNarrative({

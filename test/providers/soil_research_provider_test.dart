@@ -123,21 +123,25 @@ void main() {
       expect(report.landRecord, isNull);
     });
 
-    test('a record is withheld when the user has not marked it available',
-        () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _overreachingReply),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
+    test(
+      'a record is withheld when the user has not marked it available',
+      () async {
+        final container = await makeContainer(
+          gateway: FakeAiGateway(reply: _overreachingReply),
+        );
+        final controller = container.read(
+          soilResearchControllerProvider.notifier,
+        );
 
-      controller.setLandRecord(const LandRecordInfo(parcelId: 'TYPED-BUT-OFF'));
-      await controller.analyze();
+        controller.setLandRecord(
+          const LandRecordInfo(parcelId: 'TYPED-BUT-OFF'),
+        );
+        await controller.analyze();
 
-      final report = container.read(soilResearchControllerProvider).result!;
-      expect(report.landRecord, isNull);
-    });
+        final report = container.read(soilResearchControllerProvider).result!;
+        expect(report.landRecord, isNull);
+      },
+    );
   });
 
   group('aerial imagery provenance', () {
@@ -157,31 +161,35 @@ void main() {
       expect(report.aerialImagery, isNull);
     });
 
-    test('with coordinates the URL is local and the narrative is merged',
-        () async {
-      final container = await makeContainer(
-        gateway: FakeAiGateway(reply: _overreachingReply),
-        location: const PlantLocation(
-          latitude: 24.7136,
-          longitude: 46.6753,
-          city: 'Riyadh',
-        ),
-      );
-      final controller = container.read(
-        soilResearchControllerProvider.notifier,
-      );
+    test(
+      'with coordinates the URL is local and the narrative is merged',
+      () async {
+        final container = await makeContainer(
+          gateway: FakeAiGateway(reply: _overreachingReply),
+          location: const PlantLocation(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            city: 'Riyadh',
+          ),
+        );
+        final controller = container.read(
+          soilResearchControllerProvider.notifier,
+        );
 
-      await controller.analyze();
+        await controller.analyze();
 
-      final info =
-          container.read(soilResearchControllerProvider).result!.aerialImagery!;
-      expect(info.url, contains('World_Imagery'));
-      expect(info.url, endsWith('/16/28122/41264'));
-      expect(info.attribution, isNotEmpty);
-      // Narrative fields still come from the model.
-      expect(info.landCover, 'Cropland');
-      expect(info.visibleFeatures, ['Tracks']);
-    });
+        final info = container
+            .read(soilResearchControllerProvider)
+            .result!
+            .aerialImagery!;
+        expect(info.url, contains('World_Imagery'));
+        expect(info.url, endsWith('/16/28122/41264'));
+        expect(info.attribution, isNotEmpty);
+        // Narrative fields still come from the model.
+        expect(info.landCover, 'Cropland');
+        expect(info.visibleFeatures, ['Tracks']);
+      },
+    );
   });
 
   group('official map / national grid provenance', () {
@@ -200,8 +208,10 @@ void main() {
 
       await controller.analyze();
 
-      final map =
-          container.read(soilResearchControllerProvider).result!.officialMap!;
+      final map = container
+          .read(soilResearchControllerProvider)
+          .result!
+          .officialMap!;
       expect(map.authority, contains('RJGC'));
       expect(map.gridCode, 'EPSG:3066');
       expect(map.easting, closeTo(397021.1, 0.5));
@@ -247,8 +257,10 @@ void main() {
 
       await controller.analyze();
 
-      final map =
-          container.read(soilResearchControllerProvider).result!.officialMap!;
+      final map = container
+          .read(soilResearchControllerProvider)
+          .result!
+          .officialMap!;
       // The app's own conversion must win: an authority-badged grid reference
       // can never originate in model output.
       expect(map.easting, isNot(111111.0));

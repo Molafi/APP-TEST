@@ -2433,7 +2433,7 @@ abstract class AppLocalizations {
   /// No description provided for @georesearchSlopeZonesNotice.
   ///
   /// In en, this message translates to:
-  /// **'"Buildable after treatment" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.'**
+  /// **'\"Buildable after treatment\" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.'**
   String get georesearchSlopeZonesNotice;
 
   /// No description provided for @georesearchSlopeStabilisation.
@@ -2549,6 +2549,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The authority\'s official basemap layer is not enabled for this build (it requires an agreement with the Centre). The grid reference and the links below still work.'**
   String get georesearchOfficialMapTileUnavailable;
+
+  /// No description provided for @demoModeBannerAiReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.'**
+  String get demoModeBannerAiReady;
 }
 
 class _AppLocalizationsDelegate

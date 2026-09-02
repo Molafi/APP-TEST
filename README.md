@@ -269,8 +269,16 @@ The `android/` and `ios/` folders are not committed. Generate them and apply
 every native change below in one step:
 
 ```bash
-tool/setup_platforms.sh com.yourcompany
+tool/setup_platforms.sh com.yourcompany          # macOS / Linux / Git Bash
 ```
+
+```powershell
+.\tool\setup_platforms.ps1 com.yourcompany       # Windows PowerShell
+```
+
+Both scripts apply the same edits and are kept in sync; the PowerShell port
+exists because the bash version needs `python3`, which a stock Windows install
+does not have.
 
 This runs `flutter create --platforms=android,ios --org <org>` (scoped with
 `--platforms` so it can't clobber `lib/main.dart` or `test/widget_test.dart`),
@@ -324,6 +332,17 @@ Android 11+ package visibility — inside `<queries>`, or `speech_to_text` and
 - Use the modern photo picker (image_picker handles this) — no legacy broad
   storage permissions.
 - Do **not** enable cleartext traffic.
+- **`android/gradle.properties`** needs:
+  ```properties
+  kotlin.jvm.target.validation.mode=warning
+  ```
+  Several plugins (`flutter_timezone`, `flutter_tts`, `share_plus`,
+  `speech_to_text`) still pin their Kotlin `jvmTarget` to 1.8 while AGP compiles
+  their Java at 11. Since Kotlin 1.9 that mismatch is a hard error and the build
+  fails with *"Inconsistent JVM-target compatibility detected for tasks
+  `compileDebugJavaWithJavac` (11) and `compileDebugKotlin` (1.8)"*. 1.8 bytecode
+  runs fine on an 11 target, so a warning is the correct severity — remove the
+  line once those plugins target 11+.
 
 ### iOS — `ios/Runner/Info.plist`
 ```xml
@@ -390,6 +409,21 @@ flutter test integration_test        # needs a device or emulator
 flutter build apk --release
 flutter build ios --release --no-codesign   # on macOS
 ```
+
+### Building an APK without a local toolchain
+
+The **Build APK** workflow (`.github/workflows/build-apk.yml`) generates the
+Android project, runs analyze + test, builds the APKs and publishes them as the
+`apk-latest` prerelease — a direct download link, so the app can be installed
+straight from a phone's browser. Run it from the Actions tab.
+
+Configure the AI through repository secrets, not the workflow file:
+
+| Secret | Effect |
+| --- | --- |
+| `AI_BACKEND_URL` | Preferred. Calls go through the Cloud Function proxy and the Groq key never leaves the server. |
+| `GROQ_API_KEY` | Dev/test only. **Compiled into the APK and extractable from it** — never for a build you share. |
+| neither | Builds fine; the app uses its localized offline responses. |
 
 > **Minimum toolchain is Flutter 3.35.** `settings_screen.dart` uses the
 > `RadioGroup` widget, which shipped in 3.35 (`Radio.groupValue`/`onChanged`

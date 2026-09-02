@@ -27,19 +27,22 @@ void main() {
       expect(tile.y, 1);
     });
 
-    test('clamps latitude beyond the Mercator limit instead of overflowing', () {
-      const int zoom = 8;
-      const int maxIndex = (1 << zoom) - 1;
-      for (final double lat in <double>[89.9, -89.9, 200, -200]) {
-        final tile = AerialImageryService.tileFor(
-          latitude: lat,
-          longitude: 10,
-          zoom: zoom,
-        );
-        expect(tile.y, inInclusiveRange(0, maxIndex), reason: 'lat=$lat');
-        expect(tile.x, inInclusiveRange(0, maxIndex), reason: 'lat=$lat');
-      }
-    });
+    test(
+      'clamps latitude beyond the Mercator limit instead of overflowing',
+      () {
+        const int zoom = 8;
+        const int maxIndex = (1 << zoom) - 1;
+        for (final double lat in <double>[89.9, -89.9, 200, -200]) {
+          final tile = AerialImageryService.tileFor(
+            latitude: lat,
+            longitude: 10,
+            zoom: zoom,
+          );
+          expect(tile.y, inInclusiveRange(0, maxIndex), reason: 'lat=$lat');
+          expect(tile.x, inInclusiveRange(0, maxIndex), reason: 'lat=$lat');
+        }
+      },
+    );
 
     test('wraps out-of-range longitude into a valid tile', () {
       const int zoom = 4;

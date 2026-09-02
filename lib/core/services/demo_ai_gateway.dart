@@ -86,13 +86,24 @@ class DemoAiGateway extends AiGateway {
     // Keyword branches are matched in both languages: an Arabic question could
     // never match the English keywords, so Arabic users always fell through to
     // the generic answer.
-    final bool asksYellowing = q.contains('yellow') || q.contains('اصفرار') ||
-        q.contains('أصفر') || q.contains('صفراء');
-    final bool asksWatering = q.contains('water') || q.contains('basil') ||
-        q.contains('ريّ') || q.contains('ري ') || q.contains('سقي') ||
-        q.contains('حبق') || q.contains('ريحان');
-    final bool asksSucculent = q.contains('succulent') || q.contains('soil') ||
-        q.contains('عصاري') || q.contains('تربة');
+    final bool asksYellowing =
+        q.contains('yellow') ||
+        q.contains('اصفرار') ||
+        q.contains('أصفر') ||
+        q.contains('صفراء');
+    final bool asksWatering =
+        q.contains('water') ||
+        q.contains('basil') ||
+        q.contains('ريّ') ||
+        q.contains('ري ') ||
+        q.contains('سقي') ||
+        q.contains('حبق') ||
+        q.contains('ريحان');
+    final bool asksSucculent =
+        q.contains('succulent') ||
+        q.contains('soil') ||
+        q.contains('عصاري') ||
+        q.contains('تربة');
 
     String assessment;
     if (asksYellowing) {
@@ -783,7 +794,10 @@ class DemoAiGateway extends AiGateway {
         ],
         'zones': [
           {
-            'name': t('Upper plateau (flatter part)', 'الهضبة العليا (الجزء الأكثر استواءً)'),
+            'name': t(
+              'Upper plateau (flatter part)',
+              'الهضبة العليا (الجزء الأكثر استواءً)',
+            ),
             'location': t(
               'The level ground set back from the sloping margin.',
               'الأرض المستوية المتراجعة عن الحاشية المنحدرة.',
@@ -842,7 +856,10 @@ class DemoAiGateway extends AiGateway {
             ),
           },
           {
-            'name': t('Foot of the slope and drainage line', 'أسفل المنحدر وخط التصريف'),
+            'name': t(
+              'Foot of the slope and drainage line',
+              'أسفل المنحدر وخط التصريف',
+            ),
             'location': t(
               'The low corner where surface water concentrates.',
               'الزاوية المنخفضة التي تتجمع فيها المياه السطحية.',
@@ -964,10 +981,7 @@ class DemoAiGateway extends AiGateway {
           'زراعة مختلطة مع أشجار متفرقة وأرض جرداء',
         ),
         'visibleFeatures': [
-          t(
-            'Field boundaries and access tracks',
-            'حدود الحقول ومسارات الوصول',
-          ),
+          t('Field boundaries and access tracks', 'حدود الحقول ومسارات الوصول'),
           t('Seasonal drainage lines', 'خطوط تصريف موسمية'),
           t(
             'Scattered built structures nearby',

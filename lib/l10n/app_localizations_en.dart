@@ -1253,7 +1253,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get georesearchSlopeZonesNotice =>
-      '"Buildable after treatment" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.';
+      '\"Buildable after treatment\" is conditional: it holds only if the listed treatments are carried out and a licensed geotechnical engineer designs and signs off the works. No area is cleared as safe by this report.';
 
   @override
   String get georesearchSlopeStabilisation => 'Possible stabilisation measures';
@@ -1318,4 +1318,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get georesearchOfficialMapTileUnavailable =>
       'The authority\'s official basemap layer is not enabled for this build (it requires an agreement with the Centre). The grid reference and the links below still work.';
+
+  @override
+  String get demoModeBannerAiReady =>
+      'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.';
 }

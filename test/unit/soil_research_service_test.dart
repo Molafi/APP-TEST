@@ -70,39 +70,43 @@ void main() {
       );
     });
 
-    test('DemoAiGateway returns a parseable SoilReport for soil requests',
-        () async {
-      final gateway = DemoAiGateway();
-      final service = SoilResearchService(gateway);
+    test(
+      'DemoAiGateway returns a parseable SoilReport for soil requests',
+      () async {
+        final gateway = DemoAiGateway();
+        final service = SoilResearchService(gateway);
 
-      final report = await service.analyze(
-        locale: 'en',
-        context: const {'city': 'Riyadh'},
-      );
+        final report = await service.analyze(
+          locale: 'en',
+          context: const {'city': 'Riyadh'},
+        );
 
-      // Demo output must be a valid, populated SoilReport (estimate flow).
-      expect(report.isSoilRelated, isTrue);
-      expect(report.soilType, isNotNull);
-      expect(report.salinity, isNotNull);
-      expect(report.sodium, isNotNull);
-      expect(report.nutrients, isNotEmpty);
-      expect(report.disclaimer, isNotEmpty);
-      expect(report.confidence, Confidence.low);
-    });
+        // Demo output must be a valid, populated SoilReport (estimate flow).
+        expect(report.isSoilRelated, isTrue);
+        expect(report.soilType, isNotNull);
+        expect(report.salinity, isNotNull);
+        expect(report.sodium, isNotNull);
+        expect(report.nutrients, isNotEmpty);
+        expect(report.disclaimer, isNotEmpty);
+        expect(report.confidence, Confidence.low);
+      },
+    );
 
-    test('DemoAiGateway still returns diagnosis JSON for non-soil requests',
-        () async {
-      final gateway = DemoAiGateway();
-      final raw = await gateway.generate(
-        const AiRequest(
-          systemPrompt: 'sys',
-          userText: 'diagnose this plant',
-          jsonMode: true,
-        ),
-      );
-      // Diagnosis JSON has isPlantRelated, not isSoilRelated.
-      expect(raw.contains('isPlantRelated'), isTrue);
-      expect(raw.contains('isSoilRelated'), isFalse);
-    });
+    test(
+      'DemoAiGateway still returns diagnosis JSON for non-soil requests',
+      () async {
+        final gateway = DemoAiGateway();
+        final raw = await gateway.generate(
+          const AiRequest(
+            systemPrompt: 'sys',
+            userText: 'diagnose this plant',
+            jsonMode: true,
+          ),
+        );
+        // Diagnosis JSON has isPlantRelated, not isSoilRelated.
+        expect(raw.contains('isPlantRelated'), isTrue);
+        expect(raw.contains('isSoilRelated'), isFalse);
+      },
+    );
   });
 }

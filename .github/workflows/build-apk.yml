@@ -1,0 +1,147 @@
+name: Build APK
+
+# Builds an installable Android APK and publishes it as a downloadable release
+# asset, so the app can be installed on a phone without a local Flutter or
+# Android toolchain.
+#
+# Two triggers, because GitHub only offers the "Run workflow" button for
+# workflow_dispatch once the file exists on the DEFAULT branch. Until this is
+# merged there, push a tag to build from any branch:
+#
+#   git tag apk-v1 && git push origin apk-v1
+#
+# After merging, use the Actions tab -> "Build APK" -> "Run workflow".
+on:
+  workflow_dispatch:
+    inputs:
+      org:
+        description: "Android applicationId prefix (becomes <org>.plantsense_ai)"
+        required: false
+        default: "com.molafi"
+      publish:
+        description: "Publish a downloadable release (apk-latest)"
+        type: boolean
+        required: false
+        default: true
+  push:
+    tags: ["apk-v*"]
+
+# contents: write is only needed to publish the release asset. Without the
+# publish step this would be contents: read.
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # AGP 8 requires JDK 17.
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # Pinned for the same reason as flutter.yml: 3.35 is the floor
+          # required by RadioGroup in settings_screen.dart.
+          flutter-version: "3.35.x"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # android/ is not committed, so the runner project is generated here with
+      # every native change the app needs (permissions, desugaring, minSdk).
+      # `inputs` is empty on a tag push, so the default has to be repeated here
+      # or the script would be handed an empty org and exit with its usage error.
+      - name: Generate the Android project
+        run: tool/setup_platforms.sh "${{ inputs.org || 'com.molafi' }}"
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      # The Groq key is read from a repository secret, never from the repo. If
+      # the secret is unset the build still succeeds and the app falls back to
+      # its built-in offline responses, which are fully localized.
+      #
+      # NOTE: a --dart-define value is compiled into the binary and can be
+      # extracted from the APK. Only set this secret for private test builds;
+      # for anything shared, deploy the Cloud Function proxy and set
+      # AI_BACKEND_URL instead so the key stays server-side.
+      - name: Build release APKs
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          AI_BACKEND_URL: ${{ secrets.AI_BACKEND_URL }}
+        run: |
+          set -euo pipefail
+          DEFINES=(--dart-define=DEMO_MODE=true --dart-define=USE_FIREBASE=false)
+          if [ -n "${AI_BACKEND_URL}" ]; then
+            echo "AI: secure backend proxy (key stays server-side)"
+            DEFINES+=(--dart-define=USE_AI_BACKEND=true
+                      "--dart-define=AI_BACKEND_URL=${AI_BACKEND_URL}")
+          elif [ -n "${GROQ_API_KEY}" ]; then
+            echo "AI: direct Groq (key is embedded in the APK)"
+            DEFINES+=(--dart-define=USE_AI_BACKEND=false
+                      --dart-define=ALLOW_DIRECT_GROQ=true
+                      "--dart-define=GROQ_API_KEY=${GROQ_API_KEY}")
+          else
+            echo "AI: not configured - the app will use its offline responses"
+          fi
+          # Per-ABI builds as well as the universal one: the universal APK is
+          # ~67 MB, while arm64-v8a alone is a third of that and covers every
+          # phone made in the last several years.
+          flutter build apk --release --split-per-abi "${DEFINES[@]}"
+          flutter build apk --release "${DEFINES[@]}"
+          ls -lh build/app/outputs/flutter-apk/
+
+      - name: Upload as workflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plantsense-apk
+          path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+
+      # A release asset is a direct download link, which is what makes this
+      # installable straight from the phone's browser. Workflow artifacts are
+      # zipped and require a GitHub login, so they are awkward on mobile.
+      # Always publish for a tag push; honour the checkbox for a manual run.
+      # Without the event check a tag push would build the APKs and then attach
+      # them to nothing, because inputs.publish is empty rather than true.
+      - name: Publish downloadable release
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Written with printf rather than a heredoc: YAML block scalars keep
+          # the relative indentation, so an indented heredoc terminator would
+          # never match and the step would hang on unterminated input.
+          {
+            printf 'Test build. Install `app-arm64-v8a-release.apk` on any recent\n'
+            printf 'phone (use `app-release.apk` if that one refuses to install).\n\n'
+            printf -- '- Signed with a **debug** key: fine for sideloading, not\n'
+            printf '  publishable to Google Play.\n'
+            printf -- '- If the `GROQ_API_KEY` secret was set, the key is **embedded in\n'
+            printf '  this APK and can be extracted from it**. Do not share the file.\n'
+            printf '  For a shareable build set the `AI_BACKEND_URL` secret instead, so\n'
+            printf '  the key stays on the server.\n'
+          } > release-notes.md
+          gh release delete apk-latest --yes --cleanup-tag || true
+          gh release create apk-latest \
+            --title "Latest test APK" \
+            --notes-file release-notes.md \
+            --prerelease \
+            --target "${GITHUB_SHA}" \
+            build/app/outputs/flutter-apk/*.apk
+          echo "Download page: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/apk-latest"

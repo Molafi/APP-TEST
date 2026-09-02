@@ -36,8 +36,7 @@ class AiPrompts {
     return '''
 LANGUAGE — HIGHEST PRIORITY: write EVERY human-readable string VALUE in $name.
 That covers summaries, descriptions, notes, list items, follow-up questions and
-the disclaimer. Do not answer in English unless $name is English, and do not
-mix languages.
+the disclaimer. Write in $name only; never switch to or mix in another language.
 Keep in English, exactly as written: all JSON keys, and the fixed enum tokens
 "low", "medium", "high", "good", "poor", "unusable", "general", "agriculture",
 "building", "wellDrilling", "slopeStability". Use ASCII digits for numbers.''';

@@ -122,7 +122,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Column(
       children: [
-        if (Environment.isDemo) _DemoBanner(text: l10n.demoModeBanner),
+        // `isDemo` only means "local data, no Firebase" — it says nothing about
+        // the AI, which is configured separately. The old single message claimed
+        // Groq was unconfigured even on a build that was calling it live, so the
+        // banner distinguishes the two cases.
+        if (Environment.isDemo)
+          _DemoBanner(
+            text: Environment.aiUnavailable
+                ? l10n.demoModeBanner
+                : l10n.demoModeBannerAiReady,
+          ),
         Row(
           children: [
             TextButton.icon(

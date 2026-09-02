@@ -28,11 +28,14 @@ void main() {
     test('the meridian arc series matches numeric integration', () {
       // Independent check of the only non-trivial term: integrate the meridian
       // radius of curvature directly and compare.
+      const double e2 =
+          2 / JtmProjection.inverseFlattening -
+          1 /
+              (JtmProjection.inverseFlattening *
+                  JtmProjection.inverseFlattening);
+
       double numericArc(double latRad, {int steps = 20000}) {
         double f(double t) {
-          final double e2 =
-              2 / JtmProjection.inverseFlattening -
-              1 / (JtmProjection.inverseFlattening * JtmProjection.inverseFlattening);
           return JtmProjection.semiMajorAxis *
               (1 - e2) /
               math.pow(1 - e2 * math.pow(math.sin(t), 2), 1.5);
@@ -121,8 +124,10 @@ void main() {
         RjgcMapService.coversLocation(latitude: 30.04, longitude: 31.23),
         isFalse,
       );
-      expect(RjgcMapService.coversLocation(latitude: null, longitude: 35.9),
-          isFalse);
+      expect(
+        RjgcMapService.coversLocation(latitude: null, longitude: 35.9),
+        isFalse,
+      );
       expect(RjgcMapService.coversLocation(), isFalse);
     });
 

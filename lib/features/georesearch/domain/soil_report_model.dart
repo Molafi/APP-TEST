@@ -1,10 +1,12 @@
 import 'dart:convert';
 
-import '../../diagnosis/domain/diagnosis_model.dart' show Confidence, confidenceFrom, ImageQuality, imageQualityFrom;
+import '../../diagnosis/domain/diagnosis_model.dart'
+    show Confidence, confidenceFrom, ImageQuality, imageQualityFrom;
 import 'site_survey_model.dart';
 import 'soil_level.dart';
 
-export '../../diagnosis/domain/diagnosis_model.dart' show Confidence, ImageQuality;
+export '../../diagnosis/domain/diagnosis_model.dart'
+    show Confidence, ImageQuality;
 // Re-exported so existing `import '.../soil_report_model.dart'` call sites keep
 // resolving SoilLevel and the survey models without extra imports.
 export 'site_survey_model.dart';
@@ -568,7 +570,9 @@ class SoilReport {
       if (ss.hazardLevel != null) {
         b.writeln('- Hazard rating: ${ss.hazardLevel!.name}');
       }
-      if (ss.activityState != null) b.writeln('- Activity: ${ss.activityState}');
+      if (ss.activityState != null) {
+        b.writeln('- Activity: ${ss.activityState}');
+      }
       if (ss.movementDirection != null) {
         b.writeln('- Movement direction: ${ss.movementDirection}');
       }
@@ -599,19 +603,10 @@ class SoilReport {
     if (om != null && !om.isEmpty) {
       b.writeln('\nOfficial mapping reference:');
       b.writeln('- Authority: ${om.authority}');
-      if (om.hasGrid) {
-        b.writeln(
-          '- ${om.gridName}${om.gridCode != null ? ' (${om.gridCode})' : ''}: '
-          'E ${om.easting!.toStringAsFixed(1)}, '
-          'N ${om.northing!.toStringAsFixed(1)}',
-        );
-      }
-      if (om.hasGrid && !om.datumShiftApplied) {
-        b.writeln(
-          '- Unofficial conversion: no datum transformation applied. '
-          'Confirm against an official RJGC survey before any legal use.',
-        );
-      }
+      // Same single formatter the copy button uses, so a shared report and a
+      // copied reference can never disagree - and the caveat is inside the line.
+      final String? grid = om.gridReferenceLine();
+      if (grid != null) b.writeln('- $grid');
       if (om.portalUrl != null) b.writeln('- Geoportal: ${om.portalUrl}');
       if (om.orderUrl != null) b.writeln('- Order maps: ${om.orderUrl}');
     }

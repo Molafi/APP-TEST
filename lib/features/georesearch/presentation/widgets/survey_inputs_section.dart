@@ -46,15 +46,14 @@ class SurveyInputsSection extends StatelessWidget {
           children: [
             // Labels come from the shared `purposeLabel` so the chip the user
             // taps and the purpose echoed back in the report always agree.
-            for (final (SurveyPurpose p, IconData icon) in <
-              (SurveyPurpose, IconData)
-            >[
-              (SurveyPurpose.general, Icons.explore_outlined),
-              (SurveyPurpose.agriculture, Icons.agriculture_outlined),
-              (SurveyPurpose.building, Icons.foundation_outlined),
-              (SurveyPurpose.wellDrilling, Icons.water_drop_outlined),
-              (SurveyPurpose.slopeStability, Icons.terrain_outlined),
-            ])
+            for (final (SurveyPurpose p, IconData icon)
+                in <(SurveyPurpose, IconData)>[
+                  (SurveyPurpose.general, Icons.explore_outlined),
+                  (SurveyPurpose.agriculture, Icons.agriculture_outlined),
+                  (SurveyPurpose.building, Icons.foundation_outlined),
+                  (SurveyPurpose.wellDrilling, Icons.water_drop_outlined),
+                  (SurveyPurpose.slopeStability, Icons.terrain_outlined),
+                ])
               ChoiceChip(
                 selected: state.purpose == p,
                 onSelected: (_) => controller.setPurpose(p),
