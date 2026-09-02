@@ -397,10 +397,17 @@ firebase emulators:start   # auth, firestore, storage, functions
 `flutter analyze` reports no issues, and all **52 tests pass**.
 
 ```bash
-flutter pub get              # also runs gen-l10n (generate: true)
-flutter analyze              # verified clean
-flutter test                 # verified: 52 passing
+flutter pub get                              # also runs gen-l10n (generate: true)
+dart format lib test integration_test        # CI enforces this
+flutter analyze                              # verified clean
+flutter test                                 # verified: 52 passing
 ```
+
+> Format the three source directories, not `.`. A bare `dart format .` also
+> walks `build/`, and once you have run a Gradle build locally that directory
+> contains paths that crash the formatter on Windows with
+> `PathNotFoundException: Directory listing failed`. CI uses the same scoped
+> command, so what passes locally passes there.
 
 Still requires the platform projects (`tool/setup_platforms.sh`) plus an Android
 SDK / Xcode:

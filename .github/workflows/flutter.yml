@@ -36,8 +36,29 @@ jobs:
       - name: Generate localizations
         run: flutter gen-l10n
 
+      # Scoped to the source directories rather than `.` on purpose. A bare
+      # `dart format .` walks build/ too, and once anyone has run a Gradle build
+      # locally that directory contains transform folders whose paths break
+      # directory listing on Windows:
+      #   PathNotFoundException: Directory listing failed, path =
+      #   '.\build\cloud_firestore\.transforms\...'
+      # So the command CI enforced could not be run locally by the developers
+      # expected to satisfy it. These three directories are all the Dart there
+      # is, so nothing is lost by naming them.
       - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed .
+        id: format
+        run: |
+          dart format --output=none --set-exit-if-changed \
+            lib test integration_test
+
+      # `dart format` only names the files it would change, which is not enough
+      # to fix them from a log. Printing the diff makes the failure actionable
+      # without having to reproduce it locally first.
+      - name: Show the required formatting
+        if: ${{ failure() && steps.format.outcome == 'failure' }}
+        run: |
+          dart format lib test integration_test
+          git --no-pager diff
 
       - name: Analyze
         run: flutter analyze
