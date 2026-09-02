@@ -121,7 +121,7 @@ class OfficialMapCard extends StatelessWidget {
                         label: Text(l10n.georesearchOfficialMapCopy),
                         onPressed: () => _copy(
                           context,
-                          _gridReferenceText(),
+                          info.gridReferenceLine()!,
                           l10n.georesearchOfficialMapCopied,
                         ),
                       ),
@@ -182,26 +182,6 @@ class OfficialMapCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  /// One-line reference in the form a surveyor or the authority's counter staff
-  /// expects, including the CRS so the numbers are never ambiguous.
-  String _gridReferenceText() {
-    final StringBuffer b = StringBuffer();
-    b.write(info.gridName);
-    if (info.gridCode != null) b.write(' ${info.gridCode}');
-    b.write(': E ${info.easting!.toStringAsFixed(1)} m');
-    b.write(', N ${info.northing!.toStringAsFixed(1)} m');
-    if (info.latitude != null && info.longitude != null) {
-      b.write(
-        ' (WGS84 ${info.latitude!.toStringAsFixed(5)}, '
-        '${info.longitude!.toStringAsFixed(5)})',
-      );
-    }
-    if (!info.datumShiftApplied) {
-      b.write(' — unofficial conversion, no datum transformation applied');
-    }
-    return b.toString();
   }
 
   Future<void> _copy(BuildContext context, String text, String message) async {

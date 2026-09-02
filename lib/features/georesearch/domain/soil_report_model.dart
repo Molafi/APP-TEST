@@ -603,19 +603,10 @@ class SoilReport {
     if (om != null && !om.isEmpty) {
       b.writeln('\nOfficial mapping reference:');
       b.writeln('- Authority: ${om.authority}');
-      if (om.hasGrid) {
-        b.writeln(
-          '- ${om.gridName}${om.gridCode != null ? ' (${om.gridCode})' : ''}: '
-          'E ${om.easting!.toStringAsFixed(1)}, '
-          'N ${om.northing!.toStringAsFixed(1)}',
-        );
-      }
-      if (om.hasGrid && !om.datumShiftApplied) {
-        b.writeln(
-          '- Unofficial conversion: no datum transformation applied. '
-          'Confirm against an official RJGC survey before any legal use.',
-        );
-      }
+      // Same single formatter the copy button uses, so a shared report and a
+      // copied reference can never disagree - and the caveat is inside the line.
+      final String? grid = om.gridReferenceLine();
+      if (grid != null) b.writeln('- $grid');
       if (om.portalUrl != null) b.writeln('- Geoportal: ${om.portalUrl}');
       if (om.orderUrl != null) b.writeln('- Order maps: ${om.orderUrl}');
     }

@@ -951,6 +951,33 @@ class OfficialMapReference {
   bool get isEmpty =>
       !hasGrid && tileUrl == null && portalUrl == null && orderUrl == null;
 
+  /// One-line grid reference in the form a surveyor or the mapping authority's
+  /// counter staff expects, or null when there is no grid to describe.
+  ///
+  /// The CRS is always included: a bare pair of numbers with no coordinate
+  /// system is ambiguous, and the two Jordanian grids in common use (JTM and the
+  /// older Palestine grid) give very different values for the same point.
+  ///
+  /// The unofficial-conversion caveat is part of the same string on purpose, so
+  /// the numbers cannot be copied or shared without it travelling along.
+  String? gridReferenceLine() {
+    if (!hasGrid) return null;
+    final StringBuffer b = StringBuffer(gridName);
+    if (gridCode != null) b.write(' $gridCode');
+    b.write(': E ${easting!.toStringAsFixed(1)} m');
+    b.write(', N ${northing!.toStringAsFixed(1)} m');
+    if (latitude != null && longitude != null) {
+      b.write(
+        ' (WGS84 ${latitude!.toStringAsFixed(5)}, '
+        '${longitude!.toStringAsFixed(5)})',
+      );
+    }
+    if (!datumShiftApplied) {
+      b.write(' — unofficial conversion, no datum transformation applied');
+    }
+    return b.toString();
+  }
+
   Map<String, dynamic> toMap() => {
     'authority': authority,
     'gridName': gridName,

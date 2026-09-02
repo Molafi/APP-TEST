@@ -622,6 +622,85 @@ void main() {
       expect(ref.isEmpty, isTrue);
     });
 
+    group('gridReferenceLine', () {
+      test('carries the CRS, both axes and the source coordinates', () {
+        const ref = OfficialMapReference(
+          authority: 'RJGC',
+          gridName: 'Jordan Transverse Mercator (JTM)',
+          gridCode: 'EPSG:3066',
+          easting: 397021.14,
+          northing: 536604.51,
+          latitude: 31.95389,
+          longitude: 35.91056,
+        );
+
+        final String line = ref.gridReferenceLine()!;
+        // A bare pair of numbers with no coordinate system is ambiguous: JTM and
+        // the older Palestine grid give very different values for one point.
+        expect(line, contains('EPSG:3066'));
+        expect(line, contains('E 397021.1 m'));
+        expect(line, contains('N 536604.5 m'));
+        expect(line, contains('WGS84 31.95389, 35.91056'));
+      });
+
+      test('the caveat travels inside the copied string', () {
+        const unshifted = OfficialMapReference(
+          authority: 'RJGC',
+          gridName: 'JTM',
+          easting: 1.0,
+          northing: 2.0,
+        );
+        // Copying or sharing the numbers must not be able to strip the warning.
+        expect(
+          unshifted.gridReferenceLine(),
+          contains('no datum transformation applied'),
+        );
+
+        const shifted = OfficialMapReference(
+          authority: 'RJGC',
+          gridName: 'JTM',
+          easting: 1.0,
+          northing: 2.0,
+          datumShiftApplied: true,
+        );
+        expect(
+          shifted.gridReferenceLine(),
+          isNot(contains('no datum transformation applied')),
+        );
+      });
+
+      test('is null when there is no grid', () {
+        const ref = OfficialMapReference(authority: 'A', gridName: 'G');
+        expect(ref.gridReferenceLine(), isNull);
+      });
+
+      test('the shared report reuses the same formatter', () {
+        final report = SoilReport.parse('''
+        {
+          "isSoilRelated": true, "imageQuality": "good", "nutrients": [],
+          "substances": [], "suitablePlants": [], "recommendations": [],
+          "safetyNotes": [], "confidence": "low", "needsMoreInformation": false,
+          "followUpQuestions": [], "disclaimer": "d"
+        }''').withUserInputs(
+          landRecord: null,
+          aerialImagery: null,
+          officialMap: const OfficialMapReference(
+            authority: 'RJGC',
+            gridName: 'JTM',
+            gridCode: 'EPSG:3066',
+            easting: 397021.1,
+            northing: 536604.5,
+          ),
+          purpose: SurveyPurpose.general,
+          userRequirements: null,
+        );
+
+        final String text = report.toShareText();
+        expect(text, contains(report.officialMap!.gridReferenceLine()!));
+        expect(text, contains('no datum transformation applied'));
+      });
+    });
+
     test('is persisted with the report', () {
       final report =
           SoilReport.parse('''

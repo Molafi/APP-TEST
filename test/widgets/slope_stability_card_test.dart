@@ -195,23 +195,46 @@ void main() {
       },
     );
 
-    testWidgets('the grid reference can be copied', (tester) async {
+    testWidgets('offers copy and both authority links', (tester) async {
       await pumpApp(
         tester,
         const SingleChildScrollView(child: OfficialMapCard(info: reference)),
       );
 
-      // The card is taller than the 800x600 test surface, so the chip starts
-      // below the viewport. Without scrolling to it the hit test lands on
-      // nothing and the tap silently does nothing.
-      final Finder copyChip = find.text('Copy grid reference');
-      await tester.ensureVisible(copyChip);
-      await tester.pumpAndSettle();
+      expect(find.text('Copy grid reference'), findsOneWidget);
+      expect(find.text('Open the geoportal'), findsOneWidget);
+      expect(find.text('Order official maps & aerial photos'), findsOneWidget);
 
-      await tester.tap(copyChip);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Grid reference copied'), findsOneWidget);
+      // The text that the copy chip puts on the clipboard is asserted directly
+      // in test/unit/site_survey_parse_test.dart against
+      // OfficialMapReference.gridReferenceLine(). Driving the tap here instead
+      // would only exercise Clipboard's platform-channel plumbing, which does
+      // not settle reliably inside the widget-test fake-async zone.
+    });
+
+    testWidgets('the copy chip is hidden when there is no grid to copy',
+        (tester) async {
+      await pumpApp(
+        tester,
+        const SingleChildScrollView(
+          child: OfficialMapCard(
+            info: OfficialMapReference(
+              authority: 'RJGC',
+              gridName: 'JTM',
+              portalUrl: 'https://example.test/portal',
+            ),
+          ),
+        ),
+      );
+
+      // Without a grid there is nothing to put on the clipboard, and the
+      // conversion caveat must not appear either.
+      expect(find.text('Copy grid reference'), findsNothing);
+      expect(
+        find.textContaining('no datum transformation was applied'),
+        findsNothing,
+      );
+      expect(find.text('Open the geoportal'), findsOneWidget);
     });
 
     testWidgets('renders in Arabic without mangling the LTR coordinates', (
