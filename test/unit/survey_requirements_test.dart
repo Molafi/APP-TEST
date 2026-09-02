@@ -172,8 +172,10 @@ void main() {
       expect(instruction, contains('CANNOT be determined without'));
       expect(instruction, contains('inclinometers'));
       expect(instruction, contains('piezometers'));
-      // No verdicts about individual buildings, and no cleared zones.
-      expect(instruction, contains('Never declare a specific building safe'));
+      // No verdicts about individual buildings, and no cleared zones. Matched
+      // in fragments short enough to survive the prompt's line wrapping.
+      expect(instruction, contains('Never declare a specific building'));
+      expect(instruction, contains('never imply an evacuation decision'));
       expect(instruction, contains('CONDITIONAL'));
       expect(instruction, contains('Never present a zone as already safe'));
     });
@@ -189,6 +191,12 @@ void main() {
 
       final String french = AiPrompts.soilResearchInstruction(locale: 'fr');
       expect(french, contains('French'));
+
+      // The rule has to read sensibly for English too. An earlier phrasing
+      // produced "Do not answer in English unless English is English".
+      final String english = AiPrompts.soilResearchInstruction(locale: 'en');
+      expect(english, contains('Write in English only'));
+      expect(english, isNot(contains('English is English')));
 
       // Region suffixes resolve to the base language.
       expect(AiPrompts.languageName('ar_JO'), contains('Arabic'));

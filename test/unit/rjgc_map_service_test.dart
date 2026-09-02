@@ -28,13 +28,14 @@ void main() {
     test('the meridian arc series matches numeric integration', () {
       // Independent check of the only non-trivial term: integrate the meridian
       // radius of curvature directly and compare.
+      const double e2 =
+          2 / JtmProjection.inverseFlattening -
+          1 /
+              (JtmProjection.inverseFlattening *
+                  JtmProjection.inverseFlattening);
+
       double numericArc(double latRad, {int steps = 20000}) {
         double f(double t) {
-          final double e2 =
-              2 / JtmProjection.inverseFlattening -
-              1 /
-                  (JtmProjection.inverseFlattening *
-                      JtmProjection.inverseFlattening);
           return JtmProjection.semiMajorAxis *
               (1 - e2) /
               math.pow(1 - e2 * math.pow(math.sin(t), 2), 1.5);

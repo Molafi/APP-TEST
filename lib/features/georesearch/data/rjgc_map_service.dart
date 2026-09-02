@@ -107,7 +107,7 @@ class JtmProjection {
 
     final double phi = lat * math.pi / 180.0;
     final double lam = lon * math.pi / 180.0;
-    final double lam0 = centralMeridian * math.pi / 180.0;
+    const double lam0 = centralMeridian * math.pi / 180.0;
 
     final double e2 = _e2;
     final double ep2 = e2 / (1 - e2);
@@ -191,8 +191,8 @@ class JtmProjection {
     final double lam = longitude * math.pi / 180.0;
 
     // Source (WGS84) → geocentric.
-    final double fs = 1.0 / _wgs84InvF;
-    final double e2s = 2 * fs - fs * fs;
+    const double fs = 1.0 / _wgs84InvF;
+    const double e2s = 2 * fs - fs * fs;
     final double nS =
         _wgs84A / math.sqrt(1 - e2s * math.sin(phi) * math.sin(phi));
     final double x = nS * math.cos(phi) * math.cos(lam) + dx;
@@ -267,7 +267,7 @@ class RjgcMapService {
   }) {
     if (!Environment.rjgcTilesConfigured) return null;
     if (!latitude.isFinite || !longitude.isFinite) return null;
-    final String template = Environment.rjgcTileUrl;
+    const String template = Environment.rjgcTileUrl;
 
     final int z = zoom.clamp(0, _maxZoom);
     final int n = 1 << z;

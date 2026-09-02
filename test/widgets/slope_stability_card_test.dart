@@ -201,7 +201,14 @@ void main() {
         const SingleChildScrollView(child: OfficialMapCard(info: reference)),
       );
 
-      await tester.tap(find.text('Copy grid reference'));
+      // The card is taller than the 800x600 test surface, so the chip starts
+      // below the viewport. Without scrolling to it the hit test lands on
+      // nothing and the tap silently does nothing.
+      final Finder copyChip = find.text('Copy grid reference');
+      await tester.ensureVisible(copyChip);
+      await tester.pumpAndSettle();
+
+      await tester.tap(copyChip);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.text('Grid reference copied'), findsOneWidget);

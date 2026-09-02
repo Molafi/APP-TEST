@@ -199,6 +199,36 @@ if ($src -notmatch 'desugar_jdk_libs') {
 Write-TextNoBom $gradlePath $src
 Write-Host '    desugaring + minSdk >= 23 OK'
 
+# ------------------------------------------------------- gradle.properties ----
+# Several plugins (flutter_timezone 3.x is the first to fail, but the same
+# applies to flutter_tts, share_plus, speech_to_text and others) still pin their
+# Kotlin jvmTarget to 1.8, while AGP compiles their Java at 11. Since Kotlin 1.9
+# that mismatch is a hard error and the whole build stops with "Inconsistent
+# JVM-target compatibility detected for tasks 'compileDebugJavaWithJavac' (11)
+# and 'compileDebugKotlin' (1.8)".
+#
+# Downgrading the check to a warning is safe here: 1.8 bytecode runs fine on an
+# 11 target, so the mismatch is a compatibility warning rather than a real
+# defect. Remove this line once every plugin above targets 11+.
+$propsPath = 'android/gradle.properties'
+$propKey = 'kotlin.jvm.target.validation.mode'
+if (Test-Path $propsPath) {
+  Write-Host "==> Patching $propsPath" -ForegroundColor Cyan
+  $props = Read-Text $propsPath
+  if ($props -notmatch [regex]::Escape($propKey)) {
+    $props = $props.TrimEnd() + $nl + $nl +
+      '# Plugins that still target Kotlin jvmTarget 1.8 (flutter_timezone,' + $nl +
+      '# flutter_tts, share_plus, speech_to_text) would otherwise fail the build' + $nl +
+      '# against the template''s Java 11. 1.8 bytecode is compatible with an 11' + $nl +
+      '# target, so a warning is the right severity. Remove once they are updated.' + $nl +
+      "$propKey=warning" + $nl
+    Write-TextNoBom $propsPath $props
+    Write-Host '    Kotlin JVM-target validation set to warning'
+  } else {
+    Write-Host '    already set'
+  }
+}
+
 # ------------------------------------------------------------------- plist ----
 # iOS cannot be built on Windows, but the file is patched anyway so a checkout
 # shared with a macOS machine is already correct.

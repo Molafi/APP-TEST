@@ -332,6 +332,17 @@ Android 11+ package visibility — inside `<queries>`, or `speech_to_text` and
 - Use the modern photo picker (image_picker handles this) — no legacy broad
   storage permissions.
 - Do **not** enable cleartext traffic.
+- **`android/gradle.properties`** needs:
+  ```properties
+  kotlin.jvm.target.validation.mode=warning
+  ```
+  Several plugins (`flutter_timezone`, `flutter_tts`, `share_plus`,
+  `speech_to_text`) still pin their Kotlin `jvmTarget` to 1.8 while AGP compiles
+  their Java at 11. Since Kotlin 1.9 that mismatch is a hard error and the build
+  fails with *"Inconsistent JVM-target compatibility detected for tasks
+  `compileDebugJavaWithJavac` (11) and `compileDebugKotlin` (1.8)"*. 1.8 bytecode
+  runs fine on an 11 target, so a warning is the correct severity — remove the
+  line once those plugins target 11+.
 
 ### iOS — `ios/Runner/Info.plist`
 ```xml

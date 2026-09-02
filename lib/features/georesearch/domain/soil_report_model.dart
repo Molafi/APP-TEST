@@ -570,8 +570,9 @@ class SoilReport {
       if (ss.hazardLevel != null) {
         b.writeln('- Hazard rating: ${ss.hazardLevel!.name}');
       }
-      if (ss.activityState != null)
+      if (ss.activityState != null) {
         b.writeln('- Activity: ${ss.activityState}');
+      }
       if (ss.movementDirection != null) {
         b.writeln('- Movement direction: ${ss.movementDirection}');
       }
