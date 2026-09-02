@@ -34,7 +34,10 @@ permissions:
 jobs:
   apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # A cold Gradle build (no cache, everything downloaded) is the slow case and
+    # takes well over 20 minutes, so the limit is generous enough that a first
+    # run can never be killed part-way through.
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,6 +57,19 @@ jobs:
           flutter-version: "3.35.x"
           channel: stable
           cache: true
+
+      # Most of a cold run is Gradle fetching AGP, Kotlin and the plugin
+      # dependencies. pubspec.lock is gitignored, so the key is pinned to
+      # pubspec.yaml with a prefix fallback so a near-miss still restores.
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
       - name: Install dependencies
         run: flutter pub get
@@ -98,11 +114,13 @@ jobs:
           else
             echo "AI: not configured - the app will use its offline responses"
           fi
-          # Per-ABI builds as well as the universal one: the universal APK is
-          # ~67 MB, while arm64-v8a alone is a third of that and covers every
-          # phone made in the last several years.
+          # Per-ABI only, and deliberately NOT also the universal APK: that was
+          # a second full Gradle build for the same code, which roughly doubled
+          # the run and got it cancelled before it produced anything. The three
+          # per-ABI outputs cover every Android phone between them - arm64-v8a
+          # for anything modern, armeabi-v7a for older 32-bit hardware - and
+          # arm64-v8a is about a third of the universal APK's ~67 MB.
           flutter build apk --release --split-per-abi "${DEFINES[@]}"
-          flutter build apk --release "${DEFINES[@]}"
           ls -lh build/app/outputs/flutter-apk/
 
       - name: Upload as workflow artifacts
@@ -129,7 +147,7 @@ jobs:
           # never match and the step would hang on unterminated input.
           {
             printf 'Test build. Install `app-arm64-v8a-release.apk` on any recent\n'
-            printf 'phone (use `app-release.apk` if that one refuses to install).\n\n'
+            printf 'phone; `app-armeabi-v7a-release.apk` is for older 32-bit hardware.\n\n'
             printf -- '- Signed with a **debug** key: fine for sideloading, not\n'
             printf '  publishable to Google Play.\n'
             printf -- '- If the `GROQ_API_KEY` secret was set, the key is **embedded in\n'
