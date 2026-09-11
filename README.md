@@ -436,6 +436,28 @@ Configure the AI through repository secrets, not the workflow file:
 > `RadioGroup` widget, which shipped in 3.35 (`Radio.groupValue`/`onChanged`
 > were deprecated after 3.32). Earlier SDKs will not compile.
 
+### If the installed APK crashes on launch
+
+`main()` runs inside a guarded zone with an `ErrorWidget.builder` that paints
+the actual error text, so a **Dart** startup failure shows a readable message
+(dark green screen, "PlantSense could not start") instead of a blank one. A
+crash that happens *before* the Flutter engine starts is native and cannot be
+caught in Dart — the Android "keeps stopping" dialog is that case.
+
+To tell the two apart, install the **debug** APK, which is unminified and logs
+verbosely:
+
+```bash
+flutter build apk --debug --dart-define-from-file=dart_defines.json
+```
+
+- Debug shows a message (green or red screen) → a Dart error; the text says what.
+- Debug also black-screens / "keeps stopping" → native, before Dart. Capture it
+  with `adb logcat -b crash -d` (or the phone's crash-dialog "View summary") and
+  look for `FATAL EXCEPTION` / the first `Caused by:` line.
+- Debug works but release crashes → R8/tree-shaking stripped something a plugin
+  needs at runtime; add the plugin's ProGuard keep rules.
+
 ---
 
 ## 🌟 Additional features

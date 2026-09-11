@@ -4,9 +4,25 @@
 class AppConfig {
   const AppConfig._();
 
-  // --- Groq / AI -----------------------------------------------------------
-  // Groq exposes an OpenAI-compatible Chat Completions API.
+  // --- Direct AI providers -------------------------------------------------
+  // Both expose an OpenAI-compatible Chat Completions API, so the single
+  // OpenAiCompatibleGateway serves either one by changing only the base URL.
   static const String groqApiBase = 'https://api.groq.com/openai/v1';
+  static const String mistralApiBase = 'https://api.mistral.ai/v1';
+
+  /// Base URL for a DEV-ONLY direct provider name.
+  ///
+  /// A pure function of the name rather than a lookup against the compile-time
+  /// defines, so every branch is unit-testable. Unknown, empty and misspelled
+  /// names fall back to Groq: silently pointing at the wrong host would surface
+  /// as a confusing 401 from a provider the developer never chose.
+  static String directAiBaseFor(String provider) {
+    return switch (provider.trim().toLowerCase()) {
+      'mistral' => mistralApiBase,
+      _ => groqApiBase,
+    };
+  }
+
   static const Duration aiTimeout = Duration(seconds: 45);
   static const int aiMaxRetries = 3;
   static const int maxInputChars = 4000;
