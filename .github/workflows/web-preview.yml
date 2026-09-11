@@ -1,0 +1,93 @@
+name: Web preview
+
+# Builds the Flutter web app and deploys it to GitHub Pages, giving a free,
+# public, installable-on-any-phone URL:  https://<owner>.github.io/APP-TEST/
+#
+# Web runs entirely in the browser with no Android/iOS native layer, so it is
+# the quickest way to exercise the UI, localization and GeoResearch flows
+# without a device — and it sidesteps any native launch crash.
+#
+# IMPORTANT: the web bundle is public and unauthenticated, so it is built in
+# DEMO mode with NO API key. A key placed in client-side web code is readable by
+# anyone in plain text, and browsers block direct calls to the Groq/Mistral APIs
+# with CORS regardless. The demo AI responses are fully localized (including
+# Arabic), so language, layout and the survey UI are all still testable. To wire
+# real AI on the web, deploy the Cloud Function proxy and point the build at it
+# with AI_BACKEND_URL.
+#
+# One-time setup: repository Settings -> Pages -> "Build and deployment" ->
+# Source = "GitHub Actions".
+#
+# Runs from the Actions tab ("Web preview" -> "Run workflow") once this file is
+# on the default branch, or immediately from any branch by pushing a tag:
+#   git tag web-v1 && git push origin web-v1
+on:
+  workflow_dispatch:
+  push:
+    tags: ["web-v*"]
+
+# Pages deployment needs these; contents stays read-only.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One in-flight deploy at a time; do not cancel a running one half-way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.x"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # web/ is not committed (each platform project is generated). Only the web
+      # runner is needed here, so this is scoped to --platforms=web rather than
+      # the full android/ios setup script.
+      - name: Generate the web project
+        run: flutter create --platforms=web --org com.molafi .
+
+      # base-href must match the project-site subpath so asset URLs resolve at
+      # https://<owner>.github.io/APP-TEST/ rather than the domain root.
+      - name: Build web (demo mode, no key)
+        run: |
+          flutter build web --release \
+            --base-href /APP-TEST/ \
+            --dart-define=DEMO_MODE=true \
+            --dart-define=USE_FIREBASE=false
+
+      # SPA fallback: Pages serves 404.html for unknown paths, and copying
+      # index.html there lets a deep link / refresh load the app instead of a
+      # 404. Harmless for a hash-routed app, correct for a path-routed one.
+      - name: Add SPA 404 fallback
+        run: cp build/web/index.html build/web/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
