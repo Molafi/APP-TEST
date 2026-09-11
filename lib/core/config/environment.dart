@@ -33,17 +33,41 @@ class Environment {
     defaultValue: '',
   );
 
-  /// DEV-ONLY escape hatch for calling Groq directly from the client. Guarded
-  /// so it can never be enabled accidentally in a release without an explicit
-  /// define. Use only for local development.
+  /// DEV-ONLY escape hatch for calling a provider directly from the client.
+  /// Guarded so it can never be enabled accidentally in a release without an
+  /// explicit define. Use only for local development.
+  ///
+  /// `ALLOW_DIRECT_GROQ` is kept as a backward-compatible alias so existing
+  /// dart-define files and CI configs keep working after Mistral was added.
+  static const bool _allowDirectAi = bool.fromEnvironment(
+    'ALLOW_DIRECT_AI',
+    defaultValue: false,
+  );
   static const bool allowDirectGroq = bool.fromEnvironment(
     'ALLOW_DIRECT_GROQ',
     defaultValue: false,
   );
+  static bool get allowDirectAi => _allowDirectAi || allowDirectGroq;
+
+  /// Which direct provider the dev gateway targets: `groq` (default) or
+  /// `mistral`. Both speak the OpenAI-compatible Chat Completions API, so only
+  /// the base URL, key and model names differ.
+  static const String aiProvider = String.fromEnvironment(
+    'AI_PROVIDER',
+    defaultValue: 'groq',
+  );
+
+  static bool get isMistral => aiProvider.trim().toLowerCase() == 'mistral';
 
   /// DEV-ONLY key supplied via --dart-define. Empty in all committed configs.
   static const String groqApiKey = String.fromEnvironment(
     'GROQ_API_KEY',
+    defaultValue: '',
+  );
+
+  /// DEV-ONLY Mistral key. Empty in all committed configs.
+  static const String mistralApiKey = String.fromEnvironment(
+    'MISTRAL_API_KEY',
     defaultValue: '',
   );
 
@@ -74,6 +98,45 @@ class Environment {
       _dedupe([groqTextModel, groqTextModelFallback]);
   static List<String> get groqVisionModels =>
       _dedupe([groqVisionModel, groqVisionModelFallback]);
+
+  // --- Mistral models --------------------------------------------------------
+  // mistral-small-latest handles BOTH text and vision (Small 3.1+ added image
+  // understanding), so it is the default for each. Fallbacks are empty by
+  // default rather than guessed: naming a model that is not on the account's
+  // tier would just add a failing attempt before the working one.
+
+  static const String mistralTextModel = String.fromEnvironment(
+    'MISTRAL_TEXT_MODEL',
+    defaultValue: 'mistral-small-latest',
+  );
+  static const String mistralVisionModel = String.fromEnvironment(
+    'MISTRAL_VISION_MODEL',
+    defaultValue: 'mistral-small-latest',
+  );
+  static const String mistralTextModelFallback = String.fromEnvironment(
+    'MISTRAL_TEXT_MODEL_FALLBACK',
+    defaultValue: '',
+  );
+  static const String mistralVisionModelFallback = String.fromEnvironment(
+    'MISTRAL_VISION_MODEL_FALLBACK',
+    defaultValue: '',
+  );
+
+  static List<String> get mistralTextModels =>
+      _dedupe([mistralTextModel, mistralTextModelFallback]);
+  static List<String> get mistralVisionModels =>
+      _dedupe([mistralVisionModel, mistralVisionModelFallback]);
+
+  // --- Provider-agnostic accessors the gateway reads -------------------------
+  // The gateway asks for "the direct key / models / base" and never branches on
+  // the provider itself, so adding a third OpenAI-compatible provider later is
+  // a change confined to this file.
+
+  static String get directAiKey => isMistral ? mistralApiKey : groqApiKey;
+  static List<String> get directTextModels =>
+      isMistral ? mistralTextModels : groqTextModels;
+  static List<String> get directVisionModels =>
+      isMistral ? mistralVisionModels : groqVisionModels;
 
   static List<String> _dedupe(List<String> models) {
     final seen = <String>{};
@@ -135,7 +198,7 @@ class Environment {
   /// must fall back to canned demo AI responses.
   static bool get aiUnavailable {
     if (useAiBackend) return aiBackendUrl.isEmpty;
-    if (allowDirectGroq) return groqApiKey.isEmpty;
+    if (allowDirectAi) return directAiKey.isEmpty;
     return true;
   }
 

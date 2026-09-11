@@ -124,7 +124,7 @@ class BackendAiGateway extends AiGateway {
 }
 
 /// DEV-ONLY direct transport that calls Groq's OpenAI-compatible Chat
-/// Completions API from the client. Guarded by [Environment.allowDirectGroq];
+/// Completions API from the client. Guarded by [Environment.allowDirectAi];
 /// never ships with a committed key (supplied via --dart-define). The same
 /// class works for any OpenAI-compatible provider by changing [baseUrl].
 class OpenAiCompatibleGateway extends AiGateway {
@@ -310,12 +310,14 @@ final aiGatewayProvider = Provider<AiGateway>((ref) {
       idTokenProvider: firebaseIdTokenImpl,
     );
   }
-  if (Environment.allowDirectGroq) {
+  if (Environment.allowDirectAi) {
+    // Groq or Mistral, chosen by AI_PROVIDER — both are OpenAI-compatible, so
+    // only the base URL, key and model list differ.
     return OpenAiCompatibleGateway(
-      baseUrl: AppConfig.groqApiBase,
-      apiKey: Environment.groqApiKey,
-      textModels: Environment.groqTextModels,
-      visionModels: Environment.groqVisionModels,
+      baseUrl: AppConfig.directAiBaseFor(Environment.aiProvider),
+      apiKey: Environment.directAiKey,
+      textModels: Environment.directTextModels,
+      visionModels: Environment.directVisionModels,
     );
   }
   return DemoAiGateway();
