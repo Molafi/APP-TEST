@@ -38,10 +38,14 @@ class AppRouter extends ConsumerWidget {
           error: (_, __) => const LoginScreen(),
           data: (user) {
             if (user == null) return const LoginScreen();
-            // One-time purpose picker: null means the user has not chosen yet.
-            // Branch only on this resolved value to stay flicker-free.
-            final SurveyPurpose? purpose = ref.watch(appPurposeProvider);
-            if (purpose == null) return const PurposeScreen();
+            // Purpose picker on EVERY entry to the app, not just the first.
+            // Gated on the session flag rather than the persisted purpose: the
+            // flag resets on each launch (fresh provider container), while the
+            // stored purpose survives to pre-select the last choice.
+            final bool confirmed = ref.watch(
+              purposeConfirmedThisSessionProvider,
+            );
+            if (!confirmed) return const PurposeScreen();
             return const HomeScreen();
           },
         );
