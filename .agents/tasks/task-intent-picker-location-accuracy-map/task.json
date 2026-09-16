@@ -1,0 +1,7 @@
+{
+  "task_id": "task-intent-picker-location-accuracy-map",
+  "task_description": "Implement three user-requested features in the PlantSense AI Flutter app on a new branch off feat/plantsense-ai-app: (1) a first-launch PURPOSE/INTENT picker at app start reusing the existing SurveyPurpose enum, which sets the initial Home tab and seeds the GeoResearch survey purpose and is re-choosable from Settings; (2) fix inaccurate location by raising LocationAccuracy from low to high with a timeout; (3) an interactive map location picker (flutter_map + latlong2 + OpenStreetMap tiles, no API key) letting the user drop/drag a pin, reverse-geocode it, and selectManual. All strings localized EN+AR (fr/es English fallback) and hand-wired through all 5 generated l10n files since gen-l10n cannot run in this sandbox. Native needs go into both setup scripts. The user must run flutter pub get / analyze / test / dart format on their toolchain.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

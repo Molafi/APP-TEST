@@ -1,0 +1,35 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "Map location picker (user item 3: 'make the app so I can point the location'). Add an interactive map where the user drops/drags a pin to choose coordinates, alongside the existing 'Use my location' and text search in lib/features/location/presentation/location_selector.dart. Use flutter_map + latlong2 with OpenStreetMap tiles (no API key, works on Android + web, consistent with the app's key-free OSM/Nominatim ethos; google_maps_flutter is rejected because it needs a key and does not run on Flutter web, which this app now deploys to). On confirm, reverse-geocode the pinned lat/lon via NominatimService.reverse to fill city/country and call LocationController.selectManual. OSM tile attribution must stay visible. Functionally independent of the other features.",
+  "status": "pending",
+  "steps": [
+    "Add dependencies to pubspec.yaml near the location deps: 'flutter_map: ^7.0.2' and 'latlong2: ^0.9.1' (known compatible with Flutter 3.35 / Dart 3.9). The sandbox cannot resolve pub; note in the PR body that the user must run flutter pub get. Add a brief comment explaining the key-free OSM choice.",
+    "Create lib/features/location/presentation/map_location_picker.dart: a ConsumerStatefulWidget that shows a FlutterMap with an OpenStreetMap TileLayer (urlTemplate 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', userAgentPackageName 'plantsense_ai') centred on the current selected location if any (ref.read(selectedLocationProvider)) else a sensible default (the demo Amman coords 31.9539,35.9106). Let the user move the pin by tapping the map (onTap sets the pin LatLng) and/or dragging a centre marker; show a fixed centre crosshair or a MarkerLayer marker at the chosen point. Include a visible OSM attribution (RichAttributionWidget/SimpleAttributionWidget or a small localized '© OpenStreetMap contributors' text) matching the precedent that the aerial card keeps Esri attribution visible. Provide a confirm button (localized) and a loading state while reverse-geocoding.",
+    "On confirm: read the pinned lat/lon, call ref.read(nominatimServiceProvider).reverse(lat, lon, locale: ref.read(appLocaleCodeProvider)); build a PlantLocation from the result, or when reverse returns null fall back to PlantLocation(latitude, longitude, city: <localized 'Dropped pin' label>, isManual: true); then ref.read(locationControllerProvider.notifier).selectManual(loc) and pop/close, invoking the onSelected callback.",
+    "Integrate into location_selector.dart: add a third option (an OutlinedButton.icon with Icons.map_outlined labelled with a new localized string like 'Pick on map') below 'Use my location' that opens the MapLocationPicker (push a full-screen route or a large modal bottom sheet). When the picker selects a location, propagate widget.onSelected so the existing bottom sheet closes. Keep the existing 'Use my location' and search UI unchanged.",
+    "Graceful web/degradation: flutter_map works on web, but guard tile loading errors (TileLayer errorTileCallback or a fallback message) so a blocked tile server does not crash the picker. Ensure the picker is sized so it works in both a full-screen route and a bottom sheet.",
+    "Native config: OSM raster tiles over flutter_map need only INTERNET (already added by both setup scripts) and no extra Android/iOS permission. Confirm this and add nothing to the scripts unless flutter_map's platform docs require it for the chosen version; if so, add the same entry to BOTH tool/setup_platforms.sh and tool/setup_platforms.ps1.",
+    "Add ARB keys to BOTH app_en.arb and app_ar.arb for: the 'Pick on map' button, the map picker screen title, the confirm button, and the 'Dropped pin' fallback city label. Keep exact key parity and add @-metadata mirroring neighbouring keys.",
+    "Hand-add each new key to all 5 generated l10n files (abstract getter in app_localizations.dart + en/ar real strings + es/fr English fallback in their impl files), matching dart format's 80-column two-line wrap.",
+    "Add a provider test test/providers/map_picker_flow_test.dart driving the reverse-geocode-then-selectManual flow with a fake NominatimService: override nominatimServiceProvider with a fake returning a known PlantLocation for given coords, invoke the same logic the confirm button runs (extract the confirm handler into a small testable method/function if the button closure is not directly callable), and assert locationControllerProvider ends with status ready and the expected location; add a second case where reverse returns null and assert the fallback PlantLocation (correct lat/lon, fallback city, isManual true) is applied. Follow the ProviderContainer + defaultOverrides pattern; add a fake NominatimService to test/mocks/mocks.dart or build a purpose-made fake in the test file.",
+    "Optionally update README 'Third-party integrations' to mention flutter_map + OSM tiles, consistent with the existing OSM/Esri documentation."
+  ],
+  "acceptance_criteria": [
+    "pubspec.yaml lists flutter_map ^7.0.2 and latlong2 ^0.9.1; no google_maps_flutter added.",
+    "location_selector.dart offers a 'Pick on map' action that opens an interactive OSM map where the user can move a pin.",
+    "Confirming the pin reverse-geocodes via NominatimService.reverse and calls LocationController.selectManual; when reverse returns null a fallback PlantLocation with the pinned coords and a localized 'Dropped pin' city is applied.",
+    "OSM '© OpenStreetMap contributors' attribution is visible on the map.",
+    "Map picker builds for web (raster TileLayer) and handles tile load failure without crashing.",
+    "New ARB keys keep app_en.arb/app_ar.arb parity and exist in all 5 generated l10n files (fr/es English fallback).",
+    "test/providers/map_picker_flow_test.dart passes (verified by the user): both the reverse-geocode-success and reverse-returns-null fallback paths call selectManual with the correct PlantLocation."
+  ],
+  "verification": [
+    "grep -n 'flutter_map\\|latlong2' pubspec.yaml shows both deps; grep confirms no google_maps_flutter",
+    "python3 parity + getter-coverage harness pass for the new keys",
+    "grep -n 'OpenStreetMap' lib/features/location/presentation/map_location_picker.dart confirms attribution",
+    "User runs: flutter pub get && flutter analyze && flutter test && dart format lib test integration_test"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
