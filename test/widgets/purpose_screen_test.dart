@@ -92,19 +92,22 @@ void main() {
     expect(container.read(purposeConfirmedThisSessionProvider), isTrue);
   });
 
-  test('the picker is not skipped on a launch that already has a purpose', () async {
-    // The regression this guards: gating the router on the persisted purpose
-    // would skip the screen for every returning user. A fresh container is what
-    // an app launch looks like, so the session flag must start false even when a
-    // purpose is stored.
-    final container = ProviderContainer(
-      overrides: await defaultOverrides(
-        prefs: {AppConstants.prefAppPurpose: SurveyPurpose.building.name},
-      ),
-    );
-    addTearDown(container.dispose);
+  test(
+    'the picker is not skipped on a launch that already has a purpose',
+    () async {
+      // The regression this guards: gating the router on the persisted purpose
+      // would skip the screen for every returning user. A fresh container is what
+      // an app launch looks like, so the session flag must start false even when a
+      // purpose is stored.
+      final container = ProviderContainer(
+        overrides: await defaultOverrides(
+          prefs: {AppConstants.prefAppPurpose: SurveyPurpose.building.name},
+        ),
+      );
+      addTearDown(container.dispose);
 
-    expect(container.read(appPurposeProvider), SurveyPurpose.building);
-    expect(container.read(purposeConfirmedThisSessionProvider), isFalse);
-  });
+      expect(container.read(appPurposeProvider), SurveyPurpose.building);
+      expect(container.read(purposeConfirmedThisSessionProvider), isFalse);
+    },
+  );
 }
