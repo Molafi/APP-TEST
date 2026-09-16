@@ -95,13 +95,18 @@ class SettingsScreen extends ConsumerWidget {
             groupValue: purpose,
             onChanged: (v) {
               final SurveyPurpose chosen = v ?? SurveyPurpose.general;
-              ref.read(appPurposeProvider.notifier).setPurpose(chosen);
+              // Set the target Home tab and seed the GeoResearch survey BEFORE
+              // the persisted purpose write. setPurpose flips provider state
+              // (and, on first choice, the router) synchronously, so ordering
+              // the tab/seed first keeps the first Home frame on the right tab
+              // instead of flashing the default Chat tab for a frame.
               ref.read(homeTabProvider.notifier).state = homeTabForPurpose(
                 chosen,
               );
               ref
                   .read(soilResearchControllerProvider.notifier)
                   .setPurpose(chosen);
+              ref.read(appPurposeProvider.notifier).setPurpose(chosen);
             },
             child: Column(
               children: [

@@ -41,9 +41,14 @@ class _PurposeScreenState extends ConsumerState<PurposeScreen> {
 
   Future<void> _confirm() async {
     final SurveyPurpose chosen = _selected;
-    await ref.read(appPurposeProvider.notifier).setPurpose(chosen);
+    // Set the target Home tab and seed the GeoResearch survey BEFORE the
+    // persisted purpose write. setPurpose assigns provider state synchronously,
+    // which flips the router to Home; doing that last would let Home build one
+    // frame on its default Chat tab before correcting. Ordering the tab/seed
+    // first means the very first Home frame is already on the right tab.
     ref.read(homeTabProvider.notifier).state = homeTabForPurpose(chosen);
     ref.read(soilResearchControllerProvider.notifier).setPurpose(chosen);
+    await ref.read(appPurposeProvider.notifier).setPurpose(chosen);
   }
 
   @override

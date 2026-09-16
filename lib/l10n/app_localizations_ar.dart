@@ -849,6 +849,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mapDroppedPin => 'دبوس محدد';
 
   @override
+  String get mapTileError =>
+      'تعذّر تحميل الخريطة. تحقّق من اتصالك وحاول مرة أخرى.';
+
+  @override
   String get profileTitle => 'الملف الشخصي';
 
   @override

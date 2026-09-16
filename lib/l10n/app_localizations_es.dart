@@ -856,6 +856,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mapDroppedPin => 'Dropped pin';
 
   @override
+  String get mapTileError =>
+      'Couldn\'t load the map. Check your connection and try again.';
+
+  @override
   String get profileTitle => 'Perfil';
 
   @override

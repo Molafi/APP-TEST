@@ -162,7 +162,7 @@ class _MapLocationPickerState extends ConsumerState<MapLocationPicker> {
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.sm),
                       child: Text(
-                        l10n.geocodeFailed,
+                        l10n.mapTileError,
                         style: TextStyle(
                           color: theme.colorScheme.onErrorContainer,
                         ),

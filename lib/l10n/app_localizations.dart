@@ -1704,6 +1704,12 @@ abstract class AppLocalizations {
   /// **'Dropped pin'**
   String get mapDroppedPin;
 
+  /// No description provided for @mapTileError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the map. Check your connection and try again.'**
+  String get mapTileError;
+
   /// No description provided for @profileTitle.
   ///
   /// In en, this message translates to:
