@@ -8,10 +8,7 @@ void main() {
         AppConfig.directAiBaseFor('groq'),
         'https://api.groq.com/openai/v1',
       );
-      expect(
-        AppConfig.directAiBaseFor('mistral'),
-        'https://api.mistral.ai/v1',
-      );
+      expect(AppConfig.directAiBaseFor('mistral'), 'https://api.mistral.ai/v1');
     });
 
     test('is case- and whitespace-insensitive', () {

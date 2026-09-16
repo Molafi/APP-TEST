@@ -94,10 +94,7 @@ class _MapLocationPickerState extends ConsumerState<MapLocationPicker> {
             AppSpacing.lg,
             AppSpacing.sm,
           ),
-          child: Text(
-            l10n.mapPickerTitle,
-            style: theme.textTheme.titleLarge,
-          ),
+          child: Text(l10n.mapPickerTitle, style: theme.textTheme.titleLarge),
         ),
         Expanded(
           child: Stack(

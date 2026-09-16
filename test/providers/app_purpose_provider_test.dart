@@ -18,12 +18,15 @@ void main() {
     return container;
   }
 
-  test('defaults to null when no purpose is stored (picker shows once)', () async {
-    final container = await makeContainer();
+  test(
+    'defaults to null when no purpose is stored (picker shows once)',
+    () async {
+      final container = await makeContainer();
 
-    expect(container.read(appPurposeProvider), isNull);
-    expect(container.read(purposeChosenProvider), isFalse);
-  });
+      expect(container.read(appPurposeProvider), isNull);
+      expect(container.read(purposeChosenProvider), isFalse);
+    },
+  );
 
   test('setPurpose persists the choice and updates state', () async {
     final container = await makeContainer();
@@ -54,13 +57,16 @@ void main() {
     expect(container.read(purposeChosenProvider), isTrue);
   });
 
-  test('an unknown stored value degrades to general via tolerant parsing', () async {
-    final container = await makeContainer(
-      prefs: {AppConstants.prefAppPurpose: 'not-a-real-purpose'},
-    );
+  test(
+    'an unknown stored value degrades to general via tolerant parsing',
+    () async {
+      final container = await makeContainer(
+        prefs: {AppConstants.prefAppPurpose: 'not-a-real-purpose'},
+      );
 
-    // surveyPurposeFrom maps unknown -> general; still counts as chosen.
-    expect(container.read(appPurposeProvider), SurveyPurpose.general);
-    expect(container.read(purposeChosenProvider), isTrue);
-  });
+      // surveyPurposeFrom maps unknown -> general; still counts as chosen.
+      expect(container.read(appPurposeProvider), SurveyPurpose.general);
+      expect(container.read(purposeChosenProvider), isTrue);
+    },
+  );
 }

@@ -22,9 +22,8 @@ Future<void> main() async {
   // Render any framework build/layout error as visible text rather than the
   // default blank container in release. Kept lightweight and dependency-free so
   // it cannot itself fail.
-  ErrorWidget.builder = (FlutterErrorDetails details) => _StartupErrorView(
-    message: details.exceptionAsString(),
-  );
+  ErrorWidget.builder = (FlutterErrorDetails details) =>
+      _StartupErrorView(message: details.exceptionAsString());
 
   runZonedGuarded<Future<void>>(
     () async {

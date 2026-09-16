@@ -25,9 +25,7 @@ void main() {
     final container = ProviderContainer(
       overrides: [
         ...overrides,
-        nominatimServiceProvider.overrideWith(
-          (ref) => buildGeocoder(cache),
-        ),
+        nominatimServiceProvider.overrideWith((ref) => buildGeocoder(cache)),
       ],
     );
     addTearDown(container.dispose);

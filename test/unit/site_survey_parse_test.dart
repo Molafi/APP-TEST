@@ -675,25 +675,26 @@ void main() {
       });
 
       test('the shared report reuses the same formatter', () {
-        final report = SoilReport.parse('''
+        final report =
+            SoilReport.parse('''
         {
           "isSoilRelated": true, "imageQuality": "good", "nutrients": [],
           "substances": [], "suitablePlants": [], "recommendations": [],
           "safetyNotes": [], "confidence": "low", "needsMoreInformation": false,
           "followUpQuestions": [], "disclaimer": "d"
         }''').withUserInputs(
-          landRecord: null,
-          aerialImagery: null,
-          officialMap: const OfficialMapReference(
-            authority: 'RJGC',
-            gridName: 'JTM',
-            gridCode: 'EPSG:3066',
-            easting: 397021.1,
-            northing: 536604.5,
-          ),
-          purpose: SurveyPurpose.general,
-          userRequirements: null,
-        );
+              landRecord: null,
+              aerialImagery: null,
+              officialMap: const OfficialMapReference(
+                authority: 'RJGC',
+                gridName: 'JTM',
+                gridCode: 'EPSG:3066',
+                easting: 397021.1,
+                northing: 536604.5,
+              ),
+              purpose: SurveyPurpose.general,
+              userRequirements: null,
+            );
 
         final String text = report.toShareText();
         expect(text, contains(report.officialMap!.gridReferenceLine()!));

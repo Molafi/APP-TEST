@@ -212,8 +212,9 @@ void main() {
       // not settle reliably inside the widget-test fake-async zone.
     });
 
-    testWidgets('the copy chip is hidden when there is no grid to copy',
-        (tester) async {
+    testWidgets('the copy chip is hidden when there is no grid to copy', (
+      tester,
+    ) async {
       await pumpApp(
         tester,
         const SingleChildScrollView(

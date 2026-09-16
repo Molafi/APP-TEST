@@ -109,6 +109,19 @@ class AppLocalizationsEs extends AppLocalizations {
       'AI results may be inaccurate. You control permissions, image retention and your data.';
 
   @override
+  String get purposeScreenTitle => 'What would you like help with?';
+
+  @override
+  String get purposeScreenSubtitle =>
+      'Choose your main goal so we can open the right tools first. You can change this anytime in Settings.';
+
+  @override
+  String get purposeScreenContinue => 'Continue';
+
+  @override
+  String get settingsPurpose => 'What you\'re here for';
+
+  @override
   String get login => 'Iniciar sesión';
 
   @override
@@ -1338,17 +1351,4 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get demoModeBannerAiReady =>
       'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.';
-
-  @override
-  String get purposeScreenTitle => 'What would you like help with?';
-
-  @override
-  String get purposeScreenSubtitle =>
-      'Choose your main goal so we can open the right tools first. You can change this anytime in Settings.';
-
-  @override
-  String get purposeScreenContinue => 'Continue';
-
-  @override
-  String get settingsPurpose => 'What you\'re here for';
 }

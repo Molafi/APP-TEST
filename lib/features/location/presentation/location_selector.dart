@@ -71,10 +71,8 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
           ),
           const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
-            onPressed: () => showMapLocationPicker(
-              context,
-              onSelected: widget.onSelected,
-            ),
+            onPressed: () =>
+                showMapLocationPicker(context, onSelected: widget.onSelected),
             icon: const Icon(Icons.map_outlined),
             label: Text(l10n.locationPickOnMap),
           ),
