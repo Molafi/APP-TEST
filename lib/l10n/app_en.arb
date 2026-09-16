@@ -285,6 +285,10 @@
   "geocodeFailed": "Couldn't determine your city. Try searching manually.",
   "selectCity": "Select a city",
   "noResults": "No matching places found",
+  "locationPickOnMap": "Pick on map",
+  "mapPickerTitle": "Point to your location",
+  "mapPickerConfirm": "Use this location",
+  "mapDroppedPin": "Dropped pin",
 
   "profileTitle": "Profile",
   "editProfile": "Edit profile",

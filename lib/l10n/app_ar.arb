@@ -285,6 +285,10 @@
   "geocodeFailed": "تعذّر تحديد مدينتك. حاول البحث يدويًا.",
   "selectCity": "اختر مدينة",
   "noResults": "لا توجد أماكن مطابقة",
+  "locationPickOnMap": "اختر على الخريطة",
+  "mapPickerTitle": "حدّد موقعك",
+  "mapPickerConfirm": "استخدم هذا الموقع",
+  "mapDroppedPin": "دبوس محدد",
 
   "profileTitle": "الملف الشخصي",
   "editProfile": "تعديل الملف",

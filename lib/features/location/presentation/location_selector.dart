@@ -6,6 +6,7 @@ import '../../../core/errors/error_mapper.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/location_provider.dart';
 import '../domain/location_model.dart';
+import 'map_location_picker.dart';
 
 /// Reusable location picker: "Use my location" plus debounced city search with
 /// manual fallback. Handles denied / permanently-denied / services-off states.
@@ -67,6 +68,15 @@ class _LocationSelectorState extends ConsumerState<LocationSelector> {
                   )
                 : const Icon(Icons.my_location),
             label: Text(l10n.useMyLocation),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton.icon(
+            onPressed: () => showMapLocationPicker(
+              context,
+              onSelected: widget.onSelected,
+            ),
+            icon: const Icon(Icons.map_outlined),
+            label: Text(l10n.locationPickOnMap),
           ),
           if (state.status == LocationStatus.permanentlyDenied ||
               state.status == LocationStatus.servicesDisabled ||

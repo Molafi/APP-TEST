@@ -837,6 +837,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noResults => 'لا توجد أماكن مطابقة';
 
   @override
+  String get locationPickOnMap => 'اختر على الخريطة';
+
+  @override
+  String get mapPickerTitle => 'حدّد موقعك';
+
+  @override
+  String get mapPickerConfirm => 'استخدم هذا الموقع';
+
+  @override
+  String get mapDroppedPin => 'دبوس محدد';
+
+  @override
   String get profileTitle => 'الملف الشخصي';
 
   @override

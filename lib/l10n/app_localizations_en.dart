@@ -844,6 +844,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noResults => 'No matching places found';
 
   @override
+  String get locationPickOnMap => 'Pick on map';
+
+  @override
+  String get mapPickerTitle => 'Point to your location';
+
+  @override
+  String get mapPickerConfirm => 'Use this location';
+
+  @override
+  String get mapDroppedPin => 'Dropped pin';
+
+  @override
   String get profileTitle => 'Profile';
 
   @override

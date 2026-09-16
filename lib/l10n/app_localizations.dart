@@ -1680,6 +1680,30 @@ abstract class AppLocalizations {
   /// **'No matching places found'**
   String get noResults;
 
+  /// No description provided for @locationPickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on map'**
+  String get locationPickOnMap;
+
+  /// No description provided for @mapPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Point to your location'**
+  String get mapPickerTitle;
+
+  /// No description provided for @mapPickerConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this location'**
+  String get mapPickerConfirm;
+
+  /// No description provided for @mapDroppedPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropped pin'**
+  String get mapDroppedPin;
+
   /// No description provided for @profileTitle.
   ///
   /// In en, this message translates to:

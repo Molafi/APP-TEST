@@ -222,6 +222,13 @@ bytes, and never returns the key.
   the AI never supplies an image URL. The attribution string returned by the
   service **must stay visible** in the UI. Review Esri's terms before commercial
   use and consider a licensed basemap for production.
+- **flutter_map + OpenStreetMap tiles** — the map location picker
+  (`MapLocationPicker`) renders key-free OSM raster tiles
+  (`https://tile.openstreetmap.org/{z}/{x}/{y}.png`) so the user can drop a pin;
+  the confirmed coordinates are reverse-geocoded via Nominatim. Chosen over
+  `google_maps_flutter` because it needs no API key and runs on Flutter web. The
+  `© OpenStreetMap contributors` attribution **must stay visible**; respect the
+  OSM tile usage policy (light traffic, valid `User-Agent`).
 
 ---
 
