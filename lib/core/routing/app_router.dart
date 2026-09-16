@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/application/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
-import '../../features/georesearch/domain/site_survey_model.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/onboarding/application/app_purpose_provider.dart';
 import '../../features/onboarding/application/onboarding_provider.dart';
