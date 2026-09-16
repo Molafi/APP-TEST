@@ -18,7 +18,11 @@ import 'core/services/local_cache_service.dart';
 /// readable, screenshottable error. (A crash in the native layer, before the
 /// Flutter engine starts, is still outside Dart's reach — that is what the
 /// debug-vs-release install test in the README distinguishes.)
-Future<void> main() async {
+// Deliberately synchronous: the async work lives inside the guarded zone below.
+// A `Future<void> main() async` would make the un-awaited runZonedGuarded call an
+// `unawaited_futures` violation, and awaiting it would serve no purpose since
+// runApp hands control to the framework rather than completing meaningful work.
+void main() {
   // Render any framework build/layout error as visible text rather than the
   // default blank container in release. Kept lightweight and dependency-free so
   // it cannot itself fail.

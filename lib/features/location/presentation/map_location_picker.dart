@@ -141,8 +141,8 @@ class _MapLocationPickerState extends ConsumerState<MapLocationPicker> {
                     ],
                   ),
                   // OSM attribution must remain visible per the tile policy.
-                  RichAttributionWidget(
-                    attributions: const [
+                  const RichAttributionWidget(
+                    attributions: [
                       TextSourceAttribution('© OpenStreetMap contributors'),
                     ],
                   ),
