@@ -8,6 +8,11 @@ import '../../../core/services/telemetry_service.dart';
 import '../../../core/theme/locale_provider.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../georesearch/application/soil_research_provider.dart';
+import '../../georesearch/domain/site_survey_model.dart';
+import '../../georesearch/presentation/widgets/purpose_label.dart';
+import '../../home/application/home_provider.dart';
+import '../../onboarding/application/app_purpose_provider.dart';
 import '../application/settings_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -22,6 +27,8 @@ class SettingsScreen extends ConsumerWidget {
     final bool retention = ref.watch(imageRetentionProvider);
     final bool notifications = ref.watch(notificationsEnabledProvider);
     final bool analytics = ref.watch(analyticsEnabledProvider);
+    final SurveyPurpose purpose =
+        ref.watch(appPurposeProvider) ?? SurveyPurpose.general;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.editProfile)),
@@ -79,6 +86,35 @@ class SettingsScreen extends ConsumerWidget {
                   value: ThemeMode.dark,
                   title: Text(l10n.themeDark),
                 ),
+              ],
+            ),
+          ),
+          const Divider(),
+          _SectionHeader(title: l10n.settingsPurpose),
+          RadioGroup<SurveyPurpose>(
+            groupValue: purpose,
+            onChanged: (v) {
+              final SurveyPurpose chosen = v ?? SurveyPurpose.general;
+              // Set the target Home tab and seed the GeoResearch survey BEFORE
+              // the persisted purpose write. setPurpose flips provider state
+              // (and, on first choice, the router) synchronously, so ordering
+              // the tab/seed first keeps the first Home frame on the right tab
+              // instead of flashing the default Chat tab for a frame.
+              ref.read(homeTabProvider.notifier).state = homeTabForPurpose(
+                chosen,
+              );
+              ref
+                  .read(soilResearchControllerProvider.notifier)
+                  .setPurpose(chosen);
+              ref.read(appPurposeProvider.notifier).setPurpose(chosen);
+            },
+            child: Column(
+              children: [
+                for (final SurveyPurpose p in SurveyPurpose.values)
+                  RadioListTile<SurveyPurpose>(
+                    value: p,
+                    title: Text(purposeLabel(p, l10n)),
+                  ),
               ],
             ),
           ),

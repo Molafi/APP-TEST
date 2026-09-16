@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Establish a green static baseline before making changes, since the sandbox has no Flutter SDK. Confirm the localization key-parity check passes (app_en.arb vs app_ar.arb == 409 keys each, currently equal), record the exact Python verification commands that will gate every later feature, and confirm the two setup scripts and pubspec are in the expected shape. This feature does not modify product code; it locks in the verification harness the coder and reviewer will reuse. Independent of FEAT-002/003/004 (baseline only).",
+  "status": "completed",
+  "steps": [
+    "Confirm the working tree is on branch feat/plantsense-ai-app and clean (git status).",
+    "Run a Python parity check on lib/l10n/app_en.arb and lib/l10n/app_ar.arb: parse both as JSON, collect non-@ keys, assert the two key sets are equal and note the count (currently 409 each). Save this as a reusable snippet the coder documents in the PR body.",
+    "Run a Python check that, for a given list of getter names, each name appears as 'String get <name>;' in lib/l10n/app_localizations.dart and as 'String get <name> =>' in each of app_localizations_en.dart, app_localizations_ar.dart, app_localizations_es.dart, app_localizations_fr.dart. This is the harness reused when new keys are added.",
+    "Confirm pubspec.yaml has no map dependency yet and note the geolocator ^13.0.1 and permission_handler ^11.3.1 entries.",
+    "Confirm tool/setup_platforms.sh and tool/setup_platforms.ps1 both already add ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION and INTERNET permissions (they do, per README). Record that flutter_map needs only INTERNET, which is present.",
+    "Write the verification snippets into a short notes file the later features and PR body reference (e.g. append to the feature findings)."
+  ],
+  "acceptance_criteria": [
+    "Python parity check reports app_en.arb and app_ar.arb have identical key sets (409 each) with empty symmetric difference.",
+    "The getter-coverage Python harness runs and, given an empty list, passes trivially; given a known existing key like 'georesearchPurposeBuilding', confirms it is present in all 5 l10n files.",
+    "Confirmed both setup scripts contain ACCESS_FINE_LOCATION and INTERNET.",
+    "No product source files modified in this feature."
+  ],
+  "verification": [
+    "python3 -c \"import json;e=json.load(open('lib/l10n/app_en.arb'));a=json.load(open('lib/l10n/app_ar.arb'));ek={k for k in e if not k.startswith('@')};ak={k for k in a if not k.startswith('@')};assert ek==ak,(ek^ak);print('parity OK',len(ek))\"",
+    "grep -c ACCESS_FINE_LOCATION tool/setup_platforms.sh tool/setup_platforms.ps1"
+  ],
+  "blocked_reason": null,
+  "findings": {
+    "branch": "Work is on branch feat/intent-picker-location-map (created off feat/plantsense-ai-app per orchestrator briefing). Tree clean apart from the untracked .agents task dir. No product source files modified in this feature.",
+    "environment": "INTEGRATIONS_ONLY: no Flutter/Dart SDK, no pub, no internet. Only Python3 + shell (grep/git) available for static verification. The user runs flutter pub get / analyze / test / dart format on their own toolchain.",
+    "arb_parity_snippet": "python3 -c \"import json;e=json.load(open('lib/l10n/app_en.arb'));a=json.load(open('lib/l10n/app_ar.arb'));ek={k for k in e if not k.startswith('@')};ak={k for k in a if not k.startswith('@')};assert ek==ak,(ek^ak);print('parity OK',len(ek))\"",
+    "arb_parity_result": "parity OK 409 (app_en.arb and app_ar.arb have identical non-@ key sets, 409 each, empty symmetric difference). This is the gate every later feature must keep green when adding keys to BOTH arb files.",
+    "getter_coverage_harness": "python3 - <<'PY'\nimport re\ndef check_getters(names):\n    abstract='lib/l10n/app_localizations.dart'\n    impls=['lib/l10n/app_localizations_en.dart','lib/l10n/app_localizations_ar.dart','lib/l10n/app_localizations_es.dart','lib/l10n/app_localizations_fr.dart']\n    missing=[]\n    at=open(abstract).read()\n    impltext={f:open(f).read() for f in impls}\n    for n in names:\n        if not re.search(r'String get %s;'%re.escape(n), at):\n            missing.append((abstract,n))\n        for f in impls:\n            if not re.search(r'String get %s'%re.escape(n)+r'\\b', impltext[f]):\n                missing.append((f,n))\n    return missing\nassert check_getters([])==[]\nprint('empty list OK')\nm=check_getters(['georesearchPurposeBuilding'])\nassert m==[], m\nprint('georesearchPurposeBuilding present in all 5 l10n files OK')\nPY",
+    "getter_coverage_result": "Harness passes: empty list is trivially green; known key 'georesearchPurposeBuilding' is present as abstract getter 'String get georesearchPurposeBuilding;' in app_localizations.dart and as 'String get georesearchPurposeBuilding => '...';' in _en (Building), _ar (بناء), _es (Building fallback), _fr (Building fallback). When a later feature adds a new ARB key it must be hand-wired into all 5 generated files (abstract + 4 impls, es/fr falling back to the English string) and pass this harness, since gen-l10n cannot run in the sandbox.",
+    "permissions_grep": "grep -c ACCESS_FINE_LOCATION tool/setup_platforms.sh tool/setup_platforms.ps1  (also ACCESS_COARSE_LOCATION and android.permission.INTERNET)",
+    "permissions_result": "Both setup scripts contain exactly one occurrence each of android.permission.INTERNET, ACCESS_FINE_LOCATION, and ACCESS_COARSE_LOCATION (sh lines 74/76/77; ps1 lines 106/108/109). flutter_map with OSM tiles needs only INTERNET, which is already present, so the map picker (FEAT-003) requires no new Android permission.",
+    "pubspec_state": "pubspec.yaml has geolocator: ^13.0.1 (line 53) and permission_handler: ^11.3.1 (line 54) and NO map dependency yet (no flutter_map / latlong2). FEAT-003 will add flutter_map ^7.0.2 and latlong2 ^0.9.1.",
+    "brace_balance_snippet": "For edited Dart files, sanity-check brace/paren balance with: python3 -c \"import sys;s=open(sys.argv[1]).read();print(s.count('{')-s.count('}'),s.count('(')-s.count(')'))\" <file>  (expect 0 0). Note: this is a naive check that counts braces inside strings/comments too, so treat non-zero as a prompt to inspect, not a hard failure."
+  }
+}

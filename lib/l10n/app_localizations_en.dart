@@ -109,6 +109,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'AI results may be inaccurate. You control permissions, image retention and your data.';
 
   @override
+  String get purposeScreenTitle => 'What would you like help with?';
+
+  @override
+  String get purposeScreenSubtitle =>
+      'Choose your main goal so we can open the right tools first. You can change this anytime in Settings.';
+
+  @override
+  String get purposeScreenContinue => 'Continue';
+
+  @override
+  String get settingsPurpose => 'What you\'re here for';
+
+  @override
   String get login => 'Log in';
 
   @override
@@ -842,6 +855,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noResults => 'No matching places found';
+
+  @override
+  String get locationPickOnMap => 'Pick on map';
+
+  @override
+  String get mapPickerTitle => 'Point to your location';
+
+  @override
+  String get mapPickerConfirm => 'Use this location';
+
+  @override
+  String get mapDroppedPin => 'Dropped pin';
+
+  @override
+  String get mapTileError =>
+      'Couldn\'t load the map. Check your connection and try again.';
 
   @override
   String get profileTitle => 'Profile';

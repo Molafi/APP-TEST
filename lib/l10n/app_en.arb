@@ -37,6 +37,11 @@
   "onboardingTitle4": "You're in control",
   "onboardingBody4": "AI results may be inaccurate. You control permissions, image retention and your data.",
 
+  "purposeScreenTitle": "What would you like help with?",
+  "purposeScreenSubtitle": "Choose your main goal so we can open the right tools first. You can change this anytime in Settings.",
+  "purposeScreenContinue": "Continue",
+  "settingsPurpose": "What you're here for",
+
   "login": "Log in",
   "register": "Create account",
   "email": "Email",
@@ -280,6 +285,11 @@
   "geocodeFailed": "Couldn't determine your city. Try searching manually.",
   "selectCity": "Select a city",
   "noResults": "No matching places found",
+  "locationPickOnMap": "Pick on map",
+  "mapPickerTitle": "Point to your location",
+  "mapPickerConfirm": "Use this location",
+  "mapDroppedPin": "Dropped pin",
+  "mapTileError": "Couldn't load the map. Check your connection and try again.",
 
   "profileTitle": "Profile",
   "editProfile": "Edit profile",

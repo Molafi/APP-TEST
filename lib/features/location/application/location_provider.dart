@@ -116,6 +116,35 @@ class LocationController extends StateNotifier<LocationState> {
 
   void selectManual(PlantLocation location) => _apply(location);
 
+  /// Confirms a pin dropped on the map picker: reverse-geocodes [lat]/[lon] to
+  /// a [PlantLocation] and applies it. When the geocoder returns null (offline,
+  /// rate-limited, or over open water) it falls back to a manual location that
+  /// keeps the exact pinned coordinates and uses [fallbackCity] as the label.
+  ///
+  /// Extracted from the picker UI so the reverse-then-selectManual flow (and
+  /// its null fallback) can be exercised in a provider test without pumping a
+  /// map widget.
+  Future<void> selectPinnedLocation({
+    required double lat,
+    required double lon,
+    required String fallbackCity,
+  }) async {
+    final PlantLocation? resolved = await _geocoder.reverse(
+      lat: lat,
+      lon: lon,
+      locale: _locale,
+    );
+    final PlantLocation loc =
+        resolved ??
+        PlantLocation(
+          latitude: lat,
+          longitude: lon,
+          city: fallbackCity,
+          isManual: true,
+        );
+    _apply(loc);
+  }
+
   void search(String query) {
     _debounce?.cancel();
     if (query.trim().length < 2) {

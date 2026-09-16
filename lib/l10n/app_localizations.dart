@@ -288,6 +288,30 @@ abstract class AppLocalizations {
   /// **'AI results may be inaccurate. You control permissions, image retention and your data.'**
   String get onboardingBody4;
 
+  /// No description provided for @purposeScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like help with?'**
+  String get purposeScreenTitle;
+
+  /// No description provided for @purposeScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your main goal so we can open the right tools first. You can change this anytime in Settings.'**
+  String get purposeScreenSubtitle;
+
+  /// No description provided for @purposeScreenContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get purposeScreenContinue;
+
+  /// No description provided for @settingsPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'re here for'**
+  String get settingsPurpose;
+
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
@@ -1679,6 +1703,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No matching places found'**
   String get noResults;
+
+  /// No description provided for @locationPickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on map'**
+  String get locationPickOnMap;
+
+  /// No description provided for @mapPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Point to your location'**
+  String get mapPickerTitle;
+
+  /// No description provided for @mapPickerConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this location'**
+  String get mapPickerConfirm;
+
+  /// No description provided for @mapDroppedPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropped pin'**
+  String get mapDroppedPin;
+
+  /// No description provided for @mapTileError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the map. Check your connection and try again.'**
+  String get mapTileError;
 
   /// No description provided for @profileTitle.
   ///

@@ -1,0 +1,27 @@
+{
+  "id": "FEAT-003",
+  "type": "fix",
+  "description": "Fix inaccurate location (user item 2: 'fix the location, make it accurate'). The direct cause is lib/features/location/data/location_repository.dart using LocationAccuracy.low. Raise accuracy to high and add a sensible timeout so a fix cannot hang indefinitely, keeping the existing typed-exception handling and demo-mode behaviour intact. Verify the manifest permissions the setup scripts add already include ACCESS_FINE_LOCATION (they do). Independent of FEAT-002 and FEAT-004.",
+  "status": "completed",
+  "steps": [
+    "In lib/features/location/data/location_repository.dart, change the LocationSettings accuracy from LocationAccuracy.low to LocationAccuracy.high (best is acceptable but high is the documented, battery-reasonable choice for a one-shot foreground fix). Add a timeLimit (e.g. const Duration(seconds: 15)) to LocationSettings so getCurrentPosition cannot hang forever.",
+    "Ensure a TimeoutException / LocationServiceDisabledException from getCurrentPosition is translated into an AppException by the existing flow. Check lib/core/errors/error_mapper.dart: if geolocator's TimeoutException is not already mapped to a sensible AppErrorKind (e.g. locationServicesDisabled or a generic location error), map it so LocationController.useMyLocation surfaces a friendly message rather than an unhandled error. If a new AppErrorKind or message is needed, add it and localize its message in ErrorMapper/validation_messages with EN+AR ARB keys wired through all 5 l10n files.",
+    "Keep the demo-mode early return (Amman sample) and all existing permission checks unchanged.",
+    "Confirm both tool/setup_platforms.sh and tool/setup_platforms.ps1 add ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION (they do) and the iOS NSLocationWhenInUseUsageDescription (present). No script change is expected for accuracy alone; only touch the scripts if a new capability is genuinely required (it is not for high accuracy).",
+    "Add/extend a unit test: if error_mapper gained a mapping, add a case in test/unit/error_mapper_test.dart. If no mapper change was needed, add a small test asserting the repository uses high accuracy is impractical (geolocator is a plugin); instead document the change and rely on analyze. Prefer adding an error_mapper test only if the mapper actually changed."
+  ],
+  "acceptance_criteria": [
+    "location_repository.dart requests LocationAccuracy.high (or best) with a finite timeLimit; low accuracy no longer used.",
+    "getCurrentPosition timing out yields a handled AppException surfaced through LocationController rather than an uncaught exception.",
+    "Demo mode still returns the sample location; permission and services-disabled paths unchanged.",
+    "If any new user-visible message was added, EN+AR ARB parity holds and all 5 l10n files updated.",
+    "flutter analyze clean and existing tests still pass (verified by the user)."
+  ],
+  "verification": [
+    "grep -n 'LocationAccuracy' lib/features/location/data/location_repository.dart shows high/best and no remaining .low",
+    "python3 parity + getter-coverage harness pass if any l10n key was added",
+    "User runs: flutter analyze && flutter test"
+  ],
+  "blocked_reason": null,
+  "findings": "Changed LocationSettings in lib/features/location/data/location_repository.dart from LocationAccuracy.low to LocationAccuracy.high and added a finite timeLimit: Duration(seconds: 15) so getCurrentPosition cannot hang. Demo-mode early return (Amman 31.9539, 35.9106), the isLocationServiceEnabled/permission checks, and all typed AppException throwing are unchanged. NO error_mapper change needed: geolocator's getCurrentPosition throws dart:async TimeoutException on timeLimit, and ErrorMapper.fromException already maps TimeoutException -> AppErrorKind.timeout (localized errorTimeout, isRetryable true). LocationController.useMyLocation already try/catches and routes timeout to LocationStatus.error with the localized message, so a timed-out fix surfaces gracefully. Therefore NO new AppErrorKind and NO new ARB key were added (413-key parity untouched), and NO new test was added (existing test/unit/error_mapper_test.dart already covers 'TimeoutException -> timeout'). Setup scripts confirmed unchanged: both tool/setup_platforms.sh and .ps1 already declare ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION and iOS NSLocationWhenInUseUsageDescription; high accuracy needs no new native capability. Verified statically (no Flutter SDK in sandbox): grep shows only LocationAccuracy.high and no remaining .low; Python brace/paren/bracket balance on the edited file passes. User must run flutter analyze && flutter test on their Windows toolchain."
+}

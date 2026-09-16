@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plantsense_ai/core/services/ai_gateway.dart';
 import 'package:plantsense_ai/core/services/local_cache_service.dart';
 import 'package:plantsense_ai/core/services/notification_service.dart';
+import 'package:plantsense_ai/features/location/data/nominatim_service.dart';
+import 'package:plantsense_ai/features/location/domain/location_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deterministic fake gateway used in provider/widget tests.
@@ -55,6 +57,39 @@ class FakeNotificationService extends NotificationService {
 
   @override
   Future<void> cancelAll() async => cancelledAll = true;
+}
+
+/// Fake [NominatimService] for tests that must not hit the network. Returns a
+/// preconfigured [reverseResult] (which may be null to exercise the fallback
+/// path) and records the coordinates it was called with.
+class FakeNominatimService extends NominatimService {
+  FakeNominatimService(super.cache, {this.reverseResult, this.searchResults});
+
+  final PlantLocation? reverseResult;
+  final List<PlantLocation>? searchResults;
+  int reverseCalls = 0;
+  double? lastLat;
+  double? lastLon;
+
+  @override
+  Future<PlantLocation?> reverse({
+    required double lat,
+    required double lon,
+    String locale = 'en',
+  }) async {
+    reverseCalls++;
+    lastLat = lat;
+    lastLon = lon;
+    return reverseResult;
+  }
+
+  @override
+  Future<List<PlantLocation>> search(
+    String query, {
+    String locale = 'en',
+  }) async {
+    return searchResults ?? const [];
+  }
 }
 
 /// Builds a real [LocalCacheService] backed by mocked SharedPreferences.

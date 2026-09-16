@@ -37,6 +37,11 @@
   "onboardingTitle4": "أنت المتحكم",
   "onboardingBody4": "قد تكون نتائج الذكاء الاصطناعي غير دقيقة. أنت تتحكم في الأذونات والاحتفاظ بالصور وبياناتك.",
 
+  "purposeScreenTitle": "بماذا تريد المساعدة؟",
+  "purposeScreenSubtitle": "اختر هدفك الأساسي لنفتح لك الأدوات المناسبة أولًا. يمكنك تغيير ذلك في أي وقت من الإعدادات.",
+  "purposeScreenContinue": "متابعة",
+  "settingsPurpose": "ما الذي تريده",
+
   "login": "تسجيل الدخول",
   "register": "إنشاء حساب",
   "email": "البريد الإلكتروني",
@@ -280,6 +285,11 @@
   "geocodeFailed": "تعذّر تحديد مدينتك. حاول البحث يدويًا.",
   "selectCity": "اختر مدينة",
   "noResults": "لا توجد أماكن مطابقة",
+  "locationPickOnMap": "اختر على الخريطة",
+  "mapPickerTitle": "حدّد موقعك",
+  "mapPickerConfirm": "استخدم هذا الموقع",
+  "mapDroppedPin": "دبوس محدد",
+  "mapTileError": "تعذّر تحميل الخريطة. تحقّق من اتصالك وحاول مرة أخرى.",
 
   "profileTitle": "الملف الشخصي",
   "editProfile": "تعديل الملف",
