@@ -10,12 +10,14 @@ import '../../georesearch/presentation/widgets/purpose_label.dart';
 import '../../home/application/home_provider.dart';
 import '../application/app_purpose_provider.dart';
 
-/// One-time purpose picker shown at app start (after onboarding and auth,
+/// Purpose picker shown on EVERY entry to the app (after onboarding and auth,
 /// before Home). Lets the user say what they want the app for — plants,
 /// building, wells, etc. — reusing the existing [SurveyPurpose] enum.
 ///
-/// Requests NO permissions here (those are contextual, like onboarding). The
-/// choice sets the initial Home tab and seeds the GeoResearch survey purpose.
+/// The previous choice is persisted and pre-selected, so confirming again is a
+/// single tap rather than a re-decision. Requests NO permissions here (those are
+/// contextual, like onboarding). The choice sets the initial Home tab and seeds
+/// the GeoResearch survey purpose.
 class PurposeScreen extends ConsumerStatefulWidget {
   const PurposeScreen({super.key});
 
@@ -24,9 +26,18 @@ class PurposeScreen extends ConsumerStatefulWidget {
 }
 
 class _PurposeScreenState extends ConsumerState<PurposeScreen> {
-  /// The purpose to apply on Continue. Defaults to general so the button is
-  /// always actionable; the selection is confirmed explicitly.
-  SurveyPurpose _selected = SurveyPurpose.general;
+  /// The purpose to apply on Continue. Pre-selected from the stored choice so a
+  /// returning user just taps Continue; falls back to general on a first run so
+  /// the button is always actionable.
+  late SurveyPurpose _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    // read, not watch: this seeds the initial selection only and must not fight
+    // the user's taps if the stored value changes underneath.
+    _selected = ref.read(appPurposeProvider) ?? SurveyPurpose.general;
+  }
 
   /// Icon for each purpose, matching the chips in survey_inputs_section.dart.
   static IconData _iconFor(SurveyPurpose purpose) {
@@ -41,14 +52,15 @@ class _PurposeScreenState extends ConsumerState<PurposeScreen> {
 
   Future<void> _confirm() async {
     final SurveyPurpose chosen = _selected;
-    // Set the target Home tab and seed the GeoResearch survey BEFORE the
-    // persisted purpose write. setPurpose assigns provider state synchronously,
-    // which flips the router to Home; doing that last would let Home build one
-    // frame on its default Chat tab before correcting. Ordering the tab/seed
-    // first means the very first Home frame is already on the right tab.
+    // Order matters. The session flag is what flips the router to Home, so it is
+    // set LAST: the tab, the survey seed and the persisted purpose are all in
+    // place before Home builds, so its very first frame is already on the right
+    // tab instead of showing the default Chat tab for a frame and correcting.
     ref.read(homeTabProvider.notifier).state = homeTabForPurpose(chosen);
     ref.read(soilResearchControllerProvider.notifier).setPurpose(chosen);
     await ref.read(appPurposeProvider.notifier).setPurpose(chosen);
+    if (!mounted) return;
+    ref.read(purposeConfirmedThisSessionProvider.notifier).state = true;
   }
 
   @override
