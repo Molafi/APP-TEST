@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/application/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/georesearch/domain/site_survey_model.dart';
 import '../../features/home/presentation/home_screen.dart';
+import '../../features/onboarding/application/app_purpose_provider.dart';
 import '../../features/onboarding/application/onboarding_provider.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/onboarding/presentation/purpose_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../bootstrap.dart';
 
@@ -33,8 +36,14 @@ class AppRouter extends ConsumerWidget {
         return auth.when(
           loading: () => const SplashScreen(),
           error: (_, __) => const LoginScreen(),
-          data: (user) =>
-              user == null ? const LoginScreen() : const HomeScreen(),
+          data: (user) {
+            if (user == null) return const LoginScreen();
+            // One-time purpose picker: null means the user has not chosen yet.
+            // Branch only on this resolved value to stay flicker-free.
+            final SurveyPurpose? purpose = ref.watch(appPurposeProvider);
+            if (purpose == null) return const PurposeScreen();
+            return const HomeScreen();
+          },
         );
       },
     );

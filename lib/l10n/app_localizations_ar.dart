@@ -1308,4 +1308,17 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get demoModeBannerAiReady =>
       'الوضع التجريبي — بياناتك محفوظة على هذا الجهاز. الذكاء الاصطناعي متصل ويجيب فعليًا؛ اضبط Firebase للمزامنة بين الأجهزة.';
+
+  @override
+  String get purposeScreenTitle => 'بماذا تريد المساعدة؟';
+
+  @override
+  String get purposeScreenSubtitle =>
+      'اختر هدفك الأساسي لنفتح لك الأدوات المناسبة أولًا. يمكنك تغيير ذلك في أي وقت من الإعدادات.';
+
+  @override
+  String get purposeScreenContinue => 'متابعة';
+
+  @override
+  String get settingsPurpose => 'ما الذي تريده';
 }

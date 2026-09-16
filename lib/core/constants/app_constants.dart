@@ -13,6 +13,7 @@ class AppConstants {
 
   // SharedPreferences keys.
   static const String prefOnboardingComplete = 'onboarding_complete_v1';
+  static const String prefAppPurpose = 'app_purpose_v1';
   static const String prefLocale = 'app_locale';
   static const String prefThemeMode = 'app_theme_mode';
   static const String prefUnitSystem = 'unit_system';

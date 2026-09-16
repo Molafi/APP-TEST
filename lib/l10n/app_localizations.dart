@@ -2555,6 +2555,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Demo mode — your data stays on this device. AI is connected and answering live; configure Firebase to sync across devices.'**
   String get demoModeBannerAiReady;
+
+  /// No description provided for @purposeScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like help with?'**
+  String get purposeScreenTitle;
+
+  /// No description provided for @purposeScreenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your main goal so we can open the right tools first. You can change this anytime in Settings.'**
+  String get purposeScreenSubtitle;
+
+  /// No description provided for @purposeScreenContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get purposeScreenContinue;
+
+  /// No description provided for @settingsPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'re here for'**
+  String get settingsPurpose;
 }
 
 class _AppLocalizationsDelegate
